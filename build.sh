@@ -1,19 +1,21 @@
 #!/bin/bash
-# Compila AgentBar e ne assembla il bundle .app.
+# Compila Lunetta e ne assembla il bundle .app.
 #
-#   ./build.sh              → dist/AgentBar.app
+#   ./build.sh              → dist/Lunetta.app
 #   ./build.sh --install    → installa in ~/Applications e riavvia l'app
 #   ./build.sh --run        → costruisce e lancia da dist/
+#
+# Servono Xcode e XcodeGen (brew install xcodegen). Il progetto Xcode è generato
+# da project.yml e non sta nel repository.
 
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP_NAME="AgentBar"
-BUNDLE_ID="com.francescoromeo.agentbar"
-VERSION="1.0.0"
+APP_NAME="Lunetta"
 DIST="dist"
 APP="$DIST/$APP_NAME.app"
 INSTALL_DIR="$HOME/Applications"
+DERIVED=".build/xcode"
 
 INSTALL=0
 RUN=0
@@ -25,46 +27,56 @@ for arg in "$@"; do
   esac
 done
 
-echo "▸ compilo ($APP_NAME $VERSION)…"
-swift build -c release
+command -v xcodegen >/dev/null || { echo "serve XcodeGen: brew install xcodegen"; exit 1; }
+
+echo "▸ genero il progetto…"
+xcodegen generate --quiet
+
+echo "▸ compilo…"
+LOG="$(mktemp -t lunetta-build)"
+if ! xcodebuild -project "$APP_NAME.xcodeproj" -scheme "$APP_NAME" -configuration Release \
+      -derivedDataPath "$DERIVED" -destination 'platform=macOS,arch=arm64' -quiet build >"$LOG" 2>&1; then
+  grep -E "error:|BUILD FAILED" "$LOG" | sed 's|^.*/Sources/|Sources/|' | sort -u | head -60
+  exit 1
+fi
+grep -E "warning: .*(Sources/Lunetta)" "$LOG" | sed 's|^.*/Sources/|Sources/|' | sort -u | head -20 || true
+
+# La copia nella cartella di build non deve rispondere ai link lunetta://.
+LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+"$LSREGISTER" -u "$DERIVED/Build/Products/Release/$APP_NAME.app" >/dev/null 2>&1 || true
 
 echo "▸ assemblo il bundle…"
-rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp ".build/release/$APP_NAME" "$APP/Contents/MacOS/$APP_NAME"
+rm -rf "${APP:?}"
+mkdir -p "$DIST"
+cp -R "$DERIVED/Build/Products/Release/$APP_NAME.app" "$APP"
 
-cat > "$APP/Contents/Info.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleName</key><string>$APP_NAME</string>
-    <key>CFBundleDisplayName</key><string>$APP_NAME</string>
-    <key>CFBundleIdentifier</key><string>$BUNDLE_ID</string>
-    <key>CFBundleExecutable</key><string>$APP_NAME</string>
-    <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>$VERSION</string>
-    <key>CFBundleVersion</key><string>$VERSION</string>
-    <key>LSMinimumSystemVersion</key><string>14.0</string>
-    <key>NSHighResolutionCapable</key><true/>
-    <!-- Solo barra di stato: niente Dock, niente menu applicazione. -->
-    <key>LSUIElement</key><true/>
-</dict>
-</plist>
-PLIST
+# Un'identità stabile fa sì che macOS ricordi i permessi fra una build e l'altra:
+# con la firma ad-hoc calendario, fotocamera e accessibilità andrebbero ridati ogni volta.
+IDENTITY="${LUNETTA_SIGN_IDENTITY:-}"
+if [ -z "$IDENTITY" ]; then
+  IDENTITY="$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Apple Development/ {print $2}' | while read -r name; do
+    if security find-certificate -c "$name" -p 2>/dev/null | openssl x509 -noout -subject 2>/dev/null | grep -q "OU=M67WJ8Q88G"; then
+      echo "$name"; break
+    fi
+  done)"
+fi
+IDENTITY="${IDENTITY:--}"
 
-# Firma ad-hoc: identità stabile per login item e permessi di sistema.
-codesign --force --sign - "$APP" >/dev/null 2>&1 || echo "  (firma ad-hoc non riuscita, non è bloccante)"
-
+MEDIA_LIB="$(find "$APP/Contents" -name 'libLunettaMediaBridge.dylib' | head -1)"
+[ -n "$MEDIA_LIB" ] && codesign --force --sign "$IDENTITY" "$MEDIA_LIB" >/dev/null 2>&1
+codesign --force --sign "$IDENTITY" "$APP" >/dev/null 2>&1 || echo "  (firma non riuscita, non è bloccante)"
+echo "▸ firmato con: $IDENTITY"
 echo "▸ pronto: $APP"
 
 if [ "$INSTALL" -eq 1 ]; then
   mkdir -p "$INSTALL_DIR"
   pkill -x "$APP_NAME" 2>/dev/null || true
   sleep 0.4
-  rm -rf "$INSTALL_DIR/$APP_NAME.app"
+  rm -rf "${INSTALL_DIR:?}/${APP_NAME:?}.app"
   cp -R "$APP" "$INSTALL_DIR/"
+  "$LSREGISTER" -u "$PWD/$APP" >/dev/null 2>&1 || true
   APP="$INSTALL_DIR/$APP_NAME.app"
+  "$LSREGISTER" -f "$APP" >/dev/null 2>&1 || true
   echo "▸ installato in $APP"
 fi
 

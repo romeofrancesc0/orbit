@@ -1,0 +1,35 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "extended-srgb:0.11000,0.11000,0.27000,1.00000",
+      "extended-srgb:0.02000,0.02000,0.06000,1.00000"
+    ],
+    "orientation" : {
+      "start" : { "x" : 0.5, "y" : 0 },
+      "stop" : { "x" : 0.5, "y" : 1 }
+    }
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "lunetta.png",
+          "name" : "lunetta"
+        }
+      ],
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.55
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}

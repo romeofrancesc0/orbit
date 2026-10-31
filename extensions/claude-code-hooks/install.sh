@@ -1,7 +1,8 @@
 #!/bin/bash
-# Installa gli hook opzionali di AgentBar in ~/.claude/settings.json.
+# Installa gli hook opzionali di Lunetta in ~/.claude/settings.json.
+# Lo stesso lo fa l'app: Impostazioni → Agenti → Hook di Claude Code.
 #
-# Sono facoltativi: senza di essi AgentBar funziona già leggendo i transcript.
+# Sono facoltativi: senza di essi Lunetta funziona già leggendo i transcript.
 # Servono a vedere *subito* una richiesta di permesso ancora pendente.
 #
 #   ./install.sh            → installa
@@ -14,15 +15,15 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 SETTINGS="$HOME/.claude/settings.json"
-TARGET_DIR="$HOME/.agentbar/hooks"
-SCRIPT="$TARGET_DIR/agentbar_hook.py"
+TARGET_DIR="$HOME/.lunetta/hooks"
+SCRIPT="$TARGET_DIR/lunetta_hook.py"
 
 MODE="install"
 [ "${1:-}" = "--remove" ] && MODE="remove"
 
 if [ "$MODE" = "install" ]; then
   mkdir -p "$TARGET_DIR"
-  cp agentbar_hook.py "$SCRIPT"
+  cp lunetta_hook.py "$SCRIPT"
   chmod +x "$SCRIPT"
   echo "▸ script copiato in $SCRIPT"
 fi
@@ -39,7 +40,7 @@ events_clear = ["PostToolUse", "Stop", "UserPromptSubmit", "SessionEnd"]
 
 settings = {}
 if os.path.exists(settings_path):
-    shutil.copy2(settings_path, settings_path + ".agentbar-backup")
+    shutil.copy2(settings_path, settings_path + ".lunetta-backup")
     with open(settings_path, encoding="utf-8") as handle:
         settings = json.load(handle)
 
@@ -52,7 +53,7 @@ def command_for(event):
 
 def is_ours(entry):
     for hook in entry.get("hooks", []):
-        if "agentbar_hook.py" in str(hook.get("command", "")):
+        if "lunetta_hook.py" in str(hook.get("command", "")):
             return True
     return False
 
@@ -88,7 +89,7 @@ PY
 
 if [ "$MODE" = "remove" ]; then
   rm -f "$SCRIPT"
-  rm -rf "$HOME/.agentbar/hints"
+  rm -rf "$HOME/.lunetta/hints"
   echo "▸ hook rimossi"
 fi
 
