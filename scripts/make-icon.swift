@@ -19,8 +19,9 @@ guard let context = CGContext(
     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
 ) else { fatalError("contesto non disponibile") }
 
-let radius: CGFloat = 318
-let center = CGPoint(x: side / 2, y: side - 108)
+// Attaccata al bordo in alto: è la notch, vista come una mezzaluna.
+let radius: CGFloat = 345
+let center = CGPoint(x: side / 2, y: side)
 
 let moon = CGMutablePath()
 moon.addArc(center: center, radius: radius, startAngle: .pi, endAngle: 0, clockwise: false)

@@ -84,7 +84,7 @@ with open(settings_path, "w", encoding="utf-8") as handle:
     handle.write("\n")
 
 print(f"▸ {mode}: {changed} eventi aggiornati in {settings_path}")
-print("  (copia di sicurezza: " + settings_path + ".agentbar-backup)")
+print("  (copia di sicurezza: " + settings_path + ".lunetta-backup)")
 PY
 
 if [ "$MODE" = "remove" ]; then

@@ -36,7 +36,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if !services.settings.config.onboardingDone, !services.isDemo {
+            // La schermata iniziale spiega già il conflitto con Boring Notch.
             SettingsWindowController.shared.show(section: .welcome, services: services)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { services.warnAboutConflicts() }
         }
     }
 

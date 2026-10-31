@@ -191,11 +191,11 @@ struct ShortcutsSettingsView: View {
     var body: some View {
         SettingsForm(section: .shortcuts, subtitle: "Scorciatoie valide ovunque, anche con un'altra app in primo piano.") {
             Section {
-                ForEach(settings.config.hotkeys.indices, id: \.self) { index in
+                ForEach(settings.config.hotkeys) { hotkey in
                     HStack {
-                        Text(settings.config.hotkeys[index].action.label)
+                        Text(hotkey.action.label)
                         Spacer()
-                        HotkeyRecorder(binding: settings.binding(\.hotkeys[index]))
+                        HotkeyRecorder(binding: binding(for: hotkey.action))
                     }
                 }
             }
@@ -205,6 +205,22 @@ struct ShortcutsSettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+}
+
+extension ShortcutsSettingsView {
+    fileprivate func binding(for action: HotkeyAction) -> Binding<HotkeyBinding> {
+        Binding(
+            get: {
+                settings.config.hotkeys.first { $0.action == action } ?? HotkeyBinding(action: action, keyCode: nil, modifiers: 0)
+            },
+            set: { value in
+                settings.update { config in
+                    guard let index = config.hotkeys.firstIndex(where: { $0.action == action }) else { return }
+                    config.hotkeys[index] = value
+                }
+            }
+        )
     }
 }
 
@@ -498,7 +514,7 @@ struct AdvancedSettingsView: View {
                 }
             }
 
-            Section("Benvenuto") {
+            Section("Primi passi") {
                 Button("Rivedi la schermata iniziale") {
                     SettingsWindowController.shared.show(section: .welcome, services: AppServices.shared)
                 }
@@ -530,7 +546,7 @@ struct WelcomeView: View {
 
     @EnvironmentObject private var settings: SettingsStore
     @State private var boringNotchRunning = WelcomeView.isBoringNotchRunning
-    @State private var login = true
+    @State private var login = LoginItem.isAvailable
 
     private static var isBoringNotchRunning: Bool {
         !NSRunningApplication.runningApplications(withBundleIdentifier: "theboringteam.boringnotch").isEmpty
@@ -555,14 +571,14 @@ struct WelcomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 22) {
+            VStack(spacing: 16) {
                 VStack(spacing: 6) {
                     LunettaGlyph()
                         .fill(LinearGradient(colors: [Color(hex: 0xFFE9B3), Color(hex: 0xFFA86B), Color(hex: 0xE85C8F)], startPoint: .top, endPoint: .bottom))
-                        .frame(width: 92, height: 46)
-                        .padding(.bottom, 6)
-                    Text("Benvenuto in Lunetta")
-                        .font(.largeTitle.weight(.semibold))
+                        .frame(width: 72, height: 36)
+                        .padding(.bottom, 4)
+                    Text("Ti diamo il benvenuto in Lunetta")
+                        .font(.title.weight(.semibold))
                     Text("La notch diventa la parte più utile dello schermo. Passaci sopra col mouse per aprirla.")
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -635,7 +651,8 @@ struct WelcomeView: View {
                 .keyboardShortcut(.defaultAction)
                 .controlSize(.large)
             }
-            .padding(32)
+            .padding(.horizontal, 32)
+            .padding(.vertical, 18)
             .frame(maxWidth: .infinity)
         }
     }

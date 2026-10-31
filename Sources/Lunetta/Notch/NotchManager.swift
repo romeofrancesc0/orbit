@@ -116,6 +116,14 @@ final class NotchManager {
         }) {
             monitors.append(local)
         }
+        // Un campo di testo terrebbe per sé l'Esc: lo si intercetta prima.
+        if let escape = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { [weak self] event in
+            guard event.keyCode == 53, event.window is NotchPanel else { return event }
+            MainActor.assumeIsolated { self?.close() }
+            return nil
+        }) {
+            monitors.append(escape)
+        }
         if let scroll = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel, handler: { [weak self] event in
             MainActor.assumeIsolated {
                 if event.window is NotchPanel { self?.activeController?.handleScroll(event) }
@@ -147,7 +155,7 @@ final class NotchManager {
 
     private func dispatchMouse() {
         let location = NSEvent.mouseLocation
-        controllers.values.forEach { $0.mouseMoved(to: location, isDragging: isDragActive) }
+        controllers.values.forEach { $0.mouseMoved(to: location) }
         updatePolling()
     }
 
@@ -190,6 +198,14 @@ final class NotchManager {
     }
 
     private func observeSystem() {
+        let distributed = DistributedNotificationCenter.default()
+        observers.append(distributed.addObserver(forName: Notification.Name("com.apple.screenIsLocked"), object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.screenLocked() }
+        })
+        observers.append(distributed.addObserver(forName: Notification.Name("com.apple.screenIsUnlocked"), object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.screenUnlocked() }
+        })
+
         let center = NotificationCenter.default
         observers.append(center.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.rebuildControllers() }
@@ -213,6 +229,26 @@ final class NotchManager {
                 DispatchQueue.main.async { self?.updateSuppression() }
             }
             .store(in: &cancellables)
+    }
+
+    // MARK: - Schermata di blocco
+
+    private func screenLocked() {
+        close()
+        guard services.settings.config.behavior.showOnLockScreen else { return }
+        controllers.values.forEach { LockScreenSpace.shared.add($0.panel) }
+    }
+
+    /// Una finestra uscita da quello spazio non torna da sola negli spazi normali:
+    /// il modo più pulito di ripartire è ricreare le notch.
+    private func screenUnlocked() {
+        guard LockScreenSpace.shared.hasWindows else { return }
+        controllers.values.forEach {
+            LockScreenSpace.shared.remove($0.panel)
+            $0.tearDown()
+        }
+        controllers.removeAll()
+        rebuildControllers()
     }
 
     // MARK: - Tutto schermo

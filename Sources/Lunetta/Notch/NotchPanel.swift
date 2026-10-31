@@ -33,14 +33,25 @@ final class NotchPanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { false }
 
+    /// Un campo di testo in una finestra non attiva scarterebbe il primo click: si
+    /// prende la tastiera prima, ma solo se sotto il mouse c'è davvero qualcosa che la vuole.
+    /// Un click su un pulsante non deve togliere il fuoco all'app in uso.
+    override func sendEvent(_ event: NSEvent) {
+        if event.type == .leftMouseDown, !isKeyWindow,
+           let content = contentView,
+           let hit = content.hitTest(content.superview?.convert(event.locationInWindow, from: nil) ?? event.locationInWindow),
+           hit.needsPanelToBecomeKey {
+            makeKey()
+        }
+        super.sendEvent(event)
+    }
+
     /// AppKit spinge le finestre sotto la barra dei menu: qui è proprio dove deve stare.
     override func constrainFrameRect(_ frameRect: NSRect, to screen: NSScreen?) -> NSRect { frameRect }
 }
 
 /// Vista radice: accetta il primo click anche se la finestra non è attiva.
 final class NotchHostingView<Content: View>: NSHostingView<Content> {
-    var onKeyEscape: (() -> Void)?
-
     required init(rootView: Content) {
         super.init(rootView: rootView)
         sizingOptions = []
@@ -51,14 +62,6 @@ final class NotchHostingView<Content: View>: NSHostingView<Content> {
     required init?(coder: NSCoder) { fatalError("init(coder:) non disponibile") }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
-
-    override func keyDown(with event: NSEvent) {
-        if event.keyCode == 53 {
-            onKeyEscape?()
-        } else {
-            super.keyDown(with: event)
-        }
-    }
 }
 
 /// Le misure della notch su uno schermo: quella vera se c'è, altrimenti una virtuale.

@@ -92,41 +92,13 @@ private struct AirDropTile: View {
         .buttonStyle(NotchPressStyle())
         .help(shelf.items.isEmpty ? "Trascina qui un file per inviarlo" : "Invia tutto lo scaffale")
         .onHover { hovering = $0 }
-        .onDrop(of: [.fileURL, .url], isTargeted: $targeted) { providers in
-            let collector = URLCollector()
-            let group = DispatchGroup()
-            for provider in providers {
-                group.enter()
-                _ = provider.loadObject(ofClass: URL.self) { url, _ in
-                    if let url { collector.append(url) }
-                    group.leave()
-                }
-            }
-            group.notify(queue: .main) {
-                guard let service = NSSharingService(named: .sendViaAirDrop) else { return }
-                NSApp.activate(ignoringOtherApps: true)
-                service.perform(withItems: collector.urls)
-            }
+        .onDrop(of: [.fileURL, .url], isTargeted: $targeted) { _ in
+            let files = ShelfStore.droppedFiles()
+            guard !files.isEmpty, let service = NSSharingService(named: .sendViaAirDrop) else { return false }
+            NSApp.activate(ignoringOtherApps: true)
+            service.perform(withItems: files)
             return true
         }
-    }
-}
-
-/// Raccoglie gli URL che arrivano da thread diversi durante un rilascio.
-private final class URLCollector: @unchecked Sendable {
-    private let lock = NSLock()
-    private var storage: [URL] = []
-
-    func append(_ url: URL) {
-        lock.lock()
-        defer { lock.unlock() }
-        storage.append(url)
-    }
-
-    var urls: [URL] {
-        lock.lock()
-        defer { lock.unlock() }
-        return storage
     }
 }
 

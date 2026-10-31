@@ -66,6 +66,26 @@ final class SettingsStore: ObservableObject {
         )
     }
 
+    /// Come `binding`, per un campo di un elemento in una lista. L'elemento si cerca per id
+    /// a ogni accesso: con un indice fisso, cancellarlo farebbe crashare le viste ancora
+    /// in uscita, che possono leggere il valore un'ultima volta.
+    func binding<Element: Identifiable, Value>(
+        in list: WritableKeyPath<LunettaConfig, [Element]>,
+        id: Element.ID,
+        _ field: WritableKeyPath<Element, Value>,
+        default fallback: Value
+    ) -> Binding<Value> {
+        Binding(
+            get: { self.config[keyPath: list].first { $0.id == id }?[keyPath: field] ?? fallback },
+            set: { newValue in
+                self.update { config in
+                    guard let index = config[keyPath: list].firstIndex(where: { $0.id == id }) else { return }
+                    config[keyPath: list][index][keyPath: field] = newValue
+                }
+            }
+        )
+    }
+
     private func scheduleSave() {
         guard persists else { return }
         saveWork?.cancel()

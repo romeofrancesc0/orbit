@@ -65,9 +65,28 @@ final class AppServices {
             .store(in: &cancellables)
 
         notch.start()
+        MainMenu.install(services: self)
         MenuBarController.shared.start(services: self)
         HotKeyCenter.shared.perform = { [weak self] action in self?.perform(action) }
         HotKeyCenter.shared.apply(settings.config.hotkeys)
+    }
+
+    /// Boring Notch disegna nello stesso punto: due app sulla stessa notch si coprono a vicenda.
+    func warnAboutConflicts() {
+        let bundleID = "theboringteam.boringnotch"
+        guard !isDemo, !NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty else { return }
+        notch.show(NotchPeek(
+            title: "Boring Notch è aperto",
+            subtitle: "Si sovrappone a Lunetta",
+            icon: .symbol("exclamationmark.triangle.fill"),
+            tint: Color(hex: 0xFFC145),
+            duration: 12,
+            group: "conflict",
+            actionLabel: "Chiudilo",
+            action: {
+                NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).forEach { $0.terminate() }
+            }
+        ))
     }
 
     func shutdown() {

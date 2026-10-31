@@ -36,7 +36,6 @@ final class NotchController {
         hostingView.autoresizingMask = [.width, .height]
         panel.contentView = hostingView
 
-        hostingView.onKeyEscape = { [weak self] in self?.close() }
 
         actions.closeHandler = { [weak self] in self?.close() }
         actions.holdHandler = { [weak self] reason, active in
@@ -115,7 +114,6 @@ final class NotchController {
 
     private func applyBehavior() {
         panel.sharingType = config.behavior.hideFromScreenCapture ? .none : .readOnly
-        panel.canBecomeVisibleWithoutLogin = config.behavior.showOnLockScreen
     }
 
     func setPinnedForPreview(_ pinned: Bool) {
@@ -145,7 +143,7 @@ final class NotchController {
     }
 
     /// Chiamata a ogni movimento del mouse dal monitor globale.
-    func mouseMoved(to location: NSPoint, isDragging: Bool) {
+    func mouseMoved(to location: NSPoint) {
         guard !state.isSuppressed else { return }
         let inside = interactiveRect.contains(location)
         if inside != mouseInside {
@@ -153,7 +151,6 @@ final class NotchController {
             inside ? mouseEntered() : mouseExited()
         }
         updateMouseAcceptance()
-        _ = isDragging
     }
 
     /// Per trascinare un file la finestra deve poter ricevere eventi anche se si
@@ -286,7 +283,7 @@ final class NotchController {
         }
 
         let location = NSEvent.mouseLocation
-        let headerBottom = state.geometry.screenFrame.maxY - max(state.geometry.notchHeight, 30)
+        let headerBottom = state.geometry.screenFrame.maxY - NotchMetrics.headerHeight(notchHeight: state.geometry.notchHeight)
         if scrollAccumulated.height < -30, location.y > headerBottom {
             gestureConsumed = true
             close()

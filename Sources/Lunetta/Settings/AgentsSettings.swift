@@ -70,8 +70,8 @@ struct AgentsSettingsView: View {
             }
 
             Section("Agenti collegati") {
-                ForEach(settings.config.agents.providers.indices, id: \.self) { index in
-                    ProviderRow(index: index)
+                ForEach(settings.config.agents.providers) { provider in
+                    ProviderRow(provider: provider)
                 }
                 Button("Aggiungi un altro agent…") { addingProvider = true }
             }
@@ -133,24 +133,20 @@ struct AgentsSettingsView: View {
 }
 
 private struct ProviderRow: View {
-    let index: Int
+    let provider: ProviderConfig
 
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var sessions: SessionStore
 
-    private var provider: ProviderConfig? { settings.config.agents.providers[safe: index] }
-
     private var count: Int {
-        guard let provider else { return 0 }
-        return sessions.sessions.filter { $0.providerID == provider.id }.count
+        sessions.sessions.filter { $0.providerID == provider.id }.count
     }
 
     private var isBuiltIn: Bool {
-        ["claude-code", "codex", "inbox"].contains(provider?.id ?? "")
+        ["claude-code", "codex", "inbox"].contains(provider.id)
     }
 
     private var detail: String {
-        guard let provider else { return "" }
         if let error = sessions.providerErrors[provider.id] { return error }
         switch provider.type {
         case "claude-code", "codex":
@@ -167,42 +163,43 @@ private struct ProviderRow: View {
     }
 
     var body: some View {
-        if let provider {
-            HStack(spacing: 10) {
-                ColorPicker("", selection: accentBinding, supportsOpacity: false)
-                    .labelsHidden()
-                    .frame(width: 26)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(provider.name ?? provider.id)
-                    Text(detail)
-                        .font(.callout)
-                        .foregroundStyle(sessions.providerErrors[provider.id] != nil ? .red : .secondary)
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-                }
-                Spacer()
-                if !isBuiltIn {
-                    Button {
-                        settings.update { $0.agents.providers.removeAll { $0.id == provider.id } }
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                    .buttonStyle(.borderless)
-                    .help("Rimuovi questo agent")
-                }
-                Toggle("", isOn: settings.binding(\.agents.providers[index].enabled))
-                    .labelsHidden()
-                    .toggleStyle(.switch)
+        HStack(spacing: 10) {
+            ColorPicker("", selection: accentBinding, supportsOpacity: false)
+                .labelsHidden()
+                .frame(width: 44)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(provider.name ?? provider.id)
+                Text(detail)
+                    .font(.callout)
+                    .foregroundStyle(sessions.providerErrors[provider.id] != nil ? .red : .secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
             }
+            Spacer()
+            if !isBuiltIn {
+                Button {
+                    settings.update { $0.agents.providers.removeAll { $0.id == provider.id } }
+                } label: {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.borderless)
+                .help("Rimuovi questo agent")
+            }
+            Toggle("", isOn: settings.binding(in: \.agents.providers, id: provider.id, \.enabled, default: false))
+                .labelsHidden()
+                .toggleStyle(.switch)
         }
     }
 
     private var accentBinding: Binding<Color> {
         Binding(
-            get: { Color(hexString: provider?.accent) ?? .gray },
+            get: { Color(hexString: provider.accent) ?? .gray },
             set: { color in
                 guard let hex = color.hexString else { return }
-                settings.update { $0.agents.providers[index].accent = hex }
+                settings.update { config in
+                    guard let index = config.agents.providers.firstIndex(where: { $0.id == provider.id }) else { return }
+                    config.agents.providers[index].accent = hex
+                }
             }
         )
     }
@@ -295,8 +292,10 @@ enum ClaudeHooks {
         }
     }
 
-    static var isInstalled: Bool {
-        guard let data = try? Data(contentsOf: settingsFile),
+    static var isInstalled: Bool { isInstalled(in: settingsFile) }
+
+    static func isInstalled(in file: URL) -> Bool {
+        guard let data = try? Data(contentsOf: file),
               let text = String(data: data, encoding: .utf8)
         else { return false }
         return text.contains("lunetta_hook.py")
@@ -311,26 +310,26 @@ enum ClaudeHooks {
         if fm.fileExists(atPath: script.path) { try fm.removeItem(at: script) }
         try fm.copyItem(at: bundled, to: script)
         try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: script.path)
-        try rewrite(installing: true)
+        try rewrite(file: settingsFile, script: script.path, installing: true)
     }
 
     static func remove() throws {
-        try rewrite(installing: false)
+        try rewrite(file: settingsFile, script: script.path, installing: false)
         try? FileManager.default.removeItem(at: script)
         try? FileManager.default.removeItem(at: AppPaths.hintsDirectory)
     }
 
-    private static func rewrite(installing: Bool) throws {
+    static func rewrite(file: URL, script: String, installing: Bool) throws {
         let fm = FileManager.default
         var settings: [String: Any] = [:]
-        if let data = try? Data(contentsOf: settingsFile) {
+        if let data = try? Data(contentsOf: file) {
             guard let parsed = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
                 throw HookError.unreadableSettings
             }
             settings = parsed
-            let backup = settingsFile.appendingPathExtension("lunetta-backup")
+            let backup = file.appendingPathExtension("lunetta-backup")
             if fm.fileExists(atPath: backup.path) { try fm.removeItem(at: backup) }
-            try fm.copyItem(at: settingsFile, to: backup)
+            try fm.copyItem(at: file, to: backup)
         }
 
         var hooks = settings["hooks"] as? [String: Any] ?? [:]
@@ -341,7 +340,7 @@ enum ClaudeHooks {
                 entries.append([
                     "hooks": [[
                         "type": "command",
-                        "command": "/usr/bin/env python3 \"\(script.path)\" \(event)",
+                        "command": "/usr/bin/env python3 \"\(script)\" \(event)",
                         "async": true,
                         "timeout": 5
                     ] as [String: Any]]
@@ -360,9 +359,9 @@ enum ClaudeHooks {
             settings["hooks"] = hooks
         }
 
-        try fm.createDirectory(at: settingsFile.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try fm.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
         let data = try JSONSerialization.data(withJSONObject: settings, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes])
-        try data.write(to: settingsFile, options: .atomic)
+        try data.write(to: file, options: .atomic)
     }
 
     private static func isOurs(_ entry: [String: Any]) -> Bool {

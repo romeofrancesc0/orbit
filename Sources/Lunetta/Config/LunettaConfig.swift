@@ -261,7 +261,7 @@ struct AppearanceConfig: Codable, Equatable {
     var closedBottomRadius: Double = 11
     var openEarRadius: Double = 15
     var openBottomRadius: Double = 30
-    var openWidth: Double = 790
+    var openWidth: Double = 820
     var openHeight: Double = 244
     var maxWingWidth: Double = 170
 

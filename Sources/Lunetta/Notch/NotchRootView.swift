@@ -64,7 +64,7 @@ struct NotchRootView: View {
         .contextMenu { NotchContextMenu(services: AppServices.shared) }
         .background(shadowLayer(shape: shape, theme: theme))
         .onDrop(of: ShelfStore.dropTypes, isTargeted: dropBinding) { providers in
-            shelf.add(providers: providers)
+            shelf.handleDrop(providers: providers)
             return true
         }
         .offset(x: state.isOpen ? 0 : closedOffset(config: config))
@@ -483,6 +483,15 @@ struct HUDBelow: View {
 
 // MARK: - Notch aperta
 
+/// Le misure del contenuto aperto, condivise con l'editor del layout: le sue maniglie
+/// devono cadere esattamente sopra i widget della vera anteprima.
+enum NotchMetrics {
+    static let contentInset: CGFloat = 11
+    static let contentTopGap: CGFloat = 3
+
+    static func headerHeight(notchHeight: CGFloat) -> CGFloat { max(notchHeight, 30) }
+}
+
 struct OpenNotchContent: View {
     @ObservedObject var state: NotchState
 
@@ -504,9 +513,10 @@ struct OpenNotchContent: View {
                         .transition(pageTransition)
                 }
             }
-            .padding(.horizontal, 11)
-            .padding(.bottom, 11)
-            .padding(.top, 3)
+            // Le orecchie stanno dentro la larghezza della forma: il margine si conta da dopo di loro.
+            .padding(.horizontal, NotchMetrics.contentInset + CGFloat(config.appearance.openEarRadius))
+            .padding(.bottom, NotchMetrics.contentInset)
+            .padding(.top, NotchMetrics.contentTopGap)
         }
         .frame(width: size.width, height: size.height, alignment: .top)
         .animation(theme.animation, value: state.selectedPageID)
@@ -535,6 +545,7 @@ struct NotchHeader: View {
         let config = settings.config
         let pages = config.layout.pages
         let side = (CGFloat(config.appearance.openWidth) - state.geometry.notchWidth) / 2 - 8
+        let ear = CGFloat(config.appearance.openEarRadius)
 
         HStack(spacing: 0) {
             HStack(spacing: 2) {
@@ -545,7 +556,7 @@ struct NotchHeader: View {
                 }
                 Spacer(minLength: 0)
             }
-            .padding(.leading, 18)
+            .padding(.leading, ear + 8)
             .frame(width: side, alignment: .leading)
 
             Spacer(minLength: state.geometry.notchWidth)
@@ -567,10 +578,10 @@ struct NotchHeader: View {
                     }
                 }
             }
-            .padding(.trailing, 15)
+            .padding(.trailing, ear + 6)
             .frame(width: side, alignment: .trailing)
         }
-        .frame(height: max(state.geometry.notchHeight, 30))
+        .frame(height: NotchMetrics.headerHeight(notchHeight: state.geometry.notchHeight))
         .animation(.easeOut(duration: 0.15), value: state.hud == nil)
     }
 

@@ -325,8 +325,8 @@ struct CustomWidgetsSettingsView: View {
                     Text("Nessun widget. Parti da un modello qui sotto o creane uno vuoto.")
                         .foregroundStyle(.secondary)
                 }
-                ForEach(settings.config.customWidgets.indices, id: \.self) { index in
-                    CustomWidgetEditor(index: index)
+                ForEach(settings.config.customWidgets) { widget in
+                    CustomWidgetEditor(widget: widget)
                 }
                 Button("Nuovo widget") {
                     add(CustomWidgetConfig(name: "Nuovo widget", command: "date '+%H:%M'"))
@@ -384,50 +384,50 @@ struct CustomWidgetsSettingsView: View {
 }
 
 private struct CustomWidgetEditor: View {
-    let index: Int
+    let widget: CustomWidgetConfig
 
     @EnvironmentObject private var settings: SettingsStore
     @EnvironmentObject private var store: CustomWidgetStore
     @State private var expanded = false
 
-    private var widget: CustomWidgetConfig? { settings.config.customWidgets[safe: index] }
+    private func field<Value>(_ keyPath: WritableKeyPath<CustomWidgetConfig, Value>, default fallback: Value) -> Binding<Value> {
+        settings.binding(in: \.customWidgets, id: widget.id, keyPath, default: fallback)
+    }
 
     var body: some View {
-        if let widget {
-            DisclosureGroup(isExpanded: $expanded) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        SymbolPicker(symbol: settings.binding(\.customWidgets[index].symbol))
-                        TextField("Nome", text: settings.binding(\.customWidgets[index].name))
-                    }
-                    TextField("Comando", text: settings.binding(\.customWidgets[index].command), axis: .vertical)
-                        .font(.system(.body, design: .monospaced))
-                        .lineLimit(1...4)
-                    ValueSlider(title: "Aggiorna ogni", value: settings.binding(\.customWidgets[index].refreshSeconds), range: 5...3600, step: 5, format: { Format.duration($0) })
-
-                    HStack {
-                        Button("Prova adesso") { store.test(widget) }
-                        Spacer()
-                        Button("Elimina", role: .destructive) { delete(widget) }
-                    }
-
-                    if let error = store.errors[widget.id] {
-                        Text(error)
-                            .font(.callout)
-                            .foregroundStyle(.red)
-                    } else if let output = store.outputs[widget.id] {
-                        Text("Ultimo risultato: \(output.text ?? "(nessun testo)")")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    Text("Compare fra i widget e gli elementi disponibili in Layout.")
-                        .font(.callout)
-                        .foregroundStyle(.tertiary)
+        DisclosureGroup(isExpanded: $expanded) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    SymbolPicker(symbol: field(\.symbol, default: "terminal.fill"))
+                    TextField("Nome", text: field(\.name, default: ""))
                 }
-                .padding(.vertical, 4)
-            } label: {
-                Label(widget.name, systemImage: widget.symbol)
+                TextField("Comando", text: field(\.command, default: ""), axis: .vertical)
+                    .font(.system(.body, design: .monospaced))
+                    .lineLimit(1...4)
+                ValueSlider(title: "Aggiorna ogni", value: field(\.refreshSeconds, default: 60), range: 5...3600, step: 5, format: { Format.duration($0) })
+
+                HStack {
+                    Button("Prova adesso") { store.test(widget) }
+                    Spacer()
+                    Button("Elimina", role: .destructive) { delete(widget) }
+                }
+
+                if let error = store.errors[widget.id] {
+                    Text(error)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                } else if let output = store.outputs[widget.id] {
+                    Text("Ultimo risultato: \(output.text ?? "(nessun testo)")")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                Text("Compare fra i widget e gli elementi disponibili in Layout.")
+                    .font(.callout)
+                    .foregroundStyle(.tertiary)
             }
+            .padding(.vertical, 4)
+        } label: {
+            Label(widget.name, systemImage: widget.symbol)
         }
     }
 

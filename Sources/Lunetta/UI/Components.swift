@@ -86,7 +86,11 @@ struct NotchTheme {
     var cardRadius: CGFloat { CGFloat(appearance.cardRadius) }
 
     var animation: Animation? {
-        appearance.motion.animation(speed: appearance.motionSpeed)
+        // "Riduci movimento" di macOS vince su qualunque scelta: niente rimbalzi, solo una dissolvenza.
+        if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+            return .easeOut(duration: 0.15)
+        }
+        return appearance.motion.animation(speed: appearance.motionSpeed)
     }
 
     /// Risolve l'accento in base alla modalità scelta.
@@ -247,19 +251,21 @@ final class PulseDotView: NSView {
     }
 }
 
-/// Anello sottile che racconta quanto contesto ha consumato una sessione.
+/// Anello sottile di avanzamento: contesto consumato, batteria, timer…
 struct ContextRing: View {
     var fraction: Double
     var tint: Color
     var size: CGFloat = 14
     var lineWidth: CGFloat = 2
+    /// Quasi pieno è un problema solo per il contesto: una batteria carica non lo è.
+    var warnsWhenFull = false
 
     var body: some View {
         ZStack {
             Circle().stroke(.white.opacity(0.14), lineWidth: lineWidth)
             Circle()
                 .trim(from: 0, to: max(0.02, fraction))
-                .stroke(fraction > 0.85 ? Color(hex: 0xFF5A63) : tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .stroke(warnsWhenFull && fraction > 0.85 ? Color(hex: 0xFF5A63) : tint, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
                 .rotationEffect(.degrees(-90))
         }
         .frame(width: size, height: size)
@@ -334,6 +340,7 @@ struct NotchIconButton: View {
         }
         .buttonStyle(NotchPressStyle())
         .help(help ?? "")
+        .accessibilityLabel(help ?? symbol)
         .onHover { hovering = $0 }
         .animation(.easeOut(duration: 0.14), value: hovering)
     }

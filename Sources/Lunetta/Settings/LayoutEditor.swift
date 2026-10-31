@@ -133,25 +133,28 @@ struct LayoutEditorView: View {
 
     @ViewBuilder
     private func pageInspector(_ page: PageConfig) -> some View {
-        let index = layout.pages.firstIndex { $0.id == page.id } ?? 0
-
         if let widgetID = selectedWidgetID, let widget = page.widgets.first(where: { $0.id == widgetID }) {
-            WidgetInspector(pageIndex: index, widget: widget) {
+            WidgetInspector(pageID: page.id, widget: widget) {
                 selectedWidgetID = nil
             }
         } else {
             HStack(spacing: 12) {
-                TextField("Nome", text: settings.binding(\.layout.pages[index].title))
+                TextField("Nome", text: settings.binding(in: \.layout.pages, id: page.id, \.title, default: ""))
                     .textFieldStyle(.roundedBorder)
                     .frame(width: 160)
-                SymbolPicker(symbol: settings.binding(\.layout.pages[index].symbol))
+                SymbolPicker(symbol: settings.binding(in: \.layout.pages, id: page.id, \.symbol, default: "square"))
                 Spacer(minLength: 8)
                 Text("Altezza")
                     .foregroundStyle(.secondary)
                 Slider(
                     value: Binding(
-                        get: { settings.config.layout.pages[safe: index]?.height ?? settings.config.appearance.openHeight },
-                        set: { value in settings.update { $0.layout.pages[index].height = value } }
+                        get: { settings.config.layout.pages.first { $0.id == page.id }?.height ?? settings.config.appearance.openHeight },
+                        set: { value in
+                            settings.update { config in
+                                guard let index = config.layout.pages.firstIndex(where: { $0.id == page.id }) else { return }
+                                config.layout.pages[index].height = value
+                            }
+                        }
                     ),
                     in: 180...420,
                     step: 4
@@ -270,7 +273,7 @@ private struct CompactZoneView: View {
     @State private var targetChip: String?
 
     var body: some View {
-        HStack(spacing: 5) {
+        FlowLayout(spacing: 5) {
             if items.isEmpty {
                 Text(placeholder)
                     .font(.callout)
@@ -351,6 +354,7 @@ private struct CompactChip: View {
                 .help("Togli dalla notch")
             }
         }
+        .fixedSize()
         .foregroundStyle(.white)
         .padding(.horizontal, 8)
         .padding(.vertical, 4.5)
@@ -400,32 +404,43 @@ private struct PaletteChip: View {
     let isUsed: Bool
     let destinations: [(String, Binding<[String]>)]
 
+    @State private var choosing = false
+
     var body: some View {
-        Menu {
-            ForEach(destinations, id: \.0) { destination in
-                Button(destination.0) {
-                    if !destination.1.wrappedValue.contains(descriptor.id) {
-                        destination.1.wrappedValue.append(descriptor.id)
+        HStack(spacing: 4) {
+            Image(systemName: descriptor.symbol)
+                .font(.system(size: 10, weight: .semibold))
+            Text(descriptor.name)
+                .font(.caption.weight(.medium))
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .foregroundStyle(isUsed ? .secondary : .primary)
+        .background(Capsule(style: .continuous).fill(.quaternary))
+        .opacity(isUsed ? 0.55 : 1)
+        .contentShape(Capsule())
+        .fixedSize()
+        .onTapGesture { choosing = true }
+        .popover(isPresented: $choosing, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(descriptor.summary)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.bottom, 4)
+                ForEach(destinations, id: \.0) { destination in
+                    Button(destination.0) {
+                        if !destination.1.wrappedValue.contains(descriptor.id) {
+                            destination.1.wrappedValue.append(descriptor.id)
+                        }
+                        choosing = false
                     }
+                    .buttonStyle(.accessoryBar)
                 }
             }
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: descriptor.symbol)
-                    .font(.system(size: 10, weight: .semibold))
-                Text(descriptor.name)
-                    .font(.caption.weight(.medium))
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .foregroundStyle(isUsed ? .secondary : .primary)
-            .background(Capsule(style: .continuous).fill(.quaternary))
-            .opacity(isUsed ? 0.55 : 1)
+            .padding(8)
+            .frame(maxWidth: 260, alignment: .leading)
         }
-        .menuStyle(.button)
-        .buttonStyle(.plain)
-        .menuIndicator(.hidden)
-        .fixedSize()
         .draggable(DragPayload.compact(descriptor.id)) {
             Text(descriptor.name)
                 .font(.caption.weight(.medium))
@@ -433,7 +448,6 @@ private struct PaletteChip: View {
                 .padding(.vertical, 4)
                 .background(Capsule().fill(.regularMaterial))
         }
-        .help(descriptor.summary)
     }
 }
 
@@ -615,10 +629,10 @@ private struct PageCanvasOverlay: View {
 
     var body: some View {
         let spacing = CGFloat(settings.config.appearance.widgetSpacing) * scale
-        let header = max(32, 30) * scale
+        let header = NotchMetrics.headerHeight(notchHeight: 32) * scale
 
         GeometryReader { geometry in
-            let horizontalPadding = 11 * scale
+            let horizontalPadding = (NotchMetrics.contentInset + CGFloat(settings.config.appearance.openEarRadius)) * scale
             let width = geometry.size.width - horizontalPadding * 2
             let columns = columns
             let totalWeight = max(columns.reduce(0) { $0 + $1[0].weight }, 0.01)
@@ -647,8 +661,8 @@ private struct PageCanvasOverlay: View {
                 }
             }
             .padding(.horizontal, horizontalPadding)
-            .padding(.top, header + 3 * scale)
-            .padding(.bottom, 11 * scale)
+            .padding(.top, header + NotchMetrics.contentTopGap * scale)
+            .padding(.bottom, NotchMetrics.contentInset * scale)
             .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
             .contentShape(Rectangle())
             .overlay {
@@ -843,14 +857,30 @@ private struct ResizeHandle: View {
 }
 
 private struct WidgetInspector: View {
-    let pageIndex: Int
+    let pageID: String
     let widget: WidgetPlacement
     var onDone: () -> Void
 
     @EnvironmentObject private var settings: SettingsStore
 
-    private var widgetIndex: Int? {
-        settings.config.layout.pages[safe: pageIndex]?.widgets.firstIndex { $0.id == widget.id }
+    private var isFirst: Bool {
+        settings.config.layout.pages.first { $0.id == pageID }?.widgets.first?.id == widget.id
+    }
+
+    private var isStacked: Binding<Bool> {
+        Binding(
+            get: {
+                settings.config.layout.pages.first { $0.id == pageID }?.widgets.first { $0.id == widget.id }?.stacked ?? false
+            },
+            set: { value in
+                settings.update { config in
+                    guard let page = config.layout.pages.firstIndex(where: { $0.id == pageID }),
+                          let index = config.layout.pages[page].widgets.firstIndex(where: { $0.id == widget.id })
+                    else { return }
+                    config.layout.pages[page].widgets[index].stacked = value
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -859,14 +889,9 @@ private struct WidgetInspector: View {
             Label(descriptor?.name ?? widget.kind, systemImage: descriptor?.symbol ?? "square")
                 .font(.callout.weight(.semibold))
 
-            if let index = widgetIndex {
-                Toggle("Impila sotto il precedente", isOn: Binding(
-                    get: { settings.config.layout.pages[safe: pageIndex]?.widgets[safe: index]?.stacked ?? false },
-                    set: { value in settings.update { $0.layout.pages[pageIndex].widgets[index].stacked = value } }
-                ))
-                .disabled(index == 0)
+            Toggle("Impila sotto il precedente", isOn: isStacked)
+                .disabled(isFirst)
                 .help("Mette questo widget nella stessa colonna di quello che lo precede")
-            }
 
             Spacer(minLength: 0)
             Button("Fatto", action: onDone)

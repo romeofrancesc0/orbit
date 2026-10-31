@@ -55,8 +55,28 @@ final class ShelfStore: ObservableObject {
     /// Tipi accettati dalla zona di rilascio.
     static let dropTypes: [UTType] = [.fileURL, .url, .image, .utf8PlainText, .plainText, .text]
 
-    func add(providers: [NSItemProvider]) {
-        for provider in providers { add(provider: provider) }
+    /// Il rilascio passa dal pasteboard di trascinamento: i provider di SwiftUI per un
+    /// file espongono il suo contenuto e non il suo URL, così un .txt diventerebbe testo
+    /// e un PDF andrebbe perso. Valido solo durante il rilascio.
+    func handleDrop(providers: [NSItemProvider]) {
+        let pasteboard = NSPasteboard(name: .drag)
+        let files = pasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
+        if !files.isEmpty {
+            files.forEach(add(url:))
+        } else if let image = pasteboard.data(forType: .png) ?? pasteboard.data(forType: .tiff) {
+            add(imageData: image)
+        } else if let links = pasteboard.readObjects(forClasses: [NSURL.self]) as? [URL], !links.isEmpty {
+            links.forEach(add(url:))
+        } else if let text = pasteboard.string(forType: .string), !text.isEmpty {
+            add(text: text)
+        } else {
+            providers.forEach(add(provider:))
+        }
+    }
+
+    /// I file di un rilascio, per chi li inoltra senza metterli sullo scaffale.
+    static func droppedFiles() -> [URL] {
+        NSPasteboard(name: .drag).readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
     }
 
     private func add(provider: NSItemProvider) {

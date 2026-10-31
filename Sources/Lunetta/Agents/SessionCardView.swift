@@ -150,7 +150,7 @@ struct SessionRow: View {
         HStack(spacing: 5) {
             ElapsedLabel(date: session.updatedAt)
             if let fraction = session.contextFraction {
-                ContextRing(fraction: fraction, tint: session.status.tint, size: 11, lineWidth: 1.6)
+                ContextRing(fraction: fraction, tint: session.status.tint, size: 11, lineWidth: 1.6, warnsWhenFull: true)
             }
         }
     }

@@ -1,5 +1,6 @@
 import AppKit
 import ApplicationServices
+import AudioToolbox
 import AVFoundation
 import Carbon.HIToolbox
 import Combine
@@ -59,7 +60,7 @@ final class VolumeController: ObservableObject {
 
     private static func volumeAddress() -> AudioObjectPropertyAddress {
         AudioObjectPropertyAddress(
-            mSelector: 0x766D_766C, // kAudioHardwareServiceDeviceProperty_VirtualMainVolume ('vmvl')
+            mSelector: kAudioHardwareServiceDeviceProperty_VirtualMainVolume,
             mScope: kAudioDevicePropertyScopeOutput,
             mElement: kAudioObjectPropertyElementMain
         )
@@ -346,6 +347,8 @@ final class HotKeyCenter {
     }
 
     private static func keyName(_ keyCode: UInt32) -> String {
+        // I codici dei tasti funzione non sono in ordine: niente intervalli qui.
+        if let function = functionKeys[Int(keyCode)] { return function }
         switch Int(keyCode) {
         case kVK_Space:         return "Spazio"
         case kVK_Return:        return "↩"
@@ -356,8 +359,6 @@ final class HotKeyCenter {
         case kVK_RightArrow:    return "→"
         case kVK_UpArrow:       return "↑"
         case kVK_DownArrow:     return "↓"
-        case kVK_F1...kVK_F20 where functionKeys[Int(keyCode)] != nil:
-            return functionKeys[Int(keyCode)] ?? "F"
         default:
             break
         }
@@ -565,5 +566,65 @@ enum FullscreenDetector {
             return type == 4
         }
         return false
+    }
+}
+
+// MARK: - Schermata di blocco
+
+/// Per comparire sopra la schermata di blocco una finestra deve stare in uno spazio
+/// dedicato di livello altissimo. Lo gestisce SkyLight, il framework privato del window
+/// server: caricato a runtime, e usato solo se l'utente attiva l'opzione.
+@MainActor
+final class LockScreenSpace {
+    static let shared = LockScreenSpace()
+
+    private typealias ConnectionFn = @convention(c) () -> Int32
+    private typealias CreateFn = @convention(c) (Int32, Int32, CFDictionary?) -> UInt64
+    private typealias LevelFn = @convention(c) (Int32, UInt64, Int32) -> Int32
+    private typealias ShowFn = @convention(c) (Int32, CFArray) -> Int32
+    private typealias AddFn = @convention(c) (Int32, UInt64, CFArray, Int32) -> Int32
+    private typealias RemoveFn = @convention(c) (Int32, CFArray, CFArray) -> Int32
+
+    private var connection: Int32 = 0
+    private var space: UInt64 = 0
+    private var addFn: AddFn?
+    private var removeFn: RemoveFn?
+    private var windows: Set<Int> = []
+
+    var hasWindows: Bool { !windows.isEmpty }
+
+    private func prepare() -> Bool {
+        if space != 0 { return true }
+        guard let handle = dlopen("/System/Library/PrivateFrameworks/SkyLight.framework/Versions/A/SkyLight", RTLD_NOW),
+              let connectionSymbol = dlsym(handle, "SLSMainConnectionID"),
+              let createSymbol = dlsym(handle, "SLSSpaceCreate"),
+              let levelSymbol = dlsym(handle, "SLSSpaceSetAbsoluteLevel"),
+              let showSymbol = dlsym(handle, "SLSShowSpaces"),
+              let addSymbol = dlsym(handle, "SLSSpaceAddWindowsAndRemoveFromSpaces"),
+              let removeSymbol = dlsym(handle, "SLSRemoveWindowsFromSpaces")
+        else { return false }
+
+        connection = unsafeBitCast(connectionSymbol, to: ConnectionFn.self)()
+        space = unsafeBitCast(createSymbol, to: CreateFn.self)(connection, 1, nil)
+        guard space != 0 else { return false }
+        // 400 è sopra la schermata di blocco, che sta a 300.
+        _ = unsafeBitCast(levelSymbol, to: LevelFn.self)(connection, space, 400)
+        _ = unsafeBitCast(showSymbol, to: ShowFn.self)(connection, [space] as CFArray)
+        addFn = unsafeBitCast(addSymbol, to: AddFn.self)
+        removeFn = unsafeBitCast(removeSymbol, to: RemoveFn.self)
+        return true
+    }
+
+    func add(_ window: NSWindow) {
+        guard prepare() else { return }
+        window.canBecomeVisibleWithoutLogin = true
+        _ = addFn?(connection, space, [window.windowNumber] as CFArray, 7)
+        windows.insert(window.windowNumber)
+        window.orderFrontRegardless()
+    }
+
+    func remove(_ window: NSWindow) {
+        guard windows.remove(window.windowNumber) != nil else { return }
+        _ = removeFn?(connection, [window.windowNumber] as CFArray, [space] as CFArray)
     }
 }

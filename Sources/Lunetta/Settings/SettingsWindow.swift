@@ -11,7 +11,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .welcome:     "Benvenuto"
+        case .welcome:     "Primi passi"
         case .layout:      "Layout"
         case .appearance:  "Aspetto"
         case .general:     "Comportamento"
@@ -109,6 +109,9 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         )
         window.title = "Lunetta"
         window.titlebarAppearsTransparent = true
+        // Ogni pagina ha già la sua intestazione: il titolo in barra sarebbe un doppione,
+        // e il contenuto gli scorrerebbe sotto.
+        window.titleVisibility = .hidden
         window.toolbarStyle = .unified
         window.isReleasedWhenClosed = false
         // Si apre nello spazio in cui stai lavorando, anche sopra un'app a tutto schermo,

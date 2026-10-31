@@ -6,6 +6,7 @@ import SwiftUI
 /// serve a capire cosa vede davvero l'app senza aprire i pannelli.
 enum Diagnostics {
     /// `Lunetta --selftest`: verifica le regole che non si vedono a occhio.
+    @MainActor
     static func selfTest() {
         var failures = 0
         func check(_ condition: Bool, _ what: String) {
@@ -134,6 +135,49 @@ enum Diagnostics {
         let plain = CustomWidgetStore.parse(Data("uno\ndue\ntre\n".utf8))
         check(plain.text == "uno" && plain.rows?.count == 2, "il testo semplice diventa valore e righe")
 
+        print("── Hook di Claude Code")
+        let hooksFile = FileManager.default.temporaryDirectory.appendingPathComponent("lunetta-selftest-\(UUID().uuidString).json")
+        defer {
+            try? FileManager.default.removeItem(at: hooksFile)
+            try? FileManager.default.removeItem(at: hooksFile.appendingPathExtension("lunetta-backup"))
+        }
+        let existingSettings = #"{"model":"opus","hooks":{"Stop":[{"hooks":[{"type":"command","command":"altro-strumento"}]}]},"statusLine":{"type":"command"}}"#
+        try? existingSettings.write(to: hooksFile, atomically: true, encoding: .utf8)
+        func readSettings() -> [String: Any] {
+            (try? JSONSerialization.jsonObject(with: Data(contentsOf: hooksFile))) as? [String: Any] ?? [:]
+        }
+        func stopCommands() -> [String] {
+            let entries = (readSettings()["hooks"] as? [String: Any])?["Stop"] as? [[String: Any]] ?? []
+            return entries.flatMap { ($0["hooks"] as? [[String: Any]] ?? []).compactMap { $0["command"] as? String } }
+        }
+        do {
+            try ClaudeHooks.rewrite(file: hooksFile, script: "/tmp/lunetta_hook.py", installing: true)
+            check(ClaudeHooks.isInstalled(in: hooksFile), "l'installazione aggiunge gli hook")
+            check(stopCommands().contains("altro-strumento"), "gli hook di altri strumenti restano")
+            check(readSettings()["model"] as? String == "opus", "le altre impostazioni restano")
+            check(FileManager.default.fileExists(atPath: hooksFile.appendingPathExtension("lunetta-backup").path), "prima di scrivere si fa una copia")
+            try ClaudeHooks.rewrite(file: hooksFile, script: "/tmp/lunetta_hook.py", installing: true)
+            check(stopCommands().filter { $0.contains("lunetta_hook.py") }.count == 1, "reinstallare non crea doppioni")
+            try ClaudeHooks.rewrite(file: hooksFile, script: "/tmp/lunetta_hook.py", installing: false)
+            check(!ClaudeHooks.isInstalled(in: hooksFile), "la rimozione toglie gli hook")
+            check(stopCommands() == ["altro-strumento"], "e lascia solo quelli degli altri")
+        } catch {
+            check(false, "le modifiche al file riescono: \(error)")
+        }
+        try? "non è json".write(to: hooksFile, atomically: true, encoding: .utf8)
+        check((try? ClaudeHooks.rewrite(file: hooksFile, script: "/tmp/x", installing: true)) == nil, "un file rotto non viene sovrascritto")
+        check((try? String(contentsOf: hooksFile, encoding: .utf8)) == "non è json", "e resta com'era")
+
+        print("── Scorciatoie")
+        check(HotKeyCenter.describe(keyCode: 122, modifiers: 0x1000) == "⌃F1", "i tasti funzione hanno un nome")
+        check(HotKeyCenter.describe(keyCode: 49, modifiers: 0x0100) == "⌘Spazio", "anche i tasti speciali")
+        check(!HotKeyCenter.describe(keyCode: 45, modifiers: 0x1800).isEmpty, "e le lettere, secondo la tastiera in uso")
+        for binding in HotkeyBinding.defaults {
+            if let code = binding.keyCode {
+                check(!HotKeyCenter.describe(keyCode: code, modifiers: binding.modifiers).isEmpty, "\(binding.action.label) si può descrivere")
+            }
+        }
+
         print("── Forma")
         let shape = NotchShape(earRadius: 6, bottomRadius: 11).path(in: CGRect(x: 0, y: 0, width: 200, height: 32))
         check(shape.contains(CGPoint(x: 100, y: 16)), "il centro è dentro")
@@ -157,6 +201,13 @@ enum Diagnostics {
         print("tastiera: \(brightness.keyboardLevel.map { "\($0)" } ?? "non disponibile")")
         print("accessibilità concessa: \(MediaKeyTap.isTrusted)")
         print("tutto schermo: \(FullscreenDetector.isFullscreen(displayID: CGMainDisplayID()))")
+
+        // Solo quantità: un controllo di funzionamento non deve stampare i tuoi eventi.
+        let calendar = CalendarService()
+        calendar.start()
+        print("calendario: \(calendar.eventsAccess), promemoria: \(calendar.remindersAccess)")
+        print("  calendari: \(calendar.sources.count), eventi di oggi: \(calendar.events.count), prossimi: \(calendar.upcoming.count)")
+        calendar.stop()
     }
 
     static func dump() async {
