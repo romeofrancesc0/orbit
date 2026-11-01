@@ -1,11 +1,13 @@
 import AppKit
 import Combine
+import os
 import SwiftUI
 
 /// Tiene una notch per ogni schermo scelto, distribuisce gli eventi del mouse e
 /// mette in fila avvisi e indicatori.
 @MainActor
 final class NotchManager {
+    private static let log = Logger(subsystem: "com.francescoromeo.powerednotch", category: "avvisi")
     private let services: AppServices
     private(set) var controllers: [CGDirectDisplayID: NotchController] = [:]
 
@@ -297,6 +299,14 @@ final class NotchManager {
     // MARK: - Avvisi
 
     func show(_ peek: NotchPeek) {
+        // Durante un video o a tutto schermo gli avvisi non scendono: ciò che serve si vede
+        // comunque dall'alone e dai pallini. Un avviso scartato non viene rimandato:
+        // tra dieci minuti sarebbe una notizia vecchia.
+        guard peek.isForced || !services.isQuietNow else {
+            Self.log.notice("avviso scartato per il silenzio: \(peek.group ?? "-", privacy: .public)")
+            return
+        }
+        Self.log.notice("avviso: \(peek.group ?? "-", privacy: .public)")
         if let group = peek.group {
             peekQueue.removeAll { $0.group == group }
             if currentPeek?.group == group {
@@ -378,6 +388,9 @@ struct NotchContextMenu: View {
             }
         }
         Divider()
+        Button(services.quiet.isOn ? "Riattiva gli avvisi" : "Silenzia gli avvisi") {
+            services.setQuiet(!services.quiet.isOn)
+        }
         Button("Impostazioni…") {
             SettingsWindowController.shared.show(section: nil, services: services)
         }
@@ -413,6 +426,9 @@ enum NotchMenu {
         menu.addItem(profiles)
 
         menu.addItem(.separator())
+        menu.addItem(ClosureMenuItem(services.quiet.isOn ? "Riattiva gli avvisi" : "Silenzia gli avvisi", symbol: services.quiet.isOn ? "bell" : "bell.slash") {
+            services.setQuiet(!services.quiet.isOn)
+        })
         menu.addItem(ClosureMenuItem("Impostazioni…", symbol: "gearshape") {
             SettingsWindowController.shared.show(section: nil, services: services)
         })

@@ -20,6 +20,9 @@ struct NotchPeek: Identifiable, Equatable {
     var group: String?
     var actionLabel: String?
     var action: (() -> Void)?
+    /// Nato da un'azione esplicita dell'utente (un pulsante "Prova", un comando rapido):
+    /// non deve essere zittito dal silenzio automatico.
+    var isForced = false
 
     static func == (lhs: NotchPeek, rhs: NotchPeek) -> Bool { lhs.id == rhs.id }
 }

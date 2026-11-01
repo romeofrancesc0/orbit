@@ -129,8 +129,28 @@ struct ShowNotchMessageIntent: AppIntent {
             icon: .symbol("bell.fill"),
             tint: nil,
             duration: seconds,
-            group: "intent"
+            group: "intent",
+            isForced: true
         ))
+        return .result()
+    }
+}
+
+struct SetQuietIntent: AppIntent {
+    static var title: LocalizedStringResource = "Silenzia gli avvisi della notch"
+    static var description = IntentDescription("Silenzia o riattiva gli avvisi. Con un'automazione dei Comandi rapidi lo puoi legare a un Focus di macOS.")
+    static var openAppWhenRun = false
+
+    @Parameter(title: "Silenzia", default: true)
+    var enabled: Bool
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("\(\.$enabled) gli avvisi della notch")
+    }
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        AppServices.shared.setQuiet(enabled)
         return .result()
     }
 }

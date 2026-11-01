@@ -142,7 +142,7 @@ final class SettingsStore: ObservableObject {
         else { return nil }
         let merged = deepMerge(base, user)
         guard let mergedData = try? JSONSerialization.data(withJSONObject: merged) else { return nil }
-        return try? JSONDecoder().decode(PoweredNotchConfig.self, from: mergedData)
+        return (try? JSONDecoder().decode(PoweredNotchConfig.self, from: mergedData))?.upgraded()
     }
 
     nonisolated static func deepMerge(_ base: [String: Any], _ overlay: [String: Any]) -> [String: Any] {

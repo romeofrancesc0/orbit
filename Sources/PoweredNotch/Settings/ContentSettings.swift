@@ -30,6 +30,8 @@ struct MusicSettingsView: View {
             Section("Lettore") {
                 Toggle("Mostra casuale e ripetizione", isOn: settings.binding(\.media.showShuffleRepeat))
                 Toggle("Colora la notch con la copertina", isOn: settings.binding(\.media.tintWithArtwork))
+                Toggle("Copertina e visualizzatore solo per le app di musica", isOn: settings.binding(\.media.wingsMusicAppsOnly))
+                    .help("Un video in Safari o Chrome non allarga la notch chiusa. Musica, Spotify, Podcasts e simili sì.")
                 Picker("Visualizzatore", selection: settings.binding(\.appearance.visualizer)) {
                     ForEach(VisualizerStyle.allCases) { Text($0.label).tag($0) }
                 }

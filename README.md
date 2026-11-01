@@ -41,7 +41,7 @@ L'app finisce in `~/Applications/PoweredNotch.app` e parte subito. Requisiti: ma
 | **Calendario** | La settimana, gli eventi, i promemoria, il pulsante per entrare nelle riunioni. |
 | **Scaffale** | Trascina file, link o testo sulla notch e li ritrovi lì. Con AirDrop, Quick Look e condivisione di sistema. |
 | **Volume e luminosità** | Sostituisce gli indicatori di sistema con quelli nella notch. |
-| **Avvisi** | Caricatore, Bluetooth, cambio brano, eventi in arrivo, timer: scegli tu cosa merita di interromperti. |
+| **Avvisi** | Discreti di serie: scende solo ciò che richiede te (un permesso, un errore). Il resto resta nella notch chiusa come alone e pallini. Caricatore, Bluetooth, cambio brano, eventi e timer si attivano a scelta. |
 | **Altri widget** | Specchio, batteria, sistema, appunti, timer, note, collegamenti, orologio. |
 | **I tuoi widget** | Se lo puoi scrivere in uno script, lo puoi mettere nella notch. |
 
@@ -179,6 +179,18 @@ open 'powerednotch://peek?title=Build&subtitle=Finita&symbol=hammer.fill&tint=%2
 | `profile` | `id` |
 | `theme` | `id` |
 | `settings` | `section` |
+| `quiet` | `on` (`1` silenzia, `0` riattiva, senza parametro inverte) |
+
+---
+
+## Avvisi discreti
+
+Un avviso che scende a ogni cambiamento diventa rumore in fretta, quindi:
+
+- **Silenzio automatico.** Mentre guardi un video (un'app che non fa solo musica, in primo piano) o, se vuoi, con un'app a tutto schermo, gli avvisi non scendono e non vengono rimandati. Restano l'alone e i pallini nella notch chiusa.
+- **Silenzio a mano.** Tasto destro sulla notch → *Silenzia gli avvisi*, il link `powerednotch://quiet`, o l'azione per i Comandi rapidi. macOS non lascia leggere i Focus alle app: per legarlo a uno, crea un'automazione "quando attivo il Focus → Silenzia gli avvisi della notch".
+- **Stati stabili.** Un agente avvisa solo se il nuovo stato regge qualche secondo, e la stessa sessione non avvisa più di una volta al minuto. Si regola in Impostazioni → Avvisi.
+- **Video fuori dalle ali.** Copertina e visualizzatore compaiono nella notch chiusa solo per le app di musica, non per un video nel browser.
 
 ---
 

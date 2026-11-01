@@ -7,7 +7,8 @@ import SwiftUI
 /// Ogni valore ha un default: `SettingsStore` fonde il file dell'utente sopra i
 /// default prima di decodificarlo, così le chiavi mancanti non sono mai un errore.
 struct PoweredNotchConfig: Codable, Equatable {
-    var schemaVersion = 1
+    /// 2: avvisi più discreti (solo ciò che richiede te). Vedi `upgraded()`.
+    var schemaVersion = 2
     var onboardingDone = false
     var agents = AgentsConfig()
     var layout = LayoutConfig()
@@ -26,6 +27,21 @@ struct PoweredNotchConfig: Codable, Equatable {
     var activeProfileID: String?
 
     init() {}
+
+    /// Porta una configurazione salvata da una versione precedente alle regole attuali.
+    nonisolated func upgraded() -> PoweredNotchConfig {
+        var config = self
+        if config.schemaVersion < 2 {
+            // Le versioni precedenti avvisavano di tutto: chi le aveva lasciate così riceve
+            // i nuovi valori, chi le aveva già ridotte a mano le ritrova a posto.
+            config.peeks.agentAttention = false
+            config.peeks.trackChange = false
+            config.peeks.charger = false
+            config.peeks.lowBattery = false
+            config.schemaVersion = 2
+        }
+        return config
+    }
 
     /// Una sezione illeggibile ricade sul suo default senza trascinare giù le altre.
     init(from decoder: Decoder) throws {
@@ -337,22 +353,35 @@ struct PeekConfig: Codable, Equatable {
     var enabled = true
     var duration: Double = 4
     var agentBlocked = true
-    var agentAttention = true
+    // Di serie scende solo ciò che richiede una tua azione. "Ha finito" resta come alone
+    // nella notch chiusa: un avviso a ogni passaggio di stato diventa rumore in fretta.
+    var agentAttention = false
     var agentError = true
     var agentEnded = false
     var agentSound = ""
-    var trackChange = true
-    var charger = true
-    var lowBattery = true
+    /// Quanto deve restare stabile il nuovo stato prima di avvisare.
+    var agentSettleSeconds: Double = 4
+    /// Una sessione non avvisa più di una volta in questo tempo.
+    var agentCooldownSeconds: Double = 60
+    var trackChange = false
+    var charger = false
+    var lowBattery = false
     var bluetooth = false
     var upcomingEvent = true
     var upcomingMinutes: Double = 5
     var timerDone = true
+    /// Niente avvisi mentre guardi un video (un'app che non è di sola musica, in primo piano).
+    var quietDuringVideo = true
+    /// Niente avvisi mentre un'app è a tutto schermo.
+    var quietInFullscreen = false
 }
 
 struct MediaConfig: Codable, Equatable {
     var showShuffleRepeat = false
     var tintWithArtwork = true
+    /// Copertina e visualizzatore nella notch chiusa solo per le app di musica: un video
+    /// nel browser non deve allargare la notch.
+    var wingsMusicAppsOnly = true
     /// Per quanti secondi la copertina resta nelle ali dopo la pausa.
     var pausedLingerSeconds: Double = 12
 }

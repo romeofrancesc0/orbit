@@ -20,6 +20,7 @@ final class AppServices {
     let notes: NotesStore
     let custom = CustomWidgetStore()
     let camera = CameraMirror()
+    let quiet = QuietMode()
     let volume = VolumeController()
     let brightness = BrightnessController()
 
@@ -31,6 +32,8 @@ final class AppServices {
     private var cancellables: Set<AnyCancellable> = []
     private var knownStatuses: [String: SessionStatus] = [:]
     private var sessionsSeeded = false
+    private var pendingAgentPeeks: [String: DispatchWorkItem] = [:]
+    private var lastAgentPeek: [String: Date] = [:]
     private var accessibilityTimer: Timer?
     let isDemo: Bool
 
@@ -115,6 +118,7 @@ final class AppServices {
     private func applyConfig(_ config: PoweredNotchConfig) {
         sessions.apply(config: config.agents)
         media.pausedLinger = config.media.pausedLingerSeconds
+        media.restrictToMusicApps = config.media.wingsMusicAppsOnly
         calendar.config = config.calendar
         calendar.peekLeadMinutes = config.peeks.enabled && config.peeks.upcomingEvent ? config.peeks.upcomingMinutes : 0
         shelf.copyFiles = config.shelf.copyFiles
@@ -150,7 +154,8 @@ final class AppServices {
 
     private func wireEvents() {
         media.onTrackChange = { [weak self] track in
-            guard let self, self.settings.config.peeks.enabled, self.settings.config.peeks.trackChange else { return }
+            guard let self, self.settings.config.peeks.enabled, self.settings.config.peeks.trackChange,
+                  self.media.qualifiesForNotch(track) else { return }
             // La copertina può arrivare un istante dopo il titolo: si aspetta un attimo.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { [weak self] in
                 guard let self, self.media.nowPlaying?.trackKey == track.trackKey else { return }
@@ -249,6 +254,40 @@ final class AppServices {
             .store(in: &cancellables)
     }
 
+    // MARK: - Silenzio
+
+    /// Silenzio manuale (menu, comandi rapidi, automazioni dei Focus) o automatico.
+    var isQuietNow: Bool {
+        if quiet.isOn { return true }
+        let rules = settings.config.peeks
+        if rules.quietInFullscreen, notch.controllers.keys.contains(where: { FullscreenDetector.isFullscreen(displayID: $0) }) {
+            return true
+        }
+        return rules.quietDuringVideo && isWatchingVideo
+    }
+
+    /// Sta riproducendo qualcosa che non è sola musica, nell'app che hai davanti.
+    private var isWatchingVideo: Bool {
+        guard let track = media.nowPlaying, track.isPlaying,
+              let source = track.sourceBundleID, !MediaService.isMusicApp(source)
+        else { return false }
+        return NSWorkspace.shared.frontmostApplication?.bundleIdentifier == source
+    }
+
+    func setQuiet(_ on: Bool) {
+        guard quiet.isOn != on else { return }
+        quiet.isOn = on
+        notch.show(NotchPeek(
+            title: on ? "Avvisi silenziati" : "Avvisi attivi",
+            subtitle: on ? "Restano l'alone e i pallini" : nil,
+            icon: .symbol(on ? "bell.slash.fill" : "bell.fill"),
+            tint: nil,
+            duration: 2,
+            group: "quiet",
+            isForced: true
+        ))
+    }
+
     private func showPeek(_ peek: NotchPeek) {
         guard settings.config.peeks.enabled else { return }
         var peek = peek
@@ -268,6 +307,9 @@ final class AppServices {
         for session in list {
             let previous = knownStatuses[session.id]
             guard previous != session.status else { continue }
+            // Lo stato è cambiato di nuovo: un avviso in attesa per quello precedente è vecchio.
+            pendingAgentPeeks[session.id]?.cancel()
+            pendingAgentPeeks[session.id] = nil
 
             let wanted: Bool
             switch session.status {
@@ -279,20 +321,43 @@ final class AppServices {
             }
             guard wanted else { continue }
 
-            if !rules.agentSound.isEmpty, session.status.needsYou {
-                NSSound(named: NSSound.Name(rules.agentSound))?.play()
+            // Un agente che salta fra "lavora" e "attende" ogni pochi secondi non merita un
+            // avviso a ogni salto: si aspetta che il nuovo stato regga. Un permesso è più urgente.
+            let settle = session.status == .blocked ? min(rules.agentSettleSeconds, 1.5) : rules.agentSettleSeconds
+            let id = session.id
+            let status = session.status
+            let work = DispatchWorkItem { [weak self] in
+                MainActor.assumeIsolated { self?.announceAgent(id: id, expecting: status) }
             }
-            showPeek(NotchPeek(
-                title: session.project,
-                subtitle: peekSubtitle(for: session),
-                icon: .status(session.status),
-                tint: session.status.tint,
-                duration: rules.duration,
-                group: "agent:\(session.id)",
-                actionLabel: "Vai",
-                action: { SessionActions.focus(session) }
-            ))
+            pendingAgentPeeks[id] = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + max(0, settle), execute: work)
         }
+    }
+
+    private func announceAgent(id: String, expecting status: SessionStatus) {
+        pendingAgentPeeks[id] = nil
+        let rules = settings.config.peeks
+        guard let session = sessions.sessions.first(where: { $0.id == id }), session.status == status else { return }
+
+        // La stessa sessione non avvisa di nuovo prima che sia passato il tempo di pausa.
+        if let last = lastAgentPeek[id], Date().timeIntervalSince(last) < rules.agentCooldownSeconds { return }
+        // Niente da dire se in questo momento ogni avviso verrebbe zittito: non conta come avviso dato.
+        guard !isQuietNow else { return }
+        lastAgentPeek[id] = Date()
+
+        if !rules.agentSound.isEmpty, session.status.needsYou {
+            NSSound(named: NSSound.Name(rules.agentSound))?.play()
+        }
+        showPeek(NotchPeek(
+            title: session.project,
+            subtitle: peekSubtitle(for: session),
+            icon: .status(session.status),
+            tint: session.status.tint,
+            duration: rules.duration,
+            group: "agent:\(session.id)",
+            actionLabel: "Vai",
+            action: { SessionActions.focus(session) }
+        ))
     }
 
     private func peekSubtitle(for session: AgentSession) -> String {
@@ -463,5 +528,12 @@ extension View {
             .environmentObject(services.notes)
             .environmentObject(services.custom)
             .environmentObject(services.camera)
+            .environmentObject(services.quiet)
     }
+}
+
+/// Interruttore del silenzio. Non si salva: riaprendo l'app gli avvisi tornano normali.
+@MainActor
+final class QuietMode: ObservableObject {
+    @Published var isOn = false
 }

@@ -47,6 +47,26 @@ final class MediaService: ObservableObject {
     var onTrackChange: ((NowPlaying) -> Void)?
 
     var pausedLinger: TimeInterval = 12
+    /// Copertina e visualizzatore solo per le app di musica.
+    var restrictToMusicApps = true {
+        didSet { if restrictToMusicApps != oldValue { updateActivity() } }
+    }
+
+    /// App fatte per ascoltare: ciò che suona in un browser è quasi sempre un video.
+    static let musicApps: Set<String> = [
+        "com.apple.Music", "com.apple.iTunes", "com.spotify.client", "com.apple.podcasts",
+        "com.tidal.desktop", "com.deezer.deezer-desktop", "com.amazon.music", "com.coppertino.Vox",
+        "com.swinsian.Swinsian", "tv.plex.plexamp", "com.audirvana.Audirvana", "io.github.mpv.Doppler",
+        "com.apple.Books", "audio.pulsar", "com.yamahamusic.Doppler"
+    ]
+
+    static func isMusicApp(_ bundleID: String?) -> Bool {
+        bundleID.map(musicApps.contains) ?? false
+    }
+
+    func qualifiesForNotch(_ track: NowPlaying) -> Bool {
+        !restrictToMusicApps || Self.isMusicApp(track.sourceBundleID)
+    }
 
     private let bridge = MediaBridgeProcess()
     private let commands = MediaRemoteCommands()
@@ -141,7 +161,7 @@ final class MediaService: ObservableObject {
 
     private func updateActivity() {
         lingerWork?.cancel()
-        guard let nowPlaying else {
+        guard let nowPlaying, qualifiesForNotch(nowPlaying) else {
             isActive = false
             return
         }

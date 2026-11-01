@@ -68,6 +68,7 @@ struct GeneralSettingsView: View {
 
 struct PeeksSettingsView: View {
     @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var quiet: QuietMode
 
     private let sounds = ["", "Glass", "Tink", "Pop", "Ping", "Purr", "Hero", "Funk", "Submarine", "Morse", "Bottle", "Frog", "Sosumi", "Blow", "Basso"]
 
@@ -78,11 +79,26 @@ struct PeeksSettingsView: View {
                 ValueSlider(title: "Durata", value: settings.binding(\.peeks.duration), range: 1...12, step: 0.5, format: { String(format: "%.1f s", $0) })
             }
 
+            Section("Silenzio") {
+                Toggle("Non interrompere mentre guardi un video", isOn: settings.binding(\.peeks.quietDuringVideo))
+                Toggle("Non interrompere con un'app a tutto schermo", isOn: settings.binding(\.peeks.quietInFullscreen))
+                Toggle("Silenzia gli avvisi adesso", isOn: Binding(
+                    get: { quiet.isOn },
+                    set: { AppServices.shared.setQuiet($0) }
+                ))
+                Text("In silenzio gli avvisi non scendono e non vengono rimandati: restano l'alone e i pallini nella notch chiusa. Un video è un'app che non fa solo musica, in primo piano. macOS non permette alle app di leggere i Focus: per legarlo a uno, crea in Comandi rapidi un'automazione \"quando attivo il Focus → Silenzia gli avvisi della notch\" (e l'inversa quando si disattiva).")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Coding agent") {
                 Toggle("Un agente chiede un permesso", isOn: settings.binding(\.peeks.agentBlocked))
                 Toggle("Un agente ha finito e ti aspetta", isOn: settings.binding(\.peeks.agentAttention))
+                    .help("Anche spento, la notch chiusa si illumina e il pallino cambia colore")
                 Toggle("Un agente va in errore", isOn: settings.binding(\.peeks.agentError))
                 Toggle("Una sessione si chiude", isOn: settings.binding(\.peeks.agentEnded))
+                ValueSlider(title: "Il nuovo stato deve durare", value: settings.binding(\.peeks.agentSettleSeconds), range: 0...15, step: 0.5, format: { String(format: "%.1f s", $0) })
+                ValueSlider(title: "Pausa fra due avvisi della stessa sessione", value: settings.binding(\.peeks.agentCooldownSeconds), range: 0...300, step: 5, format: { Format.duration($0) })
                 HStack {
                     Picker("Suono", selection: settings.binding(\.peeks.agentSound)) {
                         ForEach(sounds, id: \.self) { Text($0.isEmpty ? "Nessuno" : $0).tag($0) }
@@ -121,7 +137,8 @@ struct PeeksSettingsView: View {
                         icon: .symbol("bell.fill"),
                         tint: nil,
                         duration: settings.config.peeks.duration,
-                        group: "prova"
+                        group: "prova",
+                        isForced: true
                     ))
                 }
             }

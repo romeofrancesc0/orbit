@@ -112,6 +112,10 @@ enum URLRouter {
             default:           kind = .volume
             }
             services.notch.show(hud: NotchHUD(kind: kind, level: level))
+        case "quiet":
+            // `on=1` silenzia, `on=0` riattiva, senza parametro inverte.
+            let target = value("on").map { $0 == "1" || $0 == "true" } ?? !services.quiet.isOn
+            services.setQuiet(target)
         case "profile":
             if let id = value("id") { _ = services.applyProfile(id: id) }
         case "theme":

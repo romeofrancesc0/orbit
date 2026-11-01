@@ -66,6 +66,16 @@ enum Diagnostics {
             check(false, "scrittura e rilettura non cambiano nulla")
         }
 
+        print("── Avvisi")
+        let old = SettingsStore.decode(Data(#"{"schemaVersion":1,"peeks":{"charger":true,"trackChange":true,"agentAttention":true,"agentBlocked":true,"duration":2}}"#.utf8))
+        check(old?.peeks.charger == false && old?.peeks.trackChange == false && old?.peeks.agentAttention == false, "una configurazione vecchia riceve gli avvisi più discreti")
+        check(old?.peeks.agentBlocked == true && old?.peeks.duration == 2, "senza toccare il resto")
+        check(old?.schemaVersion == 2, "e si segna come aggiornata")
+        let current = SettingsStore.decode(Data(#"{"schemaVersion":2,"peeks":{"charger":true}}"#.utf8))
+        check(current?.peeks.charger == true, "una scelta fatta dopo l'aggiornamento non viene toccata")
+        check(PoweredNotchConfig().peeks.agentAttention == false && PoweredNotchConfig().peeks.charger == false, "di serie scende solo ciò che richiede te")
+        check(MediaService.isMusicApp("com.spotify.client") && !MediaService.isMusicApp("com.apple.Safari") && !MediaService.isMusicApp(nil), "un browser non è un'app di musica")
+
         print("── Layout")
         let defaults = LayoutConfig()
         let catalogue = Set(ModuleCatalog.widgets.map(\.kind))
