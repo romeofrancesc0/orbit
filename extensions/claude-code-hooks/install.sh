@@ -1,8 +1,8 @@
 #!/bin/bash
-# Installa gli hook opzionali di Lunetta in ~/.claude/settings.json.
+# Installa gli hook opzionali di Powered Notch in ~/.claude/settings.json.
 # Lo stesso lo fa l'app: Impostazioni → Agenti → Hook di Claude Code.
 #
-# Sono facoltativi: senza di essi Lunetta funziona già leggendo i transcript.
+# Sono facoltativi: senza di essi Powered Notch funziona già leggendo i transcript.
 # Servono a vedere *subito* una richiesta di permesso ancora pendente.
 #
 #   ./install.sh            → installa
@@ -15,15 +15,15 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 SETTINGS="$HOME/.claude/settings.json"
-TARGET_DIR="$HOME/.lunetta/hooks"
-SCRIPT="$TARGET_DIR/lunetta_hook.py"
+TARGET_DIR="$HOME/.powered-notch/hooks"
+SCRIPT="$TARGET_DIR/powered_notch_hook.py"
 
 MODE="install"
 [ "${1:-}" = "--remove" ] && MODE="remove"
 
 if [ "$MODE" = "install" ]; then
   mkdir -p "$TARGET_DIR"
-  cp lunetta_hook.py "$SCRIPT"
+  cp powered_notch_hook.py "$SCRIPT"
   chmod +x "$SCRIPT"
   echo "▸ script copiato in $SCRIPT"
 fi
@@ -40,7 +40,7 @@ events_clear = ["PostToolUse", "Stop", "UserPromptSubmit", "SessionEnd"]
 
 settings = {}
 if os.path.exists(settings_path):
-    shutil.copy2(settings_path, settings_path + ".lunetta-backup")
+    shutil.copy2(settings_path, settings_path + ".powered-notch-backup")
     with open(settings_path, encoding="utf-8") as handle:
         settings = json.load(handle)
 
@@ -53,7 +53,7 @@ def command_for(event):
 
 def is_ours(entry):
     for hook in entry.get("hooks", []):
-        if "lunetta_hook.py" in str(hook.get("command", "")):
+        if "powered_notch_hook.py" in str(hook.get("command", "")):
             return True
     return False
 
@@ -84,12 +84,12 @@ with open(settings_path, "w", encoding="utf-8") as handle:
     handle.write("\n")
 
 print(f"▸ {mode}: {changed} eventi aggiornati in {settings_path}")
-print("  (copia di sicurezza: " + settings_path + ".lunetta-backup)")
+print("  (copia di sicurezza: " + settings_path + ".powered-notch-backup)")
 PY
 
 if [ "$MODE" = "remove" ]; then
   rm -f "$SCRIPT"
-  rm -rf "$HOME/.lunetta/hints"
+  rm -rf "$HOME/.powered-notch/hints"
   echo "▸ hook rimossi"
 fi
 

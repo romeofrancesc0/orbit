@@ -1,0 +1,756 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		024FB9B00AC8962495013678 /* Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2325B36F2F449F73DDF5E7D4 /* Diagnostics.swift */; };
+		034D7AC11E0E1786685E6733 /* InboxProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4340D92CF6F07B2FCE1FBD /* InboxProvider.swift */; };
+		0524826E1C83431F1257AB4B /* SessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326A2C0124D568FDB5952D6D /* SessionProvider.swift */; };
+		1592FC2E0037BA6E248FF99B /* Intents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7B7CAEA766848B3763E115 /* Intents.swift */; };
+		1C96CE5FCB1E7D58DA5FCF5D /* NotchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 788F28586EBEFAB601F57135 /* NotchManager.swift */; };
+		218AAFEB6E3D1EAAB9590211 /* AppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02B610AD5AFF1CAD9F5C245 /* AppearanceSettings.swift */; };
+		24236A9E6EA628990A1AB52F /* AgentsSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF76F03CDB9F09BFACC8BC0F /* AgentsSettings.swift */; };
+		2AAC6CD04A95EE76EF941516 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF3B9F315C3F1E860B25AC7 /* main.swift */; };
+		2B2DEB3231D0EE9BD0F109A0 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4CE384672D2EF050153688DA /* AppIcon.icon */; };
+		2BD5F3248C1F78B8526E4771 /* MediaWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC579F88C02796A8C4680A0 /* MediaWidget.swift */; };
+		34814A445C32749D42694823 /* AppServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91B764908DAF6695838AAE6 /* AppServices.swift */; };
+		367F8978D8C9C4BDFBA75435 /* DemoData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E80206E8EB53253F2BB38B /* DemoData.swift */; };
+		37A6C0DCE1E251C16C6BD85D /* CompactItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428A8A6C3FC9E3A9ABC68918 /* CompactItems.swift */; };
+		3A7979B3819D900433D01591 /* LayoutEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E933BD00F778FC3890ED8C62 /* LayoutEditor.swift */; };
+		473A133DAEAA93DB43A6A505 /* SessionActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89923F728DA08B35F3E332E0 /* SessionActions.swift */; };
+		4A90B4368045C80FA833F48C /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB8C49A38CFA0BD77B2252 /* Components.swift */; };
+		535CB58EF54BF9C89B0C141B /* TranscriptScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39A7A9C05FE64750E0CB454 /* TranscriptScanner.swift */; };
+		576E308C7052468BDFA7837E /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8759F4EEB6A9BA03261D8A /* MenuBarController.swift */; };
+		65C08987378FBB42A2901F8F /* NotchController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90DC15E3077E2F797AEDFC89 /* NotchController.swift */; };
+		65C30C3AB4C238F4BA5DDBF0 /* ProcessProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F432EC597DF66C3C5FD605C3 /* ProcessProbe.swift */; };
+		65EABF76EAADF340EAFFF632 /* AgentsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CDB413523325E78FF5F209 /* AgentsConfig.swift */; };
+		6707E63DC141BD5589EAF736 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F4B85800BC5D1DAEE478BA /* MainMenu.swift */; };
+		6885F9FF09546DB463B1ABB2 /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C41B2B7EFFC4BFF5FB72DC /* MediaService.swift */; };
+		6F8CBA7C71000CF2C6AA335A /* CodexProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2966505F276DBDFB80468087 /* CodexProvider.swift */; };
+		719DB7B0D29B765835B11695 /* DismissedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71481AE8EACB1427D79610E7 /* DismissedStore.swift */; };
+		75F7F9E91D74D2AE8BCA9EE8 /* ShelfWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E18E69076E5751673F384B0 /* ShelfWidget.swift */; };
+		81486325ECC47C97575506FB /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8973D129FC4AA7344DB544AC /* CalendarService.swift */; };
+		8D50D7D4E7092BD266A5B28D /* NotchPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C87E5BE32B13C3BF2B3FC2 /* NotchPanel.swift */; };
+		8FE85ABD1B409989370E1B62 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10098547BDFE5E80520230FF /* SettingsStore.swift */; };
+		91A3FB589F04E16DE30A9323 /* SystemSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC297AACBF85A330E06C51AF /* SystemSettings.swift */; };
+		96CE78076AE80425753F8392 /* SettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF96FDB802A3C0F5CB4D2B2 /* SettingsWindow.swift */; };
+		9837B83139B3851C29C5AB98 /* ClaudeDesktopIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = C84A6B66C12D234E711069DF /* ClaudeDesktopIndex.swift */; };
+		9B9ECE0B4B4DD1B82234A0AF /* AgentSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1A3FA8512302B01EC6D20 /* AgentSession.swift */; };
+		A3FD9630B28322CD84C146A0 /* LunettaConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AC365948ED4F2B9950670 /* LunettaConfig.swift */; };
+		A4DD89EE9D2F3A472465BC19 /* ContentSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6201E751277E050D4680F1C /* ContentSettings.swift */; };
+		A672F0EA6F41BA9C60909177 /* FileWatchers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F907638CFEE1D045BA1EB8C /* FileWatchers.swift */; };
+		A747DF045438404D31AB7D81 /* NotchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F107DB8B1DF977E79612886 /* NotchState.swift */; };
+		A836A40660AE55EB89EF993A /* NotchRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 549052D9F52C74700DEF0862 /* NotchRootView.swift */; };
+		ABF2826BFD7E8067D35E929C /* bridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 12E666DFC9DEBED9A394CB23 /* bridge.m */; };
+		AE62541D8424CA67328121DC /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D66C7DC90AB03BC3D9AD31 /* SessionStore.swift */; };
+		B149D9F25E4B6500C3D58608 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D01805FFD776379F27B23BE /* AppDelegate.swift */; };
+		C52EC74F457FAACEC84EC23B /* ModuleCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1367ED851C976C761B230CFE /* ModuleCatalog.swift */; };
+		C5C9B5941EADF4ECB05BE064 /* LunettaMediaBridge.dylib in Resources */ = {isa = PBXBuildFile; fileRef = 41199FD017305DFACA33342A /* LunettaMediaBridge.dylib */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CBEA94557C0028497FC5C378 /* ShelfStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40795B980ECFD0D1A94802EE /* ShelfStore.swift */; };
+		CE25E26B53F5B89D05180066 /* SessionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75F52C4F1A494C99136ED22 /* SessionCardView.swift */; };
+		CF2AF96DD8B639977151167E /* NotchShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9CA8A896F7CDE1FD6DBE788 /* NotchShape.swift */; };
+		D09C7891CDF85F9675644CD3 /* SmallWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 324709A41603E042A7F1FB5C /* SmallWidgets.swift */; };
+		D47E301F7A77EBEA92088910 /* SystemControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA231425CBAC2DB3B052E45 /* SystemControls.swift */; };
+		D571765B5138921DAE2599A4 /* SystemServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A75522A088EC1B2470227C /* SystemServices.swift */; };
+		DAE7B90756A0AB118C2A32AC /* CalendarWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F728C6AC502A83384BA8E113 /* CalendarWidget.swift */; };
+		E06D59E6C996DE6870DF6D3C /* ClaudeCodeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31F9E3CD1FC8479165877CB /* ClaudeCodeProvider.swift */; };
+		EC6EEE1EF9505254B0D1ADF7 /* lunetta_hook.py in Resources */ = {isa = PBXBuildFile; fileRef = F045B558E1FC4F1E472EE4B1 /* lunetta_hook.py */; };
+		F14A5C87F205DE61DEA1AC04 /* CommandProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06E58EE5B853AE23DDC1114 /* CommandProvider.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		20B7414D6C33FFB927476C6D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 584B5B753B1F850BAD72BEA5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 71651B2B840BB9194D0C385E;
+			remoteInfo = LunettaMediaBridge;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04A75522A088EC1B2470227C /* SystemServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemServices.swift; sourceTree = "<group>"; };
+		04BA2E6312A61259FB63F49E /* Lunetta.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lunetta.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09C87E5BE32B13C3BF2B3FC2 /* NotchPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchPanel.swift; sourceTree = "<group>"; };
+		0DF96FDB802A3C0F5CB4D2B2 /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
+		10098547BDFE5E80520230FF /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		11D66C7DC90AB03BC3D9AD31 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		12E666DFC9DEBED9A394CB23 /* bridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = bridge.m; sourceTree = "<group>"; };
+		1367ED851C976C761B230CFE /* ModuleCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleCatalog.swift; sourceTree = "<group>"; };
+		1F907638CFEE1D045BA1EB8C /* FileWatchers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatchers.swift; sourceTree = "<group>"; };
+		20F4B85800BC5D1DAEE478BA /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		2325B36F2F449F73DDF5E7D4 /* Diagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diagnostics.swift; sourceTree = "<group>"; };
+		2966505F276DBDFB80468087 /* CodexProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexProvider.swift; sourceTree = "<group>"; };
+		2AA231425CBAC2DB3B052E45 /* SystemControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemControls.swift; sourceTree = "<group>"; };
+		324709A41603E042A7F1FB5C /* SmallWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWidgets.swift; sourceTree = "<group>"; };
+		326A2C0124D568FDB5952D6D /* SessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionProvider.swift; sourceTree = "<group>"; };
+		34D1A3FA8512302B01EC6D20 /* AgentSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentSession.swift; sourceTree = "<group>"; };
+		40795B980ECFD0D1A94802EE /* ShelfStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShelfStore.swift; sourceTree = "<group>"; };
+		41199FD017305DFACA33342A /* LunettaMediaBridge.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = LunettaMediaBridge.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		428A8A6C3FC9E3A9ABC68918 /* CompactItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactItems.swift; sourceTree = "<group>"; };
+		45C41B2B7EFFC4BFF5FB72DC /* MediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
+		4CE384672D2EF050153688DA /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		51E80206E8EB53253F2BB38B /* DemoData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoData.swift; sourceTree = "<group>"; };
+		549052D9F52C74700DEF0862 /* NotchRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchRootView.swift; sourceTree = "<group>"; };
+		6F107DB8B1DF977E79612886 /* NotchState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchState.swift; sourceTree = "<group>"; };
+		71481AE8EACB1427D79610E7 /* DismissedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissedStore.swift; sourceTree = "<group>"; };
+		788F28586EBEFAB601F57135 /* NotchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchManager.swift; sourceTree = "<group>"; };
+		8973D129FC4AA7344DB544AC /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		89923F728DA08B35F3E332E0 /* SessionActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionActions.swift; sourceTree = "<group>"; };
+		8E18E69076E5751673F384B0 /* ShelfWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShelfWidget.swift; sourceTree = "<group>"; };
+		8FC579F88C02796A8C4680A0 /* MediaWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaWidget.swift; sourceTree = "<group>"; };
+		90DC15E3077E2F797AEDFC89 /* NotchController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchController.swift; sourceTree = "<group>"; };
+		930AC365948ED4F2B9950670 /* LunettaConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LunettaConfig.swift; sourceTree = "<group>"; };
+		9D01805FFD776379F27B23BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A02B610AD5AFF1CAD9F5C245 /* AppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettings.swift; sourceTree = "<group>"; };
+		AC297AACBF85A330E06C51AF /* SystemSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSettings.swift; sourceTree = "<group>"; };
+		B6201E751277E050D4680F1C /* ContentSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSettings.swift; sourceTree = "<group>"; };
+		C1CDB413523325E78FF5F209 /* AgentsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentsConfig.swift; sourceTree = "<group>"; };
+		C84A6B66C12D234E711069DF /* ClaudeDesktopIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeDesktopIndex.swift; sourceTree = "<group>"; };
+		C9CA8A896F7CDE1FD6DBE788 /* NotchShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotchShape.swift; sourceTree = "<group>"; };
+		D06E58EE5B853AE23DDC1114 /* CommandProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandProvider.swift; sourceTree = "<group>"; };
+		D2CB8C49A38CFA0BD77B2252 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		D31F9E3CD1FC8479165877CB /* ClaudeCodeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeCodeProvider.swift; sourceTree = "<group>"; };
+		D39A7A9C05FE64750E0CB454 /* TranscriptScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptScanner.swift; sourceTree = "<group>"; };
+		D75F52C4F1A494C99136ED22 /* SessionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCardView.swift; sourceTree = "<group>"; };
+		DBF3B9F315C3F1E860B25AC7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		DF76F03CDB9F09BFACC8BC0F /* AgentsSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentsSettings.swift; sourceTree = "<group>"; };
+		E933BD00F778FC3890ED8C62 /* LayoutEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEditor.swift; sourceTree = "<group>"; };
+		ED4340D92CF6F07B2FCE1FBD /* InboxProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxProvider.swift; sourceTree = "<group>"; };
+		ED7B7CAEA766848B3763E115 /* Intents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intents.swift; sourceTree = "<group>"; };
+		F045B558E1FC4F1E472EE4B1 /* lunetta_hook.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = lunetta_hook.py; sourceTree = "<group>"; };
+		F432EC597DF66C3C5FD605C3 /* ProcessProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessProbe.swift; sourceTree = "<group>"; };
+		F728C6AC502A83384BA8E113 /* CalendarWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarWidget.swift; sourceTree = "<group>"; };
+		F91B764908DAF6695838AAE6 /* AppServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppServices.swift; sourceTree = "<group>"; };
+		FC8759F4EEB6A9BA03261D8A /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		21D2F6524C10EF115D3FD573 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				1367ED851C976C761B230CFE /* ModuleCatalog.swift */,
+				324709A41603E042A7F1FB5C /* SmallWidgets.swift */,
+				6505667C7C16670B2998AD0E /* Calendar */,
+				3FA4D7DE3BAA69768F45301D /* Media */,
+				7EBDB2BCD81B2871D3822431 /* Shelf */,
+				3BDEBDC126B1D7438227E5BE /* System */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		2B2720464E1FB5990E6943EA = {
+			isa = PBXGroup;
+			children = (
+				B3A4FEE141C2D18EE09EB148 /* extensions */,
+				B8A42B45EC22D063E77097FF /* Resources */,
+				E52291B92F63FFDC51099195 /* Sources */,
+				79314CAF246EEF8D8E5B3A48 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3BDEBDC126B1D7438227E5BE /* System */ = {
+			isa = PBXGroup;
+			children = (
+				04A75522A088EC1B2470227C /* SystemServices.swift */,
+			);
+			path = System;
+			sourceTree = "<group>";
+		};
+		3D971747B11578932688C157 /* Agents */ = {
+			isa = PBXGroup;
+			children = (
+				34D1A3FA8512302B01EC6D20 /* AgentSession.swift */,
+				C84A6B66C12D234E711069DF /* ClaudeDesktopIndex.swift */,
+				71481AE8EACB1427D79610E7 /* DismissedStore.swift */,
+				F432EC597DF66C3C5FD605C3 /* ProcessProbe.swift */,
+				89923F728DA08B35F3E332E0 /* SessionActions.swift */,
+				D75F52C4F1A494C99136ED22 /* SessionCardView.swift */,
+				326A2C0124D568FDB5952D6D /* SessionProvider.swift */,
+				11D66C7DC90AB03BC3D9AD31 /* SessionStore.swift */,
+				D39A7A9C05FE64750E0CB454 /* TranscriptScanner.swift */,
+				BEED7225B8359908C6D4BC8A /* Providers */,
+			);
+			path = Agents;
+			sourceTree = "<group>";
+		};
+		3FA4D7DE3BAA69768F45301D /* Media */ = {
+			isa = PBXGroup;
+			children = (
+				45C41B2B7EFFC4BFF5FB72DC /* MediaService.swift */,
+				8FC579F88C02796A8C4680A0 /* MediaWidget.swift */,
+			);
+			path = Media;
+			sourceTree = "<group>";
+		};
+		456B6A903DB044C7E890FBB4 /* Dev */ = {
+			isa = PBXGroup;
+			children = (
+				51E80206E8EB53253F2BB38B /* DemoData.swift */,
+				2325B36F2F449F73DDF5E7D4 /* Diagnostics.swift */,
+			);
+			path = Dev;
+			sourceTree = "<group>";
+		};
+		4CB266B453BCDF4690853035 /* Lunetta */ = {
+			isa = PBXGroup;
+			children = (
+				DBF3B9F315C3F1E860B25AC7 /* main.swift */,
+				3D971747B11578932688C157 /* Agents */,
+				DF76A213FDC7CA14FBBC4E05 /* App */,
+				B25BB6CD876B53E2E1375280 /* Config */,
+				456B6A903DB044C7E890FBB4 /* Dev */,
+				21D2F6524C10EF115D3FD573 /* Modules */,
+				C80ECAC1CCF175350A72B8F4 /* Notch */,
+				F02010FE46510578C6845DE2 /* Settings */,
+				6BF2A563656DD9E186A0E3A8 /* System */,
+				BC490B84D8376558939D1575 /* UI */,
+			);
+			path = Lunetta;
+			sourceTree = "<group>";
+		};
+		6505667C7C16670B2998AD0E /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				8973D129FC4AA7344DB544AC /* CalendarService.swift */,
+				F728C6AC502A83384BA8E113 /* CalendarWidget.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		6BF2A563656DD9E186A0E3A8 /* System */ = {
+			isa = PBXGroup;
+			children = (
+				1F907638CFEE1D045BA1EB8C /* FileWatchers.swift */,
+				2AA231425CBAC2DB3B052E45 /* SystemControls.swift */,
+			);
+			path = System;
+			sourceTree = "<group>";
+		};
+		79314CAF246EEF8D8E5B3A48 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				04BA2E6312A61259FB63F49E /* Lunetta.app */,
+				41199FD017305DFACA33342A /* LunettaMediaBridge.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7EBDB2BCD81B2871D3822431 /* Shelf */ = {
+			isa = PBXGroup;
+			children = (
+				40795B980ECFD0D1A94802EE /* ShelfStore.swift */,
+				8E18E69076E5751673F384B0 /* ShelfWidget.swift */,
+			);
+			path = Shelf;
+			sourceTree = "<group>";
+		};
+		AEB0C1DBEDBCE273F5393069 /* claude-code-hooks */ = {
+			isa = PBXGroup;
+			children = (
+				F045B558E1FC4F1E472EE4B1 /* lunetta_hook.py */,
+			);
+			path = "claude-code-hooks";
+			sourceTree = "<group>";
+		};
+		B25BB6CD876B53E2E1375280 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C1CDB413523325E78FF5F209 /* AgentsConfig.swift */,
+				930AC365948ED4F2B9950670 /* LunettaConfig.swift */,
+				10098547BDFE5E80520230FF /* SettingsStore.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		B3A4FEE141C2D18EE09EB148 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				AEB0C1DBEDBCE273F5393069 /* claude-code-hooks */,
+			);
+			path = extensions;
+			sourceTree = "<group>";
+		};
+		B8A42B45EC22D063E77097FF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4CE384672D2EF050153688DA /* AppIcon.icon */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		BC490B84D8376558939D1575 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				D2CB8C49A38CFA0BD77B2252 /* Components.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		BEED7225B8359908C6D4BC8A /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				D31F9E3CD1FC8479165877CB /* ClaudeCodeProvider.swift */,
+				2966505F276DBDFB80468087 /* CodexProvider.swift */,
+				D06E58EE5B853AE23DDC1114 /* CommandProvider.swift */,
+				ED4340D92CF6F07B2FCE1FBD /* InboxProvider.swift */,
+			);
+			path = Providers;
+			sourceTree = "<group>";
+		};
+		C80ECAC1CCF175350A72B8F4 /* Notch */ = {
+			isa = PBXGroup;
+			children = (
+				428A8A6C3FC9E3A9ABC68918 /* CompactItems.swift */,
+				90DC15E3077E2F797AEDFC89 /* NotchController.swift */,
+				788F28586EBEFAB601F57135 /* NotchManager.swift */,
+				09C87E5BE32B13C3BF2B3FC2 /* NotchPanel.swift */,
+				549052D9F52C74700DEF0862 /* NotchRootView.swift */,
+				C9CA8A896F7CDE1FD6DBE788 /* NotchShape.swift */,
+				6F107DB8B1DF977E79612886 /* NotchState.swift */,
+			);
+			path = Notch;
+			sourceTree = "<group>";
+		};
+		DF76A213FDC7CA14FBBC4E05 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				9D01805FFD776379F27B23BE /* AppDelegate.swift */,
+				F91B764908DAF6695838AAE6 /* AppServices.swift */,
+				ED7B7CAEA766848B3763E115 /* Intents.swift */,
+				20F4B85800BC5D1DAEE478BA /* MainMenu.swift */,
+				FC8759F4EEB6A9BA03261D8A /* MenuBarController.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E52291B92F63FFDC51099195 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				4CB266B453BCDF4690853035 /* Lunetta */,
+				F25985C1E517DA4CCDCAA2EF /* LunettaMediaBridge */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		F02010FE46510578C6845DE2 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				DF76F03CDB9F09BFACC8BC0F /* AgentsSettings.swift */,
+				A02B610AD5AFF1CAD9F5C245 /* AppearanceSettings.swift */,
+				B6201E751277E050D4680F1C /* ContentSettings.swift */,
+				E933BD00F778FC3890ED8C62 /* LayoutEditor.swift */,
+				0DF96FDB802A3C0F5CB4D2B2 /* SettingsWindow.swift */,
+				AC297AACBF85A330E06C51AF /* SystemSettings.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		F25985C1E517DA4CCDCAA2EF /* LunettaMediaBridge */ = {
+			isa = PBXGroup;
+			children = (
+				12E666DFC9DEBED9A394CB23 /* bridge.m */,
+			);
+			path = LunettaMediaBridge;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		71651B2B840BB9194D0C385E /* LunettaMediaBridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 31680D49778F279499ECB547 /* Build configuration list for PBXNativeTarget "LunettaMediaBridge" */;
+			buildPhases = (
+				85D8FD363FF83CD283B2AA4A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LunettaMediaBridge;
+			packageProductDependencies = (
+			);
+			productName = LunettaMediaBridge;
+			productReference = 41199FD017305DFACA33342A /* LunettaMediaBridge.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		88647DFB9BBC3F3923BC47F9 /* Lunetta */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2717909AD4A951E4631111A1 /* Build configuration list for PBXNativeTarget "Lunetta" */;
+			buildPhases = (
+				211473C539A388572BEF11A3 /* Sources */,
+				FC9AF91EC666997C41F61D17 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D002CDB84798BF12AA96E7FD /* PBXTargetDependency */,
+			);
+			name = Lunetta;
+			packageProductDependencies = (
+			);
+			productName = Lunetta;
+			productReference = 04BA2E6312A61259FB63F49E /* Lunetta.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		584B5B753B1F850BAD72BEA5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = EE1F9D4F87879FF07B2745C0 /* Build configuration list for PBXProject "Lunetta" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2B2720464E1FB5990E6943EA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 79314CAF246EEF8D8E5B3A48 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				88647DFB9BBC3F3923BC47F9 /* Lunetta */,
+				71651B2B840BB9194D0C385E /* LunettaMediaBridge */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FC9AF91EC666997C41F61D17 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B2DEB3231D0EE9BD0F109A0 /* AppIcon.icon in Resources */,
+				EC6EEE1EF9505254B0D1ADF7 /* lunetta_hook.py in Resources */,
+				C5C9B5941EADF4ECB05BE064 /* LunettaMediaBridge.dylib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		211473C539A388572BEF11A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B9ECE0B4B4DD1B82234A0AF /* AgentSession.swift in Sources */,
+				65EABF76EAADF340EAFFF632 /* AgentsConfig.swift in Sources */,
+				24236A9E6EA628990A1AB52F /* AgentsSettings.swift in Sources */,
+				B149D9F25E4B6500C3D58608 /* AppDelegate.swift in Sources */,
+				34814A445C32749D42694823 /* AppServices.swift in Sources */,
+				218AAFEB6E3D1EAAB9590211 /* AppearanceSettings.swift in Sources */,
+				81486325ECC47C97575506FB /* CalendarService.swift in Sources */,
+				DAE7B90756A0AB118C2A32AC /* CalendarWidget.swift in Sources */,
+				E06D59E6C996DE6870DF6D3C /* ClaudeCodeProvider.swift in Sources */,
+				9837B83139B3851C29C5AB98 /* ClaudeDesktopIndex.swift in Sources */,
+				6F8CBA7C71000CF2C6AA335A /* CodexProvider.swift in Sources */,
+				F14A5C87F205DE61DEA1AC04 /* CommandProvider.swift in Sources */,
+				37A6C0DCE1E251C16C6BD85D /* CompactItems.swift in Sources */,
+				4A90B4368045C80FA833F48C /* Components.swift in Sources */,
+				A4DD89EE9D2F3A472465BC19 /* ContentSettings.swift in Sources */,
+				367F8978D8C9C4BDFBA75435 /* DemoData.swift in Sources */,
+				024FB9B00AC8962495013678 /* Diagnostics.swift in Sources */,
+				719DB7B0D29B765835B11695 /* DismissedStore.swift in Sources */,
+				A672F0EA6F41BA9C60909177 /* FileWatchers.swift in Sources */,
+				034D7AC11E0E1786685E6733 /* InboxProvider.swift in Sources */,
+				1592FC2E0037BA6E248FF99B /* Intents.swift in Sources */,
+				3A7979B3819D900433D01591 /* LayoutEditor.swift in Sources */,
+				A3FD9630B28322CD84C146A0 /* LunettaConfig.swift in Sources */,
+				6707E63DC141BD5589EAF736 /* MainMenu.swift in Sources */,
+				6885F9FF09546DB463B1ABB2 /* MediaService.swift in Sources */,
+				2BD5F3248C1F78B8526E4771 /* MediaWidget.swift in Sources */,
+				576E308C7052468BDFA7837E /* MenuBarController.swift in Sources */,
+				C52EC74F457FAACEC84EC23B /* ModuleCatalog.swift in Sources */,
+				65C08987378FBB42A2901F8F /* NotchController.swift in Sources */,
+				1C96CE5FCB1E7D58DA5FCF5D /* NotchManager.swift in Sources */,
+				8D50D7D4E7092BD266A5B28D /* NotchPanel.swift in Sources */,
+				A836A40660AE55EB89EF993A /* NotchRootView.swift in Sources */,
+				CF2AF96DD8B639977151167E /* NotchShape.swift in Sources */,
+				A747DF045438404D31AB7D81 /* NotchState.swift in Sources */,
+				65C30C3AB4C238F4BA5DDBF0 /* ProcessProbe.swift in Sources */,
+				473A133DAEAA93DB43A6A505 /* SessionActions.swift in Sources */,
+				CE25E26B53F5B89D05180066 /* SessionCardView.swift in Sources */,
+				0524826E1C83431F1257AB4B /* SessionProvider.swift in Sources */,
+				AE62541D8424CA67328121DC /* SessionStore.swift in Sources */,
+				8FE85ABD1B409989370E1B62 /* SettingsStore.swift in Sources */,
+				96CE78076AE80425753F8392 /* SettingsWindow.swift in Sources */,
+				CBEA94557C0028497FC5C378 /* ShelfStore.swift in Sources */,
+				75F7F9E91D74D2AE8BCA9EE8 /* ShelfWidget.swift in Sources */,
+				D09C7891CDF85F9675644CD3 /* SmallWidgets.swift in Sources */,
+				D47E301F7A77EBEA92088910 /* SystemControls.swift in Sources */,
+				D571765B5138921DAE2599A4 /* SystemServices.swift in Sources */,
+				91A3FB589F04E16DE30A9323 /* SystemSettings.swift in Sources */,
+				535CB58EF54BF9C89B0C141B /* TranscriptScanner.swift in Sources */,
+				2AAC6CD04A95EE76EF941516 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		85D8FD363FF83CD283B2AA4A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ABF2826BFD7E8067D35E929C /* bridge.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D002CDB84798BF12AA96E7FD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 71651B2B840BB9194D0C385E /* LunettaMediaBridge */;
+			targetProxy = 20B7414D6C33FFB927476C6D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		21D52C92E7B544294D3328AA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.francescoromeo.LunettaMediaBridge;
+				PRODUCT_NAME = LunettaMediaBridge;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		51E0A5560F41B560B9BEBD69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.francescoromeo.lunetta;
+				PRODUCT_NAME = Lunetta;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5CA36D500656BB6A3846879E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.francescoromeo.LunettaMediaBridge;
+				PRODUCT_NAME = LunettaMediaBridge;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		8C03C83E4ED483974D51B96B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E04A17B9594C2FA885A8AF92 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.francescoromeo.lunetta;
+				PRODUCT_NAME = Lunetta;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F4226FD009221C9D21B6D0DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2717909AD4A951E4631111A1 /* Build configuration list for PBXNativeTarget "Lunetta" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				51E0A5560F41B560B9BEBD69 /* Debug */,
+				E04A17B9594C2FA885A8AF92 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		31680D49778F279499ECB547 /* Build configuration list for PBXNativeTarget "LunettaMediaBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5CA36D500656BB6A3846879E /* Debug */,
+				21D52C92E7B544294D3328AA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		EE1F9D4F87879FF07B2745C0 /* Build configuration list for PBXProject "Lunetta" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4226FD009221C9D21B6D0DE /* Debug */,
+				8C03C83E4ED483974D51B96B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 584B5B753B1F850BAD72BEA5 /* Project object */;
+}

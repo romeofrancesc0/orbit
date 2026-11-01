@@ -2,5 +2,5 @@
 dist/
 .DS_Store
 *.xcuserdatad
-Lunetta.xcodeproj/
+PoweredNotch.xcodeproj/
 Resources/Info.plist

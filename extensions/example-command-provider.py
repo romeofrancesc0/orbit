@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Esempio di provider `command`: stampa su stdout le sessioni in JSON.
 
-Lunetta esegue questo script a ogni giro di polling e mostra ciò che stampa.
-Per attivarlo, aggiungi in ~/.config/lunetta/config.json:
+Powered Notch esegue questo script a ogni giro di polling e mostra ciò che stampa.
+Per attivarlo, aggiungi in ~/.config/powered-notch/config.json:
 
     {
       "id": "mio-agent",
       "type": "command",
       "name": "Mio Agent",
       "accent": "#22C55E",
-      "command": "/Users/tu/Lunetta/extensions/example-command-provider.py"
+      "command": "/Users/tu/PoweredNotch/extensions/example-command-provider.py"
     }
 
 Regole del contratto:

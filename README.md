@@ -1,14 +1,12 @@
-<p align="center"><img src="docs/icona.png" width="128" alt="Icona di Lunetta"></p>
+<p align="center"><img src="docs/icona.png" width="128" alt="Icona di Powered Notch"></p>
 
-<h1 align="center">Lunetta</h1>
+<h1 align="center">Powered Notch</h1>
 
 <p align="center">La notch del tuo Mac, fatta a modo tuo.<br>Musica, calendario, scaffale e le sessioni dei tuoi coding agent, sempre sotto gli occhi.</p>
 
 ![La notch aperta](docs/aperta.png)
 
-La *lunetta* è la finestra a mezzaluna sopra una porta, la ghiera di un orologio, una piccola luna: una forma che pende dall'alto, come la notch.
-
-Lunetta è la notch di [Boring Notch](https://github.com/TheBoredTeam/boring.notch), scritta da zero con tre idee in più: **ogni cosa si può spostare, togliere e aggiungere**, sembra una parte di macOS, e sa cosa stanno facendo i tuoi agenti.
+Powered Notch parte dall'idea di [Boring Notch](https://github.com/TheBoredTeam/boring.notch), scritta da zero, con tre idee in più: **ogni cosa si può spostare, togliere e aggiungere**, sembra una parte di macOS, e sa cosa stanno facendo i tuoi agenti.
 
 | Notch chiusa: si allarga solo se ha qualcosa da dire | Un agente ti chiama |
 |---|---|
@@ -28,9 +26,9 @@ brew install xcodegen
 ./build.sh --install
 ```
 
-L'app finisce in `~/Applications/Lunetta.app` e parte subito. Requisiti: macOS 14 o successivo; su macOS 26 e 27 usa Liquid Glass.
+L'app finisce in `~/Applications/PoweredNotch.app` e parte subito. Requisiti: macOS 14 o successivo; su macOS 26 e 27 usa Liquid Glass.
 
-**Se usi Boring Notch**, chiudilo: due app sulla stessa notch si coprono a vicenda. Lunetta se ne accorge e ti offre un pulsante per farlo.
+**Se usi Boring Notch**, chiudilo: due app sulla stessa notch si coprono a vicenda. Powered Notch se ne accorge e ti offre un pulsante per farlo.
 
 ---
 
@@ -51,7 +49,7 @@ L'app finisce in `~/Applications/Lunetta.app` e parte subito. Requisiti: macOS 1
 
 ## Personalizzare tutto
 
-La personalizzazione è il motivo per cui esiste Lunetta. Tasto destro sulla notch → **Personalizza la notch**.
+La personalizzazione è il motivo per cui esiste Powered Notch. Tasto destro sulla notch → **Personalizza la notch**.
 
 ![L'editor del layout](docs/layout.png)
 
@@ -67,7 +65,7 @@ La personalizzazione è il motivo per cui esiste Lunetta. Tasto destro sulla not
 
 **Comportamento.** Apertura al passaggio del mouse o solo con un click, ritardi, gesti del trackpad, risposta tattile, quali schermi, tutto schermo, registrazioni dello schermo, scorciatoie globali.
 
-**Tutto è un file.** `~/.config/lunetta/config.json`: modificalo a mano e la notch si aggiorna da sola. Una chiave mancante prende il valore predefinito, una sezione illeggibile non trascina giù le altre.
+**Tutto è un file.** `~/.config/powered-notch/config.json`: modificalo a mano e la notch si aggiorna da sola. Una chiave mancante prende il valore predefinito, una sezione illeggibile non trascina giù le altre.
 
 ---
 
@@ -93,23 +91,23 @@ Gli aggiornamenti arrivano da FSEvents appena i file cambiano, senza interrogare
 
 Il transcript non registra le richieste di permesso ancora pendenti: senza hook una sessione bloccata appare "in esecuzione". Impostazioni → Agenti → **Installa**.
 
-L'installazione **fonde** la configurazione in `~/.claude/settings.json` senza toccare gli hook già presenti e ne salva una copia in `settings.json.lunetta-backup`. Gli hook sono asincroni e non rallentano Claude Code. Parte solo se lo chiedi tu.
+L'installazione **fonde** la configurazione in `~/.claude/settings.json` senza toccare gli hook già presenti e ne salva una copia in `settings.json.powered-notch-backup`. Gli hook sono asincroni e non rallentano Claude Code. Parte solo se lo chiedi tu.
 
 ### Collegare un altro agent
 
-Lunetta non sa nulla di chi produce le sessioni: legge dei **provider**, che si aggiungono da Impostazioni → Agenti.
+Powered Notch non sa nulla di chi produce le sessioni: legge dei **provider**, che si aggiungono da Impostazioni → Agenti.
 
-**`inbox`: chiunque scrive un file.** Ogni file JSON in `~/.lunetta/inbox/` è una sessione.
+**`inbox`: chiunque scrive un file.** Ogni file JSON in `~/.powered-notch/inbox/` è una sessione.
 
 ```bash
-extensions/lunetta-report --id build-api --title "Compilo il backend" \
+extensions/powered-notch-report --id build-api --title "Compilo il backend" \
     --status working --project api --path "$PWD" --activity "docker build ."
 
-extensions/lunetta-report --id build-api --status attention --activity "serve una risposta"
-extensions/lunetta-report --id build-api --remove
+extensions/powered-notch-report --id build-api --status attention --activity "serve una risposta"
+extensions/powered-notch-report --id build-api --remove
 ```
 
-**`command`: un comando che stampa JSON.** Lunetta lo esegue a ogni giro. Template commentato in [`extensions/example-command-provider.py`](extensions/example-command-provider.py).
+**`command`: un comando che stampa JSON.** Powered Notch lo esegue a ogni giro. Template commentato in [`extensions/example-command-provider.py`](extensions/example-command-provider.py).
 
 Lo schema di una sessione (solo `id` è obbligatorio):
 
@@ -132,12 +130,12 @@ Lo schema di una sessione (solo `id` è obbligatorio):
   "accent": "#8B5CF6",              // colore della barretta laterale
   "openURL": "miaapp://session/42", // deep link aperto dal click
   "actions": [                      // voci extra nel menu contestuale
-    { "label": "Approva", "command": "mio-cli approve $LUNETTA_SESSION", "symbol": "checkmark.circle" }
+    { "label": "Approva", "command": "mio-cli approve $POWERED_NOTCH_SESSION", "symbol": "checkmark.circle" }
   ]
 }
 ```
 
-I comandi delle `actions` girano con `/bin/sh -lc` nella cartella della sessione, con `$LUNETTA_PATH`, `$LUNETTA_SESSION` e `$LUNETTA_PROVIDER` nell'ambiente.
+I comandi delle `actions` girano con `/bin/sh -lc` nella cartella della sessione, con `$POWERED_NOTCH_PATH`, `$POWERED_NOTCH_SESSION` e `$POWERED_NOTCH_PROVIDER` nell'ambiente.
 
 ---
 
@@ -166,10 +164,10 @@ Il widget compare fra quelli disponibili in Layout, sia come widget sia nella no
 - **Filtri Full Immersion**: ogni modalità può avere il suo profilo.
 - **Liquid Glass** nelle impostazioni, nell'icona e, se vuoi, nella notch stessa.
 - **Riduci movimento** e gli altri controlli di sistema vengono rispettati.
-- **`lunetta://`** per i tuoi script. Espone solo azioni innocue, mai l'esecuzione di comandi:
+- **`powerednotch://`** per i tuoi script. Espone solo azioni innocue, mai l'esecuzione di comandi:
 
 ```bash
-open 'lunetta://peek?title=Build&subtitle=Finita&symbol=hammer.fill&tint=%234ADE80'
+open 'powerednotch://peek?title=Build&subtitle=Finita&symbol=hammer.fill&tint=%234ADE80'
 ```
 
 | Azione | Parametri |
@@ -209,7 +207,7 @@ Nella notch chiusa tutto ciò che si muove (pallini, visualizzatore, icona, test
 
 ## Permessi e riservatezza
 
-Lunetta chiede solo ciò che serve a ciò che usi, quando lo usi. Nulla esce dal tuo Mac, a parte quello che fanno i widget da script che aggiungi tu.
+Powered Notch chiede solo ciò che serve a ciò che usi, quando lo usi. Nulla esce dal tuo Mac, a parte quello che fanno i widget da script che aggiungi tu.
 
 | Permesso | Serve per |
 |---|---|
@@ -218,7 +216,7 @@ Lunetta chiede solo ciò che serve a ciò che usi, quando lo usi. Nulla esce dal
 | Accessibilità | Solo per sostituire gli indicatori di volume e luminosità |
 | Bluetooth | Solo per gli avvisi sui dispositivi, spenti di serie |
 
-Gli appunti restano solo in memoria e saltano ciò che le app segnano come riservato, per esempio le password copiate da un gestore. Le note e lo scaffale restano in `~/.config/lunetta/`.
+Gli appunti restano solo in memoria e saltano ciò che le app segnano come riservato, per esempio le password copiate da un gestore. Le note e lo scaffale restano in `~/.config/powered-notch/`.
 
 ---
 
@@ -226,18 +224,18 @@ Gli appunti restano solo in memoria e saltano ciò che le app segnano come riser
 
 ```bash
 ./build.sh --run                              # bundle in dist/ e avvio
-dist/Lunetta.app/Contents/MacOS/Lunetta --selftest         # verifica le regole che non si vedono a occhio
-dist/Lunetta.app/Contents/MacOS/Lunetta --dump             # cosa vedono i provider di agenti
-dist/Lunetta.app/Contents/MacOS/Lunetta --probe-controls   # volume, luminosità, calendario
-open dist/Lunetta.app --args --demo           # la notch con dati inventati, per gli screenshot
-open dist/Lunetta.app --args --virtual-notch  # come su uno schermo senza notch
+dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # verifica le regole che non si vedono a occhio
+dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # cosa vedono i provider di agenti
+dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --probe-controls   # volume, luminosità, calendario
+open dist/PoweredNotch.app --args --demo           # la notch con dati inventati, per gli screenshot
+open dist/PoweredNotch.app --args --virtual-notch  # come su uno schermo senza notch
 ```
 
 Il progetto Xcode si genera da `project.yml`. Serve Xcode e non solo SwiftPM perché Comandi rapidi e filtri Full Immersion richiedono i metadati che genera solo il suo build system.
 
 ```
-Sources/Lunetta/
-  App/        avvio, servizi, menu, link lunetta://, Comandi rapidi
+Sources/PoweredNotch/
+  App/        avvio, servizi, menu, link powerednotch://, Comandi rapidi
   Config/     il modello di tutto ciò che si personalizza
   Notch/      finestra, forma, stati, mouse e gesti
   Modules/    musica, calendario, scaffale, widget, catalogo
@@ -246,22 +244,22 @@ Sources/Lunetta/
   System/     volume, luminosità, tasti, scorciatoie, Bluetooth, fotocamera
   UI/         componenti e tema
   Dev/        diagnostica e dati dimostrativi
-Sources/LunettaMediaBridge/   ponte verso Now Playing
-extensions/   lunetta-report, provider di esempio, hook di Claude Code
+Sources/PoweredNotchMediaBridge/   ponte verso Now Playing
+extensions/   powered-notch-report, provider di esempio, hook di Claude Code
 ```
 
 ### Now Playing
 
-Da macOS 15.4 MediaRemote risponde con dati vuoti ai processi qualunque. Per questo `LunettaMediaBridge` viene caricato da `/usr/bin/perl`, che ha ancora accesso, e scrive una riga JSON a ogni cambiamento. I comandi (play, avanti, scrub) non hanno questo limite e partono direttamente dall'app.
+Da macOS 15.4 MediaRemote risponde con dati vuoti ai processi qualunque. Per questo `PoweredNotchMediaBridge` viene caricato da `/usr/bin/perl`, che ha ancora accesso, e scrive una riga JSON a ogni cambiamento. I comandi (play, avanti, scrub) non hanno questo limite e partono direttamente dall'app.
 
 ## Limiti noti
 
 - Usa API private per Now Playing, luminosità, spazi a tutto schermo e schermata di blocco. Sono caricate a runtime: se un aggiornamento di macOS le togliesse, quella funzione smetterebbe di funzionare ma l'app no. Per lo stesso motivo non può stare nel Mac App Store.
-- La firma ad-hoc fa perdere i permessi a ogni build: `build.sh` usa un certificato Apple Development se lo trova, oppure quello indicato in `LUNETTA_SIGN_IDENTITY`.
+- La firma ad-hoc fa perdere i permessi a ogni build: `build.sh` usa un certificato Apple Development se lo trova, oppure quello indicato in `POWERED_NOTCH_SIGN_IDENTITY`.
 - Senza gli hook, "permesso richiesto" non viene distinto da "in esecuzione".
 - Il visualizzatore musicale è un'animazione a tempo, non analizza l'audio: farlo richiederebbe il permesso di registrare l'audio di sistema.
 - "Mostra sulla schermata di blocco" è sperimentale.
 
 ## Ringraziamenti
 
-L'idea e l'elenco delle funzioni vengono da [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (GPL-3.0). Lunetta non ne riusa il codice: è scritta da zero, consultandolo solo per capire quali API di sistema funzionano ancora.
+L'idea e l'elenco delle funzioni vengono da [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (GPL-3.0). Powered Notch non ne riusa il codice: è scritta da zero, consultandolo solo per capire quali API di sistema funzionano ancora.

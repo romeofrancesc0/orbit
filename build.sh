@@ -1,7 +1,7 @@
 #!/bin/bash
-# Compila Lunetta e ne assembla il bundle .app.
+# Compila Powered Notch e ne assembla il bundle .app.
 #
-#   ./build.sh              → dist/Lunetta.app
+#   ./build.sh              → dist/PoweredNotch.app
 #   ./build.sh --install    → installa in ~/Applications e riavvia l'app
 #   ./build.sh --run        → costruisce e lancia da dist/
 #
@@ -11,7 +11,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-APP_NAME="Lunetta"
+APP_NAME="PoweredNotch"
 DIST="dist"
 APP="$DIST/$APP_NAME.app"
 INSTALL_DIR="$HOME/Applications"
@@ -33,15 +33,15 @@ echo "▸ genero il progetto…"
 xcodegen generate --quiet
 
 echo "▸ compilo…"
-LOG="$(mktemp -t lunetta-build)"
+LOG="$(mktemp -t powerednotch-build)"
 if ! xcodebuild -project "$APP_NAME.xcodeproj" -scheme "$APP_NAME" -configuration Release \
       -derivedDataPath "$DERIVED" -destination 'platform=macOS,arch=arm64' -quiet build >"$LOG" 2>&1; then
   grep -E "error:|BUILD FAILED" "$LOG" | sed 's|^.*/Sources/|Sources/|' | sort -u | head -60
   exit 1
 fi
-grep -E "warning: .*(Sources/Lunetta)" "$LOG" | sed 's|^.*/Sources/|Sources/|' | sort -u | head -20 || true
+grep -E "warning: .*(Sources/PoweredNotch)" "$LOG" | sed 's|^.*/Sources/|Sources/|' | sort -u | head -20 || true
 
-# La copia nella cartella di build non deve rispondere ai link lunetta://.
+# La copia nella cartella di build non deve rispondere ai link powerednotch://.
 LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 "$LSREGISTER" -u "$DERIVED/Build/Products/Release/$APP_NAME.app" >/dev/null 2>&1 || true
 
@@ -52,7 +52,7 @@ cp -R "$DERIVED/Build/Products/Release/$APP_NAME.app" "$APP"
 
 # Un'identità stabile fa sì che macOS ricordi i permessi fra una build e l'altra:
 # con la firma ad-hoc calendario, fotocamera e accessibilità andrebbero ridati ogni volta.
-IDENTITY="${LUNETTA_SIGN_IDENTITY:-}"
+IDENTITY="${POWERED_NOTCH_SIGN_IDENTITY:-}"
 if [ -z "$IDENTITY" ]; then
   IDENTITY="$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Apple Development/ {print $2}' | while read -r name; do
     if security find-certificate -c "$name" -p 2>/dev/null | openssl x509 -noout -subject 2>/dev/null | grep -q "OU=M67WJ8Q88G"; then
@@ -62,7 +62,7 @@ if [ -z "$IDENTITY" ]; then
 fi
 IDENTITY="${IDENTITY:--}"
 
-MEDIA_LIB="$(find "$APP/Contents" -name 'libLunettaMediaBridge.dylib' | head -1)"
+MEDIA_LIB="$(find "$APP/Contents" -name 'libPoweredNotchMediaBridge.dylib' | head -1)"
 [ -n "$MEDIA_LIB" ] && codesign --force --sign "$IDENTITY" "$MEDIA_LIB" >/dev/null 2>&1
 codesign --force --sign "$IDENTITY" "$APP" >/dev/null 2>&1 || echo "  (firma non riuscita, non è bloccante)"
 echo "▸ firmato con: $IDENTITY"

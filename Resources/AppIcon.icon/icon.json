@@ -14,8 +14,8 @@
       "layers" : [
         {
           "glass" : true,
-          "image-name" : "lunetta.png",
-          "name" : "lunetta"
+          "image-name" : "powerednotch.png",
+          "name" : "powerednotch"
         }
       ],
       "shadow" : {

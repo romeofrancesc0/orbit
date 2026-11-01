@@ -7,7 +7,7 @@
 import AppKit
 
 let side: CGFloat = 1024
-let output = URL(fileURLWithPath: "Resources/AppIcon.icon/Assets/lunetta.png")
+let output = URL(fileURLWithPath: "Resources/AppIcon.icon/Assets/powerednotch.png")
 
 guard let context = CGContext(
     data: nil,
