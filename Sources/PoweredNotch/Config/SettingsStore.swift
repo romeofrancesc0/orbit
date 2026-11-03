@@ -7,7 +7,9 @@ import SwiftUI
 /// disco con un piccolo ritardo e la rilegge se qualcuno modifica il file a mano.
 @MainActor
 final class SettingsStore: ObservableObject {
-    @Published private(set) var config: PoweredNotchConfig
+    @Published private(set) var config: PoweredNotchConfig {
+        didSet { L10n.use(config.language) }
+    }
 
     private var saveWork: DispatchWorkItem?
     private var lastDiskData: Data?
@@ -33,6 +35,7 @@ final class SettingsStore: ObservableObject {
             config = PoweredNotchConfig()
         }
 
+        L10n.use(config.language)
         if persists {
             if lastDiskData == nil { writeNow() }
             // FSEvents e non un watcher sulla cartella: deve vedere anche gli editor che

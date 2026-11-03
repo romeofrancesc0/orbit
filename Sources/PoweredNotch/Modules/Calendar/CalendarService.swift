@@ -211,7 +211,7 @@ final class CalendarService: ObservableObject {
         return store.events(matching: predicate).map { event in
             CalendarEventItem(
                 id: event.eventIdentifier ?? UUID().uuidString,
-                title: event.title ?? "Senza titolo",
+                title: event.title ?? tr("Senza titolo"),
                 start: event.startDate,
                 end: event.endDate,
                 isAllDay: event.isAllDay,
@@ -233,7 +233,7 @@ final class CalendarService: ObservableObject {
             let mapped = (items ?? []).map { reminder in
                 ReminderItem(
                     id: reminder.calendarItemIdentifier,
-                    title: reminder.title ?? "Senza titolo",
+                    title: reminder.title ?? tr("Senza titolo"),
                     due: reminder.dueDateComponents.flatMap { Calendar.current.date(from: $0) },
                     colorHex: Self.hex(reminder.calendar?.color)
                 )

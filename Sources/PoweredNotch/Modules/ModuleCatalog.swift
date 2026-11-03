@@ -21,36 +21,36 @@ struct CompactDescriptor: Identifiable, Equatable {
 
 /// L'elenco di tutto ciò che l'editor del layout può offrire.
 enum ModuleCatalog {
-    static let widgets: [WidgetDescriptor] = [
-        WidgetDescriptor(kind: "agents", name: "Agenti", symbol: "sparkles", summary: "Le sessioni dei tuoi coding agent, con stato e azioni", defaultWeight: 1.3),
-        WidgetDescriptor(kind: "media", name: "Musica", symbol: "music.note", summary: "Copertina, comandi e avanzamento da qualunque app", defaultWeight: 1.25),
-        WidgetDescriptor(kind: "calendar", name: "Calendario", symbol: "calendar", summary: "La settimana, gli eventi e i promemoria", defaultWeight: 0.9),
-        WidgetDescriptor(kind: "shelf", name: "Scaffale", symbol: "tray.full.fill", summary: "File, link e testi a portata di mano, con AirDrop", defaultWeight: 1.4),
-        WidgetDescriptor(kind: "mirror", name: "Specchio", symbol: "person.crop.square.fill", summary: "La fotocamera, per controllarti prima di una call", defaultWeight: 0.6),
-        WidgetDescriptor(kind: "battery", name: "Batteria", symbol: "battery.100percent", summary: "Carica, autonomia e risparmio energetico", defaultWeight: 0.6),
-        WidgetDescriptor(kind: "system", name: "Sistema", symbol: "cpu", summary: "Processore, memoria, disco e rete", defaultWeight: 0.8),
-        WidgetDescriptor(kind: "clipboard", name: "Appunti", symbol: "doc.on.clipboard", summary: "Le ultime cose copiate, solo in memoria", defaultWeight: 1),
-        WidgetDescriptor(kind: "timer", name: "Timer", symbol: "timer", summary: "Timer e cronometro, visibili anche a notch chiusa", defaultWeight: 0.8),
-        WidgetDescriptor(kind: "notes", name: "Note", symbol: "note.text", summary: "Un foglio di appunti sempre pronto", defaultWeight: 1),
-        WidgetDescriptor(kind: "launcher", name: "Collegamenti", symbol: "square.grid.2x2.fill", summary: "App, comandi rapidi, link e script a un click", defaultWeight: 0.9),
-        WidgetDescriptor(kind: "clock", name: "Orologio", symbol: "clock.fill", summary: "Ora e data, grandi e leggibili", defaultWeight: 0.6)
-    ]
+    static var widgets: [WidgetDescriptor] { [
+        WidgetDescriptor(kind: "agents", name: tr("Agenti"), symbol: "sparkles", summary: tr("Le sessioni dei tuoi coding agent, con stato e azioni"), defaultWeight: 1.3),
+        WidgetDescriptor(kind: "media", name: tr("Musica"), symbol: "music.note", summary: tr("Copertina, comandi e avanzamento da qualunque app"), defaultWeight: 1.25),
+        WidgetDescriptor(kind: "calendar", name: tr("Calendario"), symbol: "calendar", summary: tr("La settimana, gli eventi e i promemoria"), defaultWeight: 0.9),
+        WidgetDescriptor(kind: "shelf", name: tr("Scaffale"), symbol: "tray.full.fill", summary: tr("File, link e testi a portata di mano, con AirDrop"), defaultWeight: 1.4),
+        WidgetDescriptor(kind: "mirror", name: tr("Specchio"), symbol: "person.crop.square.fill", summary: tr("La fotocamera, per controllarti prima di una call"), defaultWeight: 0.6),
+        WidgetDescriptor(kind: "battery", name: tr("Batteria"), symbol: "battery.100percent", summary: tr("Carica, autonomia e risparmio energetico"), defaultWeight: 0.6),
+        WidgetDescriptor(kind: "system", name: tr("Sistema"), symbol: "cpu", summary: tr("Processore, memoria, disco e rete"), defaultWeight: 0.8),
+        WidgetDescriptor(kind: "clipboard", name: tr("Appunti"), symbol: "doc.on.clipboard", summary: tr("Le ultime cose copiate, solo in memoria"), defaultWeight: 1),
+        WidgetDescriptor(kind: "timer", name: tr("Timer"), symbol: "timer", summary: tr("Timer e cronometro, visibili anche a notch chiusa"), defaultWeight: 0.8),
+        WidgetDescriptor(kind: "notes", name: tr("Note"), symbol: "note.text", summary: tr("Un foglio di appunti sempre pronto"), defaultWeight: 1),
+        WidgetDescriptor(kind: "launcher", name: tr("Collegamenti"), symbol: "square.grid.2x2.fill", summary: tr("App, comandi rapidi, link e script a un click"), defaultWeight: 0.9),
+        WidgetDescriptor(kind: "clock", name: tr("Orologio"), symbol: "clock.fill", summary: tr("Ora e data, grandi e leggibili"), defaultWeight: 0.6)
+    ] }
 
-    static let compacts: [CompactDescriptor] = [
-        CompactDescriptor(id: "agents.status", name: "Stato agenti", symbol: "sparkles", summary: "Un'icona che cambia se lavorano o ti aspettano", group: "Agenti"),
-        CompactDescriptor(id: "agents.dots", name: "Pallini sessioni", symbol: "circle.grid.2x1.fill", summary: "Un pallino colorato per ogni sessione attiva", group: "Agenti"),
-        CompactDescriptor(id: "agents.count", name: "Numero sessioni", symbol: "number", summary: "Quante sessioni sono attive", group: "Agenti"),
-        CompactDescriptor(id: "agents.activity", name: "Attività corrente", symbol: "text.alignleft", summary: "Cosa sta facendo la sessione più urgente", group: "Agenti"),
-        CompactDescriptor(id: "media.artwork", name: "Copertina", symbol: "photo.fill", summary: "La copertina del brano in riproduzione", group: "Musica"),
-        CompactDescriptor(id: "media.visualizer", name: "Visualizzatore", symbol: "waveform", summary: "Le barre a tempo di musica", group: "Musica"),
-        CompactDescriptor(id: "media.title", name: "Titolo", symbol: "music.note", summary: "Il titolo che scorre", group: "Musica"),
-        CompactDescriptor(id: "calendar.next", name: "Prossimo evento", symbol: "calendar", summary: "Compare nell'ora prima dell'evento", group: "Calendario"),
-        CompactDescriptor(id: "battery.level", name: "Batteria", symbol: "battery.75percent", summary: "Icona e percentuale", group: "Sistema"),
-        CompactDescriptor(id: "system.cpu", name: "Processore", symbol: "cpu", summary: "Carico del processore in tempo reale", group: "Sistema"),
-        CompactDescriptor(id: "clock.time", name: "Ora", symbol: "clock", summary: "L'ora corrente", group: "Sistema"),
-        CompactDescriptor(id: "timer.remaining", name: "Timer", symbol: "timer", summary: "Il tempo che manca, mentre è attivo", group: "Strumenti"),
-        CompactDescriptor(id: "shelf.count", name: "Scaffale", symbol: "tray.full.fill", summary: "Quanti oggetti aspettano sullo scaffale", group: "Strumenti")
-    ]
+    static var compacts: [CompactDescriptor] { [
+        CompactDescriptor(id: "agents.status", name: tr("Stato agenti"), symbol: "sparkles", summary: tr("Un'icona che cambia se lavorano o ti aspettano"), group: tr("Agenti")),
+        CompactDescriptor(id: "agents.dots", name: tr("Pallini sessioni"), symbol: "circle.grid.2x1.fill", summary: tr("Un pallino colorato per ogni sessione attiva"), group: tr("Agenti")),
+        CompactDescriptor(id: "agents.count", name: tr("Numero sessioni"), symbol: "number", summary: tr("Quante sessioni sono attive"), group: tr("Agenti")),
+        CompactDescriptor(id: "agents.activity", name: tr("Attività corrente"), symbol: "text.alignleft", summary: tr("Cosa sta facendo la sessione più urgente"), group: tr("Agenti")),
+        CompactDescriptor(id: "media.artwork", name: tr("Copertina"), symbol: "photo.fill", summary: tr("La copertina del brano in riproduzione"), group: tr("Musica")),
+        CompactDescriptor(id: "media.visualizer", name: tr("Visualizzatore"), symbol: "waveform", summary: tr("Le barre a tempo di musica"), group: tr("Musica")),
+        CompactDescriptor(id: "media.title", name: tr("Titolo"), symbol: "music.note", summary: tr("Il titolo che scorre"), group: tr("Musica")),
+        CompactDescriptor(id: "calendar.next", name: tr("Prossimo evento"), symbol: "calendar", summary: tr("Compare nell'ora prima dell'evento"), group: tr("Calendario")),
+        CompactDescriptor(id: "battery.level", name: tr("Batteria"), symbol: "battery.75percent", summary: tr("Icona e percentuale"), group: tr("Sistema")),
+        CompactDescriptor(id: "system.cpu", name: tr("Processore"), symbol: "cpu", summary: tr("Carico del processore in tempo reale"), group: tr("Sistema")),
+        CompactDescriptor(id: "clock.time", name: tr("Ora"), symbol: "clock", summary: tr("L'ora corrente"), group: tr("Sistema")),
+        CompactDescriptor(id: "timer.remaining", name: tr("Timer"), symbol: "timer", summary: tr("Il tempo che manca, mentre è attivo"), group: tr("Strumenti")),
+        CompactDescriptor(id: "shelf.count", name: tr("Scaffale"), symbol: "tray.full.fill", summary: tr("Quanti oggetti aspettano sullo scaffale"), group: tr("Strumenti"))
+    ] }
 
     // MARK: - Widget personalizzati
 
@@ -64,13 +64,13 @@ enum ModuleCatalog {
 
     static func allWidgets(custom: [CustomWidgetConfig]) -> [WidgetDescriptor] {
         widgets + custom.map {
-            WidgetDescriptor(kind: customKind($0.id), name: $0.name, symbol: $0.symbol, summary: "Widget personalizzato")
+            WidgetDescriptor(kind: customKind($0.id), name: $0.name, symbol: $0.symbol, summary: tr("Widget personalizzato"))
         }
     }
 
     static func allCompacts(custom: [CustomWidgetConfig]) -> [CompactDescriptor] {
         compacts + custom.map {
-            CompactDescriptor(id: customKind($0.id), name: $0.name, symbol: $0.symbol, summary: "Il valore del tuo script", group: "Personalizzati")
+            CompactDescriptor(id: customKind($0.id), name: $0.name, symbol: $0.symbol, summary: tr("Il valore del tuo script"), group: tr("Personalizzati"))
         }
     }
 
@@ -112,17 +112,17 @@ struct ThemePreset: Identifiable {
         appearance.cardStyle = cardStyle
     }
 
-    static let all: [ThemePreset] = [
-        ThemePreset(id: "notte", name: "Notte", surface: .solid, accentMode: .artwork, accentHex: "#FFB37C"),
-        ThemePreset(id: "vetro", name: "Vetro", surface: .glass, glassDim: 0.3, accentMode: .system, accentHex: "#FFFFFF", border: 0.7, glow: 0.2),
-        ThemePreset(id: "copertina", name: "Copertina", surface: .artwork, accentMode: .artwork, accentHex: "#FFFFFF", glow: 0.8),
-        ThemePreset(id: "brace", name: "Brace", surface: .gradient, gradientHex: ["#0B0605", "#2B1209"], accentMode: .custom, accentHex: "#FF8A5C", glow: 0.7),
-        ThemePreset(id: "aurora", name: "Aurora", surface: .gradient, gradientHex: ["#03090B", "#0B2A2B", "#1D1A3A"], accentMode: .custom, accentHex: "#6CF0C2", glow: 0.75),
-        ThemePreset(id: "oceano", name: "Oceano", surface: .gradient, gradientHex: ["#02060E", "#0A2342"], accentMode: .custom, accentHex: "#5AC8FA", glow: 0.65),
-        ThemePreset(id: "lavanda", name: "Lavanda", surface: .gradient, gradientHex: ["#07050D", "#221A3F"], accentMode: .custom, accentHex: "#B9A5FF", glow: 0.65),
-        ThemePreset(id: "grafite", name: "Grafite", surface: .solid, solidHex: "#1C1C1F", accentMode: .system, accentHex: "#FFFFFF", border: 0.25, glow: 0, cardStyle: .outlined),
-        ThemePreset(id: "inchiostro", name: "Inchiostro", surface: .solid, accentMode: .custom, accentHex: "#FFFFFF", border: 0, glow: 0, cardStyle: .plain)
-    ]
+    static var all: [ThemePreset] { [
+        ThemePreset(id: "notte", name: tr("Notte"), surface: .solid, accentMode: .artwork, accentHex: "#FFB37C"),
+        ThemePreset(id: "vetro", name: tr("Vetro"), surface: .glass, glassDim: 0.3, accentMode: .system, accentHex: "#FFFFFF", border: 0.7, glow: 0.2),
+        ThemePreset(id: "copertina", name: tr("Copertina"), surface: .artwork, accentMode: .artwork, accentHex: "#FFFFFF", glow: 0.8),
+        ThemePreset(id: "brace", name: tr("Brace"), surface: .gradient, gradientHex: ["#0B0605", "#2B1209"], accentMode: .custom, accentHex: "#FF8A5C", glow: 0.7),
+        ThemePreset(id: "aurora", name: tr("Aurora"), surface: .gradient, gradientHex: ["#03090B", "#0B2A2B", "#1D1A3A"], accentMode: .custom, accentHex: "#6CF0C2", glow: 0.75),
+        ThemePreset(id: "oceano", name: tr("Oceano"), surface: .gradient, gradientHex: ["#02060E", "#0A2342"], accentMode: .custom, accentHex: "#5AC8FA", glow: 0.65),
+        ThemePreset(id: "lavanda", name: tr("Lavanda"), surface: .gradient, gradientHex: ["#07050D", "#221A3F"], accentMode: .custom, accentHex: "#B9A5FF", glow: 0.65),
+        ThemePreset(id: "grafite", name: tr("Grafite"), surface: .solid, solidHex: "#1C1C1F", accentMode: .system, accentHex: "#FFFFFF", border: 0.25, glow: 0, cardStyle: .outlined),
+        ThemePreset(id: "inchiostro", name: tr("Inchiostro"), surface: .solid, accentMode: .custom, accentHex: "#FFFFFF", border: 0, glow: 0, cardStyle: .plain)
+    ] }
 
     static func preset(_ id: String) -> ThemePreset? { all.first { $0.id == id } }
 }
@@ -191,11 +191,11 @@ extension ProfileConfig {
         ]
 
         return [
-            ProfileConfig(id: "default", name: "Predefinito", symbol: "moon.stars.fill", layout: LayoutConfig(), appearance: AppearanceConfig()),
-            ProfileConfig(id: "coding", name: "Coding", symbol: "chevron.left.forwardslash.chevron.right", layout: coding, appearance: themed("brace")),
-            ProfileConfig(id: "music", name: "Musica", symbol: "music.note", layout: music, appearance: themed("copertina")),
-            ProfileConfig(id: "agenda", name: "Agenda", symbol: "calendar", layout: agenda, appearance: themed("oceano")),
-            ProfileConfig(id: "minimal", name: "Essenziale", symbol: "circle", layout: minimal, appearance: themed("inchiostro"))
+            ProfileConfig(id: "default", name: tr("Predefinito"), symbol: "moon.stars.fill", layout: LayoutConfig(), appearance: AppearanceConfig()),
+            ProfileConfig(id: "coding", name: tr("Coding"), symbol: "chevron.left.forwardslash.chevron.right", layout: coding, appearance: themed("brace")),
+            ProfileConfig(id: "music", name: tr("Musica"), symbol: "music.note", layout: music, appearance: themed("copertina")),
+            ProfileConfig(id: "agenda", name: tr("Agenda"), symbol: "calendar", layout: agenda, appearance: themed("oceano")),
+            ProfileConfig(id: "minimal", name: tr("Essenziale"), symbol: "circle", layout: minimal, appearance: themed("inchiostro"))
         ]
     }
 }

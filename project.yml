@@ -7,6 +7,7 @@ options:
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
+  developmentLanguage: it
 settings:
   base:
     MARKETING_VERSION: "1.0.0"
@@ -25,6 +26,8 @@ targets:
     sources:
       - path: Sources/PoweredNotch
       - path: Resources/AppIcon.icon
+        buildPhase: resources
+      - path: Resources/Localization
         buildPhase: resources
       - path: extensions/claude-code-hooks/powered_notch_hook.py
         buildPhase: resources
@@ -51,6 +54,8 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSMinimumSystemVersion: "14.0"
+        CFBundleDevelopmentRegion: it
+        CFBundleLocalizations: [it, en, es, fr, de]
         # Lives in the notch: no Dock icon, except while the settings window is open.
         LSUIElement: true
         NSHighResolutionCapable: true

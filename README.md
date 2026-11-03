@@ -18,7 +18,7 @@ Powered Notch takes its starting point from [Boring Notch](https://github.com/Th
 |---|---|
 | ![Closed notch](docs/closed.png) | ![Alert](docs/alert.png) |
 
-> **A note on language.** The app's interface is currently in **Italian**, and so are the screenshots and the comments in the source code. This README gives the English name of every feature and, where it helps, the Italian label you will see in the app in *italics*. Translations are very welcome; see [Contributing](#contributing).
+> **Languages.** The interface is available in **English, Italian, Spanish, French and German**. It follows your system language and can be switched at any time, instantly, from Settings → Behavior → Interface language.
 
 ---
 
@@ -55,12 +55,13 @@ The app lands in `~/Applications/PoweredNotch.app` and starts right away.
 | **Alerts** | Discreet by default: only what needs you (a permission, an error) comes down. The rest stays in the closed notch as a glow and dots. Charger, Bluetooth, track changes, events and timers are opt-in. |
 | **More widgets** | Mirror, battery, system stats, clipboard, timer, notes, launcher, clock. |
 | **Your own widgets** | If you can write it in a script, you can put it in the notch. |
+| **Five languages** | English, Italian, Spanish, French and German, switchable live from the settings. |
 
 ---
 
 ## Customize everything
 
-Customization is the reason Powered Notch exists. Right-click the notch → *Customize the notch* (*Personalizza la notch*).
+Customization is the reason Powered Notch exists. Right-click the notch → *Customize the notch*.
 
 ![The layout editor](docs/layout.png)
 
@@ -84,7 +85,7 @@ Customization is the reason Powered Notch exists. Right-click the notch → *Cus
 
 ![The agents page](docs/agents.png)
 
-Out of the box they appear in the closed notch, on the first page, and on a page of their own. To put them front and center: Settings → Agents → *Open the notch directly on agents* (*Apri la notch direttamente sugli agenti*).
+Out of the box they appear in the closed notch, on the first page, and on a page of their own. To put them front and center: Settings → Agents → *Open the notch directly on agents*.
 
 Each session is a card: a status badge, the project and branch, what the agent is doing right now, and how much of its context window is used. Hover a card for its actions (go to the chat, resume, open in Terminal, your editor or Finder, hide); right-click for the full menu.
 
@@ -94,7 +95,7 @@ Each session is a card: a status badge, the project and branch, what the agent i
 | **waiting for you** (amber, *attende te*) | It finished its turn: the ball is in your court. |
 | **permission requested** (red, *permesso richiesto*) | Blocked, waiting for an approval (needs the hook, see below). |
 | **paused** (gray, *in pausa*) | Session still open but idle for more than 6 minutes. |
-| **ended** (*terminata*) | Recently closed session, can be resumed. |
+| **ended** | Recently closed session, can be resumed. |
 
 When an agent moves to *waiting for you* or *permission requested*, the notch drops an alert, glows until the situation changes, and a click takes you **into that very chat**: Claude Desktop and Codex have direct deep links.
 
@@ -102,7 +103,7 @@ Updates arrive through FSEvents as soon as files change, with no constant pollin
 
 ### Claude Code hooks
 
-The transcript doesn't record permission requests that are still pending: without the hook, a blocked session looks "running". Settings → Agents → **Install** (*Installa*).
+The transcript doesn't record permission requests that are still pending: without the hook, a blocked session looks "running". Settings → Agents → **Install**.
 
 The installer **merges** its configuration into `~/.claude/settings.json` without touching the hooks already there, and saves a copy as `settings.json.powered-notch-backup`. The hooks are asynchronous and don't slow Claude Code down. Nothing is installed unless you ask for it. You can also run `extensions/claude-code-hooks/install.sh` (and `install.sh --remove`) by hand.
 
@@ -154,7 +155,7 @@ The commands in `actions` run with `/bin/sh -lc` in the session's folder, with `
 
 ## Widgets from scripts
 
-Settings → Custom widgets (*Widget personalizzati*). The command prints text (the first line is the value, the others go below it) or JSON:
+Settings → Custom widgets. The command prints text (the first line is the value, the others go below it) or JSON:
 
 ```json
 {
@@ -191,6 +192,7 @@ open 'powerednotch://peek?title=Build&subtitle=Done&symbol=hammer.fill&tint=%234
 | `hud` | `kind` (`volume`, `brightness`, `keyboard`), `level` |
 | `profile` | `id` |
 | `theme` | `id` |
+| `language` | `id` (`system`, `en`, `it`, `es`, `fr`, `de`) |
 | `settings` | `section` |
 | `quiet` | `on` (`1` silences, `0` unsilences, no parameter toggles) |
 
@@ -201,8 +203,8 @@ open 'powerednotch://peek?title=Build&subtitle=Done&symbol=hammer.fill&tint=%234
 An alert that drops on every change turns into noise quickly, so:
 
 - **Automatic quiet.** While you watch a video (a foreground app that does more than play music) or, if you choose, with a full-screen app, alerts neither drop nor get queued for later. The glow and dots in the closed notch remain.
-- **Manual quiet.** Right-click the notch → *Silence alerts* (*Silenzia gli avvisi*), the `powerednotch://quiet` link, or the Shortcuts action. macOS doesn't let apps read your Focus, so to tie it to one, create an automation "when I turn on this Focus → silence the notch alerts".
-- **Stable states.** An agent only alerts if its new state holds for a few seconds, and the same session never alerts more than once a minute. Tune it in Settings → Alerts (*Avvisi*).
+- **Manual quiet.** Right-click the notch → *Silence alerts*, the `powerednotch://quiet` link, or the Shortcuts action. macOS doesn't let apps read your Focus, so to tie it to one, create an automation "when I turn on this Focus → silence the notch alerts".
+- **Stable states.** An agent only alerts if its new state holds for a few seconds, and the same session never alerts more than once a minute. Tune it in Settings → Alerts.
 - **Videos stay out of the wings.** Artwork and the visualizer appear in the closed notch only for music apps, not for a video in the browser.
 
 ---
@@ -253,6 +255,7 @@ dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # check the
 dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # what the agent providers see
 dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --probe-controls   # volume, brightness, calendar
 open dist/PoweredNotch.app --args --demo           # the notch with made-up data, for screenshots
+open dist/PoweredNotch.app --args --demo --language=de   # …in another language, without touching your settings
 open dist/PoweredNotch.app --args --virtual-notch  # as on a display without a notch
 ```
 
@@ -268,6 +271,7 @@ Sources/PoweredNotch/
   Settings/   settings and the layout editor
   System/     volume, brightness, keys, shortcuts, Bluetooth, camera
   UI/         components and theme
+  Localization/   language selection and string lookup
   Dev/        diagnostics and demo data
 Sources/PoweredNotchMediaBridge/   bridge to Now Playing
 extensions/   powered-notch-report, an example provider, Claude Code hooks
@@ -284,11 +288,14 @@ Since macOS 15.4, MediaRemote answers with empty data to ordinary processes. Tha
 - Without the hooks, "permission requested" can't be told apart from "running".
 - The music visualizer is a timed animation, not an audio analysis: doing that would require the permission to record system audio.
 - "Show on the lock screen" is experimental.
-- The interface and the source comments are in Italian for now.
+- The comments in the source code are in Italian.
+- Shortcuts, Spotlight and the permission prompts follow the *system* language, not the one chosen inside the app: macOS reads their text from the app bundle before the app is running.
 
 ## Contributing
 
-Issues and pull requests are welcome. The most useful contribution right now is **localization**: moving the user-facing strings out of the views and into string catalogs, starting with English. If you'd like to take that on, please open an issue first so we can agree on the approach.
+Issues and pull requests are welcome.
+
+**Translations.** Every user-facing string lives in `Resources/Localization/<language>.lproj/Localizable.strings`. The key is the original Italian text, which is also what the code contains, so Italian needs no table of its own. To fix a translation, edit the matching line. To add a language, add a `<code>.lproj` folder with a `Localizable.strings` and an `InfoPlist.strings`, add the code to `AppLanguage` in `Sources/PoweredNotch/Localization/Localization.swift`, and to `CFBundleLocalizations` in `project.yml`. In code, wrap strings you build by hand in `tr("…")`; SwiftUI `Text("…")` literals are looked up automatically.
 
 ## Acknowledgments
 

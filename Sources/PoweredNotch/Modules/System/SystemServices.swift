@@ -257,7 +257,7 @@ struct ClipboardEntry: Identifiable, Equatable {
     var preview: String {
         switch content {
         case .text(let text):   text.trimmingCharacters(in: .whitespacesAndNewlines)
-        case .image:            "Immagine"
+        case .image:            tr("Immagine")
         case .files(let urls):  urls.map(\.lastPathComponent).joined(separator: ", ")
         }
     }
@@ -607,7 +607,7 @@ final class CustomWidgetStore: ObservableObject {
 
         guard process.terminationStatus == 0 else {
             let message = String(data: errorData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            return .failure(RunError(message: message.isEmpty ? "uscita con codice \(process.terminationStatus)" : String(message.prefix(160))))
+            return .failure(RunError(message: message.isEmpty ? tr("uscita con codice %lld", Int(process.terminationStatus)) : String(message.prefix(160))))
         }
         return .success(parse(data))
     }

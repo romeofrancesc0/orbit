@@ -8,9 +8,9 @@ enum SessionFilter: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .all:       "Tutte"
-        case .live:      "Attive"
-        case .attention: "Attenzione"
+        case .all:       tr("Tutte")
+        case .live:      tr("Attive")
+        case .attention: tr("Attenzione")
         }
     }
 
@@ -266,12 +266,12 @@ final class SessionStore: ObservableObject {
     /// Riepilogo testuale ("2 al lavoro · 1 attende").
     var summaryLine: String {
         var parts: [String] = []
-        if workingCount > 0 { parts.append("\(workingCount) al lavoro") }
-        if attentionCount > 0 { parts.append("\(attentionCount) in attesa") }
-        if idleCount > 0 { parts.append("\(idleCount) in pausa") }
+        if workingCount > 0 { parts.append(tr("%lld al lavoro", workingCount)) }
+        if attentionCount > 0 { parts.append(tr("%lld in attesa", attentionCount)) }
+        if idleCount > 0 { parts.append(tr("%lld in pausa", idleCount)) }
         if parts.isEmpty {
             let ended = sessions.count
-            return ended == 0 ? "nessuna sessione" : "\(ended) recenti"
+            return ended == 0 ? tr("nessuna sessione") : tr("%lld recenti", ended)
         }
         return parts.joined(separator: " · ")
     }

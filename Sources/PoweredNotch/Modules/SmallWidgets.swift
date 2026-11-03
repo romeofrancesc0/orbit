@@ -17,13 +17,13 @@ struct BatteryWidget: View {
     }
 
     private var statusText: String {
-        if !state.hasBattery { return "Alimentazione" }
+        if !state.hasBattery { return tr("Alimentazione") }
         if state.isCharging {
-            return state.minutesRemaining.map { "Piena tra \(Format.duration(Double($0) * 60))" } ?? "In carica"
+            return state.minutesRemaining.map { tr("Piena tra %@", Format.duration(Double($0) * 60)) } ?? tr("In carica")
         }
-        if state.isOptimizedHold { return "Carica in pausa" }
-        if state.isPluggedIn { return "Collegata" }
-        return state.minutesRemaining.map { "Restano \(Format.duration(Double($0) * 60))" } ?? "A batteria"
+        if state.isOptimizedHold { return tr("Carica in pausa") }
+        if state.isPluggedIn { return tr("Collegata") }
+        return state.minutesRemaining.map { tr("Restano %@", Format.duration(Double($0) * 60)) } ?? tr("A batteria")
     }
 
     var body: some View {
@@ -68,8 +68,8 @@ struct SystemWidget: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 0) {
                 gauge(label: "CPU", fraction: snapshot.cpu, value: "\(Int(snapshot.cpu * 100))%")
-                gauge(label: "Memoria", fraction: snapshot.memory, value: "\(Int(snapshot.memory * 100))%")
-                gauge(label: "Disco", fraction: snapshot.disk, value: "\(Int(snapshot.disk * 100))%")
+                gauge(label: tr("Memoria"), fraction: snapshot.memory, value: "\(Int(snapshot.memory * 100))%")
+                gauge(label: tr("Disco"), fraction: snapshot.disk, value: "\(Int(snapshot.disk * 100))%")
             }
             CPUSparkline(values: snapshot.cpuHistory, tint: theme.accent)
                 .frame(maxHeight: .infinity)
@@ -162,7 +162,7 @@ struct ClipboardWidget: View {
                     .foregroundStyle(theme.primary)
                 Spacer()
                 if !clipboard.entries.isEmpty {
-                    NotchIconButton(symbol: "trash", size: 20, iconSize: 9.5, help: "Svuota la cronologia", action: clipboard.clear)
+                    NotchIconButton(symbol: "trash", size: 20, iconSize: 9.5, help: tr("Svuota la cronologia"), action: clipboard.clear)
                 }
             }
             .padding(.horizontal, 4)
@@ -235,7 +235,7 @@ private struct ClipboardRow: View {
             Button("Copia", action: action)
             Button("Rimuovi") { clipboard.remove(entry) }
         }
-        .help(entry.sourceApp.map { "Da \($0)" } ?? "")
+        .help(entry.sourceApp.map { tr("Da %@", $0) } ?? "")
     }
 
     @ViewBuilder
@@ -308,7 +308,7 @@ struct TimerWidget: View {
                     .help("\(Int(minutes)) minuti")
                 }
             }
-            NotchPillButton(symbol: "stopwatch", label: "Cronometro", tint: theme.accent, action: timer.startStopwatch)
+            NotchPillButton(symbol: "stopwatch", label: tr("Cronometro"), tint: theme.accent, action: timer.startStopwatch)
         }
     }
 }
@@ -361,7 +361,7 @@ struct LauncherWidget: View {
                         actions.close()
                     }
                 }
-                NotchIconButton(symbol: "plus", size: 34, iconSize: 13, help: "Aggiungi un collegamento") {
+                NotchIconButton(symbol: "plus", size: 34, iconSize: 13, help: tr("Aggiungi un collegamento")) {
                     actions.openSettings(.launcher)
                 }
                 .frame(height: 62)
@@ -383,7 +383,7 @@ private struct LauncherTile: View {
                 icon
                     .frame(width: 34, height: 34)
                     .scaleEffect(hovering ? 1.08 : 1)
-                Text(item.name)
+                Text(tr(item.name))
                     .font(theme.font(9.5))
                     .foregroundStyle(theme.secondary)
                     .lineLimit(1)
@@ -460,10 +460,10 @@ struct ClockWidget: View {
     var body: some View {
         TimelineView(.everyMinute) { context in
             VStack(spacing: 2) {
-                Text(context.date.formatted(date: .omitted, time: .shortened))
+                Text(context.date.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)))
                     .font(theme.numberFont(30, .semibold))
                     .foregroundStyle(theme.primary)
-                Text(context.date.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(Locale(identifier: "it_IT"))))
+                Text(context.date.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(L10n.locale)))
                     .font(theme.font(10.5))
                     .foregroundStyle(theme.secondary)
                     .lineLimit(1)
@@ -506,7 +506,7 @@ struct MirrorWidget: View {
                         Image(systemName: "person.crop.square.fill")
                             .font(.system(size: 24, weight: .regular))
                             .foregroundStyle(theme.secondary)
-                        Text(camera.access == .denied ? "Consenti in Impostazioni" : "Specchio")
+                        Text(camera.access == .denied ? tr("Consenti in Impostazioni") : tr("Specchio"))
                             .font(theme.font(10.5, .medium))
                             .foregroundStyle(theme.secondary)
                             .multilineTextAlignment(.center)

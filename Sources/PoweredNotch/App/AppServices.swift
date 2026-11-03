@@ -35,11 +35,17 @@ final class AppServices {
     private var pendingAgentPeeks: [String: DispatchWorkItem] = [:]
     private var lastAgentPeek: [String: Date] = [:]
     private var accessibilityTimer: Timer?
+    private var appliedLanguage: AppLanguage?
     let isDemo: Bool
 
     private init() {
         isDemo = CommandLine.arguments.contains("--demo")
         settings = SettingsStore(persists: !isDemo)
+        // `--demo --language=es` previews another language without touching the saved settings.
+        if isDemo, let argument = CommandLine.arguments.first(where: { $0.hasPrefix("--language=") }),
+           let language = AppLanguage.allCases.first(where: { $0.code == String(argument.dropFirst(11)) }) {
+            settings.update { $0.language = language }
+        }
         sessions = isDemo ? SessionStore(preview: DemoData.sessions) : SessionStore(config: settings.config.agents)
         shelf = ShelfStore(persists: !isDemo)
         notes = NotesStore(persists: !isDemo, initial: isDemo ? DemoData.notes : nil)
@@ -79,13 +85,13 @@ final class AppServices {
         let bundleID = "theboringteam.boringnotch"
         guard !isDemo, !NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty else { return }
         notch.show(NotchPeek(
-            title: "Boring Notch è aperto",
-            subtitle: "Si sovrappone a Powered Notch",
+            title: tr("Boring Notch è aperto"),
+            subtitle: tr("Si sovrappone a Powered Notch"),
             icon: .symbol("exclamationmark.triangle.fill"),
             tint: Color(hex: 0xFFC145),
             duration: 12,
             group: "conflict",
-            actionLabel: "Chiudilo",
+            actionLabel: tr("Chiudilo"),
             action: {
                 NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).forEach { $0.terminate() }
             }
@@ -116,6 +122,15 @@ final class AppServices {
     }
 
     private func applyConfig(_ config: PoweredNotchConfig) {
+        if config.language != appliedLanguage {
+            let first = appliedLanguage == nil
+            appliedLanguage = config.language
+            if !first {
+                // Menus and session texts are built in code, so they are rebuilt in the new language.
+                MainMenu.install(services: self)
+                sessions.refresh()
+            }
+        }
         sessions.apply(config: config.agents)
         media.pausedLinger = config.media.pausedLingerSeconds
         media.restrictToMusicApps = config.media.wingsMusicAppsOnly
@@ -174,7 +189,7 @@ final class AppServices {
         battery.onPlugChange = { [weak self] state in
             guard let self, self.settings.config.peeks.enabled, self.settings.config.peeks.charger else { return }
             self.showPeek(NotchPeek(
-                title: state.isPluggedIn ? "In carica" : "A batteria",
+                title: state.isPluggedIn ? tr("In carica") : tr("A batteria"),
                 subtitle: "\(Int((state.level * 100).rounded()))%",
                 icon: .symbol(state.isPluggedIn ? "bolt.fill" : "battery.75percent"),
                 tint: state.isPluggedIn ? Color(hex: 0x4ADE80) : nil,
@@ -186,8 +201,8 @@ final class AppServices {
         battery.onLowBattery = { [weak self] state in
             guard let self, self.settings.config.peeks.enabled, self.settings.config.peeks.lowBattery else { return }
             self.showPeek(NotchPeek(
-                title: "Batteria quasi scarica",
-                subtitle: "\(Int((state.level * 100).rounded()))% rimanente",
+                title: tr("Batteria quasi scarica"),
+                subtitle: tr("%lld%% rimanente", Int((state.level * 100).rounded())),
                 icon: .symbol("battery.25percent"),
                 tint: Color(hex: 0xFF5A63),
                 duration: 5,
@@ -204,7 +219,7 @@ final class AppServices {
                 tint: Color(hexString: event.colorHex),
                 duration: 6,
                 group: "calendar",
-                actionLabel: event.meetingURL == nil ? nil : "Entra",
+                actionLabel: event.meetingURL == nil ? nil : tr("Entra"),
                 action: { [weak self] in
                     if let url = event.meetingURL {
                         NSWorkspace.shared.open(url)
@@ -220,7 +235,7 @@ final class AppServices {
             NSSound(named: "Glass")?.play()
             guard self.settings.config.peeks.enabled, self.settings.config.peeks.timerDone else { return }
             self.showPeek(NotchPeek(
-                title: "Tempo scaduto",
+                title: tr("Tempo scaduto"),
                 subtitle: self.timer.label.isEmpty ? nil : self.timer.label,
                 icon: .symbol("timer"),
                 tint: nil,
@@ -231,7 +246,7 @@ final class AppServices {
 
         bluetooth.onChange = { [weak self] name, symbol, connected, battery in
             guard let self else { return }
-            let detail = connected ? (battery.map { "Collegato · \($0)%" } ?? "Collegato") : "Scollegato"
+            let detail = connected ? (battery.map { tr("Collegato · %lld%%", $0) } ?? tr("Collegato")) : tr("Scollegato")
             DispatchQueue.main.async {
                 self.showPeek(NotchPeek(
                     title: name,
@@ -278,8 +293,8 @@ final class AppServices {
         guard quiet.isOn != on else { return }
         quiet.isOn = on
         notch.show(NotchPeek(
-            title: on ? "Avvisi silenziati" : "Avvisi attivi",
-            subtitle: on ? "Restano l'alone e i pallini" : nil,
+            title: on ? tr("Avvisi silenziati") : tr("Avvisi attivi"),
+            subtitle: on ? tr("Restano l'alone e i pallini") : nil,
             icon: .symbol(on ? "bell.slash.fill" : "bell.fill"),
             tint: nil,
             duration: 2,
@@ -355,7 +370,7 @@ final class AppServices {
             tint: session.status.tint,
             duration: rules.duration,
             group: "agent:\(session.id)",
-            actionLabel: "Vai",
+            actionLabel: tr("Vai"),
             action: { SessionActions.focus(session) }
         ))
     }
@@ -365,7 +380,7 @@ final class AppServices {
         case .blocked:
             return session.activity ?? session.status.label
         case .attention:
-            return session.activity ?? "Ha finito, tocca a te"
+            return session.activity ?? tr("Ha finito, tocca a te")
         case .error:
             return session.activity ?? session.status.label
         default:
@@ -529,6 +544,19 @@ extension View {
             .environmentObject(services.custom)
             .environmentObject(services.camera)
             .environmentObject(services.quiet)
+            .modifier(AppLocaleModifier(settings: services.settings))
+    }
+}
+
+/// Gives every view the language chosen in the settings, and rebuilds the hierarchy when it changes.
+struct AppLocaleModifier: ViewModifier {
+    @ObservedObject var settings: SettingsStore
+
+    func body(content: Content) -> some View {
+        let language = settings.config.language
+        content
+            .environment(\.locale, language.locale)
+            .id(language)
     }
 }
 

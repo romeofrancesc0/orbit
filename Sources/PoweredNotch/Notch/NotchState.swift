@@ -34,9 +34,9 @@ struct NotchHUD: Equatable {
 
         var label: String {
             switch self {
-            case .volume:     "Volume"
-            case .brightness: "Luminosità"
-            case .keyboard:   "Tastiera"
+            case .volume:     tr("Volume")
+            case .brightness: tr("Luminosità")
+            case .keyboard:   tr("Tastiera")
             }
         }
 

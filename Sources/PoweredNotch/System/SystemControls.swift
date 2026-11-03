@@ -350,7 +350,7 @@ final class HotKeyCenter {
         // I codici dei tasti funzione non sono in ordine: niente intervalli qui.
         if let function = functionKeys[Int(keyCode)] { return function }
         switch Int(keyCode) {
-        case kVK_Space:         return "Spazio"
+        case kVK_Space:         return tr("Spazio")
         case kVK_Return:        return "↩"
         case kVK_Tab:           return "⇥"
         case kVK_Escape:        return "⎋"
@@ -495,13 +495,13 @@ final class BluetoothMonitor: NSObject {
         }
         // All'avvio il sistema annuncia tutto ciò che è già collegato: non è una novità.
         guard Date().timeIntervalSince(startedAt) > 3 else { return }
-        onChange?(device.name ?? "Dispositivo", Self.symbol(for: device), true, Self.battery(of: device))
+        onChange?(device.name ?? tr("Dispositivo"), Self.symbol(for: device), true, Self.battery(of: device))
     }
 
     @objc private func deviceDisconnected(_ notification: IOBluetoothUserNotification, device: IOBluetoothDevice) {
         disconnectNotifications[ObjectIdentifier(device)]?.unregister()
         disconnectNotifications[ObjectIdentifier(device)] = nil
-        onChange?(device.name ?? "Dispositivo", Self.symbol(for: device), false, nil)
+        onChange?(device.name ?? tr("Dispositivo"), Self.symbol(for: device), false, nil)
     }
 
     private static func battery(of device: IOBluetoothDevice) -> Int? {

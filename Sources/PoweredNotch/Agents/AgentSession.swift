@@ -17,12 +17,12 @@ enum SessionStatus: String, Codable, Sendable, CaseIterable {
 
     var label: String {
         switch self {
-        case .working:   "in esecuzione"
-        case .attention: "attende te"
-        case .blocked:   "permesso richiesto"
-        case .idle:      "in pausa"
-        case .ended:     "terminata"
-        case .error:     "errore"
+        case .working:   tr("in esecuzione")
+        case .attention: tr("attende te")
+        case .blocked:   tr("permesso richiesto")
+        case .idle:      tr("in pausa")
+        case .ended:     tr("terminata")
+        case .error:     tr("errore")
         }
     }
 

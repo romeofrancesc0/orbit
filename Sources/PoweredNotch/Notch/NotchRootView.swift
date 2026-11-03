@@ -505,7 +505,7 @@ struct NotchHeader: View {
                     ForEach(config.layout.headerTrailing, id: \.self) { CompactItemView(id: $0) }
                 }
                 if config.behavior.settingsButtonInNotch {
-                    NotchIconButton(symbol: "gearshape.fill", size: 24, iconSize: 11.5, help: "Impostazioni") {
+                    NotchIconButton(symbol: "gearshape.fill", size: 24, iconSize: 11.5, help: tr("Impostazioni")) {
                         actions.openSettings()
                     }
                 }
@@ -529,7 +529,7 @@ struct NotchHeader: View {
                         .font(.system(size: 11, weight: .semibold))
                 }
                 if style != .icons {
-                    Text(page.title)
+                    Text(tr(page.title))
                         .font(theme.font(11, .semibold))
                         .lineLimit(1)
                 }
@@ -547,7 +547,7 @@ struct NotchHeader: View {
             .contentShape(Capsule())
         }
         .buttonStyle(NotchPressStyle())
-        .help(page.title)
+        .help(tr(page.title))
     }
 }
 

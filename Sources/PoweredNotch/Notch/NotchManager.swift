@@ -382,13 +382,13 @@ struct NotchContextMenu: View {
         Button("Aspetto…") {
             SettingsWindowController.shared.show(section: .appearance, services: services)
         }
-        Menu("Profilo") {
+        Menu(tr("Profilo")) {
             ForEach(services.allProfiles) { profile in
                 Button(profile.name) { services.apply(profile: profile) }
             }
         }
         Divider()
-        Button(services.quiet.isOn ? "Riattiva gli avvisi" : "Silenzia gli avvisi") {
+        Button(services.quiet.isOn ? tr("Riattiva gli avvisi") : tr("Silenzia gli avvisi")) {
             services.setQuiet(!services.quiet.isOn)
         }
         Button("Impostazioni…") {
@@ -405,10 +405,10 @@ enum NotchMenu {
         let menu = NSMenu()
         menu.autoenablesItems = false
 
-        menu.addItem(ClosureMenuItem("Personalizza la notch…", symbol: "slider.horizontal.3") {
+        menu.addItem(ClosureMenuItem(tr("Personalizza la notch…"), symbol: "slider.horizontal.3") {
             SettingsWindowController.shared.show(section: .layout, services: services)
         })
-        menu.addItem(ClosureMenuItem("Aspetto…", symbol: "paintpalette") {
+        menu.addItem(ClosureMenuItem(tr("Aspetto…"), symbol: "paintpalette") {
             SettingsWindowController.shared.show(section: .appearance, services: services)
         })
 
@@ -426,16 +426,16 @@ enum NotchMenu {
         menu.addItem(profiles)
 
         menu.addItem(.separator())
-        menu.addItem(ClosureMenuItem(services.quiet.isOn ? "Riattiva gli avvisi" : "Silenzia gli avvisi", symbol: services.quiet.isOn ? "bell" : "bell.slash") {
+        menu.addItem(ClosureMenuItem(services.quiet.isOn ? tr("Riattiva gli avvisi") : tr("Silenzia gli avvisi"), symbol: services.quiet.isOn ? "bell" : "bell.slash") {
             services.setQuiet(!services.quiet.isOn)
         })
-        menu.addItem(ClosureMenuItem("Impostazioni…", symbol: "gearshape") {
+        menu.addItem(ClosureMenuItem(tr("Impostazioni…"), symbol: "gearshape") {
             SettingsWindowController.shared.show(section: nil, services: services)
         })
-        menu.addItem(ClosureMenuItem("Riavvia Powered Notch", symbol: "arrow.clockwise") {
+        menu.addItem(ClosureMenuItem(tr("Riavvia Powered Notch"), symbol: "arrow.clockwise") {
             AppServices.relaunch()
         })
-        menu.addItem(ClosureMenuItem("Esci da Powered Notch", symbol: "power") {
+        menu.addItem(ClosureMenuItem(tr("Esci da Powered Notch"), symbol: "power") {
             NSApp.terminate(nil)
         })
         return menu

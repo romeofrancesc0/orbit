@@ -10,6 +10,7 @@ struct PoweredNotchConfig: Codable, Equatable {
     /// 2: avvisi più discreti (solo ciò che richiede te). Vedi `upgraded()`.
     var schemaVersion = 2
     var onboardingDone = false
+    var language: AppLanguage = .system
     var agents = AgentsConfig()
     var layout = LayoutConfig()
     var appearance = AppearanceConfig()
@@ -52,6 +53,7 @@ struct PoweredNotchConfig: Codable, Equatable {
         let d = PoweredNotchConfig()
         schemaVersion = read(.schemaVersion, d.schemaVersion)
         onboardingDone = read(.onboardingDone, d.onboardingDone)
+        language = read(.language, d.language)
         agents = read(.agents, d.agents)
         layout = read(.layout, d.layout)
         appearance = read(.appearance, d.appearance)
@@ -92,18 +94,18 @@ enum StartPageMode: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .first:    "La prima"
-        case .last:     "L'ultima usata"
-        case .smart:    "Intelligente"
-        case .specific: "Una a scelta"
+        case .first:    tr("La prima")
+        case .last:     tr("L'ultima usata")
+        case .smart:    tr("Intelligente")
+        case .specific: tr("Una a scelta")
         }
     }
     var help: String {
         switch self {
-        case .first:    "Si apre sempre sulla prima pagina."
-        case .last:     "Riprende dalla pagina che avevi lasciato."
-        case .smart:    "Va sulla pagina degli agenti se una sessione ti aspetta, altrimenti sulla prima."
-        case .specific: "Si apre sempre sulla pagina che scegli."
+        case .first:    tr("Si apre sempre sulla prima pagina.")
+        case .last:     tr("Riprende dalla pagina che avevi lasciato.")
+        case .smart:    tr("Va sulla pagina degli agenti se una sessione ti aspetta, altrimenti sulla prima.")
+        case .specific: tr("Si apre sempre sulla pagina che scegli.")
         }
     }
 }
@@ -159,10 +161,10 @@ enum SurfaceStyle: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .solid:    "Tinta unita"
-        case .gradient: "Sfumatura"
-        case .glass:    "Liquid Glass"
-        case .artwork:  "Dalla copertina"
+        case .solid:    tr("Tinta unita")
+        case .gradient: tr("Sfumatura")
+        case .glass:    tr("Liquid Glass")
+        case .artwork:  tr("Dalla copertina")
         }
     }
 }
@@ -172,9 +174,9 @@ enum AccentMode: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .custom:  "Personalizzato"
-        case .system:  "Di sistema"
-        case .artwork: "Dalla copertina"
+        case .custom:  tr("Personalizzato")
+        case .system:  tr("Di sistema")
+        case .artwork: tr("Dalla copertina")
         }
     }
 }
@@ -184,9 +186,9 @@ enum CardStyle: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .filled:   "Piene"
-        case .outlined: "Bordo"
-        case .plain:    "Nessuna"
+        case .filled:   tr("Piene")
+        case .outlined: tr("Bordo")
+        case .plain:    tr("Nessuna")
         }
     }
 }
@@ -196,10 +198,10 @@ enum FontChoice: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .system:  "San Francisco"
-        case .rounded: "Arrotondato"
-        case .serif:   "New York"
-        case .mono:    "Monospaziato"
+        case .system:  tr("San Francisco")
+        case .rounded: tr("Arrotondato")
+        case .serif:   tr("New York")
+        case .mono:    tr("Monospaziato")
         }
     }
     var design: Font.Design {
@@ -217,9 +219,9 @@ enum TabStyle: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .icons:          "Icone"
-        case .iconsAndTitles: "Icone e nomi"
-        case .titles:         "Nomi"
+        case .icons:          tr("Icone")
+        case .iconsAndTitles: tr("Icone e nomi")
+        case .titles:         tr("Nomi")
         }
     }
 }
@@ -229,11 +231,11 @@ enum MotionStyle: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .fluid:   "Fluido"
-        case .snappy:  "Scattante"
-        case .bouncy:  "Elastico"
-        case .gentle:  "Morbido"
-        case .instant: "Nessuna animazione"
+        case .fluid:   tr("Fluido")
+        case .snappy:  tr("Scattante")
+        case .bouncy:  tr("Elastico")
+        case .gentle:  tr("Morbido")
+        case .instant: tr("Nessuna animazione")
         }
     }
 
@@ -254,10 +256,10 @@ enum VisualizerStyle: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .bars:     "Barre"
-        case .capsules: "Capsule"
-        case .dots:     "Puntini"
-        case .off:      "Nascosto"
+        case .bars:     tr("Barre")
+        case .capsules: tr("Capsule")
+        case .dots:     tr("Puntini")
+        case .off:      tr("Nascosto")
         }
     }
 }
@@ -311,9 +313,9 @@ enum DisplayMode: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .auto: "Schermo con la notch"
-        case .main: "Schermo principale"
-        case .all:  "Tutti gli schermi"
+        case .auto: tr("Schermo con la notch")
+        case .main: tr("Schermo principale")
+        case .all:  tr("Tutti gli schermi")
         }
     }
 }
@@ -323,9 +325,9 @@ enum FullscreenPolicy: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .never:     "Mai"
-        case .mediaOnly: "Solo guardando un video"
-        case .always:    "Sempre"
+        case .never:     tr("Mai")
+        case .mediaOnly: tr("Solo guardando un video")
+        case .always:    tr("Sempre")
         }
     }
 }
@@ -404,8 +406,8 @@ enum HUDStyle: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .inline: "Ai lati della notch"
-        case .below:  "Sotto la notch"
+        case .inline: tr("Ai lati della notch")
+        case .below:  tr("Sotto la notch")
         }
     }
 }
@@ -429,10 +431,10 @@ enum LauncherItemKind: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .app:      "App"
-        case .shortcut: "Comando rapido"
-        case .url:      "Link"
-        case .command:  "Comando di shell"
+        case .app:      tr("App")
+        case .shortcut: tr("Comando rapido")
+        case .url:      tr("Link")
+        case .command:  tr("Comando di shell")
         }
     }
 }
@@ -475,14 +477,14 @@ enum HotkeyAction: String, Codable, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .toggleNotch:   "Apri o chiudi la notch"
-        case .openAgents:    "Apri gli agenti"
-        case .nextPage:      "Pagina successiva"
-        case .previousPage:  "Pagina precedente"
-        case .playPause:     "Riproduci o metti in pausa"
-        case .nextTrack:     "Brano successivo"
-        case .previousTrack: "Brano precedente"
-        case .openSettings:  "Apri le impostazioni"
+        case .toggleNotch:   tr("Apri o chiudi la notch")
+        case .openAgents:    tr("Apri gli agenti")
+        case .nextPage:      tr("Pagina successiva")
+        case .previousPage:  tr("Pagina precedente")
+        case .playPause:     tr("Riproduci o metti in pausa")
+        case .nextTrack:     tr("Brano successivo")
+        case .previousTrack: tr("Brano precedente")
+        case .openSettings:  tr("Apri le impostazioni")
         }
     }
 }

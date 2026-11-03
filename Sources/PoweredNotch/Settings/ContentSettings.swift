@@ -9,7 +9,7 @@ struct MusicSettingsView: View {
     @EnvironmentObject private var media: MediaService
 
     var body: some View {
-        SettingsForm(section: .music, subtitle: "Funziona con qualunque app che riproduce: Musica, Spotify, Safari, YouTube, e tutte le altre.") {
+        SettingsForm(section: .music, subtitle: tr("Funziona con qualunque app che riproduce: Musica, Spotify, Safari, YouTube, e tutte le altre.")) {
             Section("In riproduzione") {
                 if let track = media.nowPlaying {
                     HStack(spacing: 10) {
@@ -22,7 +22,7 @@ struct MusicSettingsView: View {
                         }
                     }
                 } else {
-                    Text(media.bridgeError ?? "Niente in riproduzione")
+                    Text(media.bridgeError ?? tr("Niente in riproduzione"))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -39,7 +39,7 @@ struct MusicSettingsView: View {
 
             Section("Notch chiusa") {
                 ValueSlider(
-                    title: "La copertina resta dopo la pausa per",
+                    title: tr("La copertina resta dopo la pausa per"),
                     value: settings.binding(\.media.pausedLingerSeconds),
                     range: 0...120,
                     step: 3,
@@ -64,14 +64,14 @@ struct CalendarSettingsView: View {
     @EnvironmentObject private var calendar: CalendarService
 
     var body: some View {
-        SettingsForm(section: .calendar, subtitle: "Il tuo calendario di sistema, compresi gli account iCloud, Google ed Exchange. I dati restano sul Mac.") {
+        SettingsForm(section: .calendar, subtitle: tr("Il tuo calendario di sistema, compresi gli account iCloud, Google ed Exchange. I dati restano sul Mac.")) {
             Section("Accesso") {
                 HStack {
                     Text("Calendario")
                     Spacer()
                     accessBadge(calendar.eventsAccess)
                     if calendar.eventsAccess != .granted {
-                        Button(calendar.eventsAccess == .denied ? "Apri Impostazioni" : "Consenti") { calendar.requestEventsAccess() }
+                        Button(calendar.eventsAccess == .denied ? tr("Apri Impostazioni") : tr("Consenti")) { calendar.requestEventsAccess() }
                     }
                 }
                 HStack {
@@ -79,7 +79,7 @@ struct CalendarSettingsView: View {
                     Spacer()
                     accessBadge(calendar.remindersAccess)
                     if calendar.remindersAccess != .granted {
-                        Button(calendar.remindersAccess == .denied ? "Apri Impostazioni" : "Consenti") { calendar.requestRemindersAccess() }
+                        Button(calendar.remindersAccess == .denied ? tr("Apri Impostazioni") : tr("Consenti")) { calendar.requestRemindersAccess() }
                     }
                 }
             }
@@ -93,7 +93,7 @@ struct CalendarSettingsView: View {
             Section("Avvisi") {
                 Toggle("Avvisa prima di un evento", isOn: settings.binding(\.peeks.upcomingEvent))
                 if settings.config.peeks.upcomingEvent {
-                    ValueSlider(title: "Quanti minuti prima", value: settings.binding(\.peeks.upcomingMinutes), range: 1...30, format: { "\(Int($0)) min" })
+                    ValueSlider(title: tr("Quanti minuti prima"), value: settings.binding(\.peeks.upcomingMinutes), range: 1...30, format: { "\(Int($0)) min" })
                 }
             }
 
@@ -119,9 +119,9 @@ struct CalendarSettingsView: View {
 
     private func accessBadge(_ access: CalendarService.Access) -> some View {
         switch access {
-        case .granted:      StatusBadge(text: "Consentito", color: .green)
-        case .denied:       StatusBadge(text: "Negato", color: .red)
-        case .undetermined: StatusBadge(text: "Da decidere", color: .orange)
+        case .granted:      StatusBadge(text: tr("Consentito"), color: .green)
+        case .denied:       StatusBadge(text: tr("Negato"), color: .red)
+        case .undetermined: StatusBadge(text: tr("Da decidere"), color: .orange)
         }
     }
 
@@ -145,7 +145,7 @@ struct ShelfSettingsView: View {
     @EnvironmentObject private var shelf: ShelfStore
 
     var body: some View {
-        SettingsForm(section: .shelf, subtitle: "Trascina qualcosa sulla notch e la ritrovi lì: file, link, testo, immagini. Con AirDrop a un gesto di distanza.") {
+        SettingsForm(section: .shelf, subtitle: tr("Trascina qualcosa sulla notch e la ritrovi lì: file, link, testo, immagini. Con AirDrop a un gesto di distanza.")) {
             Section("Trascinamento") {
                 Toggle("Apri la notch quando ci trascini sopra qualcosa", isOn: settings.binding(\.behavior.openShelfOnDrag))
                 Toggle("Togli dallo scaffale ciò che trascini fuori", isOn: settings.binding(\.shelf.removeAfterDragOut))
@@ -182,7 +182,7 @@ struct LauncherSettingsView: View {
     private var items: [LauncherItem] { settings.config.launcher.items }
 
     var body: some View {
-        SettingsForm(section: .launcher, subtitle: "App, comandi rapidi, link e script da lanciare con un click. Aggiungi il widget Collegamenti da Layout.") {
+        SettingsForm(section: .launcher, subtitle: tr("App, comandi rapidi, link e script da lanciare con un click. Aggiungi il widget Collegamenti da Layout.")) {
             Section("Elementi") {
                 if items.isEmpty {
                     Text("Nessun collegamento").foregroundStyle(.secondary)
@@ -192,7 +192,7 @@ struct LauncherSettingsView: View {
                         icon(item)
                             .frame(width: 22, height: 22)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text(item.name)
+                            Text(tr(item.name))
                             Text(item.kind.label)
                                 .font(.callout)
                                 .foregroundStyle(.secondary)
@@ -313,15 +313,15 @@ struct CustomWidgetsSettingsView: View {
         var summary: String
     }
 
-    private let templates = [
-        Template(name: "Meteo", symbol: "cloud.sun.fill", command: "curl -fsS 'https://wttr.in/?format=%t+%C'", refresh: 1800, summary: "Temperatura e cielo da wttr.in"),
-        Template(name: "Pull request", symbol: "arrow.triangle.pull", command: "gh search prs --author=@me --state=open --json title,repository --jq '{text: (length|tostring), subtitle: \"aperte\", rows: [.[] | {title: .title, value: .repository.name}]}'", refresh: 300, summary: "Le tue PR aperte, via GitHub CLI"),
-        Template(name: "Uptime", symbol: "clock.arrow.circlepath", command: "uptime | sed 's/.*up \\([^,]*\\),.*/\\1/'", refresh: 300, summary: "Da quanto è acceso il Mac"),
-        Template(name: "IP pubblico", symbol: "network", command: "curl -fsS https://ifconfig.me", refresh: 900, summary: "L'indirizzo con cui esci su Internet")
-    ]
+    private var templates: [Template] { [
+        Template(name: tr("Meteo"), symbol: "cloud.sun.fill", command: "curl -fsS 'https://wttr.in/?format=%t+%C'", refresh: 1800, summary: tr("Temperatura e cielo da wttr.in")),
+        Template(name: tr("Pull request"), symbol: "arrow.triangle.pull", command: "gh search prs --author=@me --state=open --json title,repository --jq '{text: (length|tostring), subtitle: \"aperte\", rows: [.[] | {title: .title, value: .repository.name}]}'", refresh: 300, summary: tr("Le tue PR aperte, via GitHub CLI")),
+        Template(name: tr("Uptime"), symbol: "clock.arrow.circlepath", command: "uptime | sed 's/.*up \\([^,]*\\),.*/\\1/'", refresh: 300, summary: tr("Da quanto è acceso il Mac")),
+        Template(name: tr("IP pubblico"), symbol: "network", command: "curl -fsS https://ifconfig.me", refresh: 900, summary: tr("L'indirizzo con cui esci su Internet"))
+    ] }
 
     var body: some View {
-        SettingsForm(section: .widgets, subtitle: "Se lo puoi scrivere in uno script, lo puoi mettere nella notch. Il comando stampa testo o JSON, Powered Notch lo mostra.") {
+        SettingsForm(section: .widgets, subtitle: tr("Se lo puoi scrivere in uno script, lo puoi mettere nella notch. Il comando stampa testo o JSON, Powered Notch lo mostra.")) {
             Section("I tuoi widget") {
                 if settings.config.customWidgets.isEmpty {
                     Text("Nessun widget. Parti da un modello qui sotto o creane uno vuoto.")
@@ -331,7 +331,7 @@ struct CustomWidgetsSettingsView: View {
                     CustomWidgetEditor(widget: widget)
                 }
                 Button("Nuovo widget") {
-                    add(CustomWidgetConfig(name: "Nuovo widget", command: "date '+%H:%M'"))
+                    add(CustomWidgetConfig(name: tr("Nuovo widget"), command: "date '+%H:%M'"))
                 }
             }
 
@@ -361,10 +361,10 @@ struct CustomWidgetsSettingsView: View {
                     .foregroundStyle(.secondary)
                 Text("""
                 {
-                  "text": "22°",  "subtitle": "Milano",
+                  "text": "22°",  "subtitle": tr("Milano"),
                   "symbol": "sun.max.fill",  "tint": "#FFD60A",
                   "progress": 0.4,
-                  "rows": [{ "title": "Domani", "value": "19°", "symbol": "cloud.fill" }],
+                  "rows": [{ "title": tr("Domani"), "value": "19°", "symbol": "cloud.fill" }],
                   "url": "https://…",
                   "compact": "22°",  "active": true
                 }
@@ -406,7 +406,7 @@ private struct CustomWidgetEditor: View {
                 TextField("Comando", text: field(\.command, default: ""), axis: .vertical)
                     .font(.system(.body, design: .monospaced))
                     .lineLimit(1...4)
-                ValueSlider(title: "Aggiorna ogni", value: field(\.refreshSeconds, default: 60), range: 5...3600, step: 5, format: { Format.duration($0) })
+                ValueSlider(title: tr("Aggiorna ogni"), value: field(\.refreshSeconds, default: 60), range: 5...3600, step: 5, format: { Format.duration($0) })
 
                 HStack {
                     Button("Prova adesso") { store.test(widget) }
@@ -419,7 +419,7 @@ private struct CustomWidgetEditor: View {
                         .font(.callout)
                         .foregroundStyle(.red)
                 } else if let output = store.outputs[widget.id] {
-                    Text("Ultimo risultato: \(output.text ?? "(nessun testo)")")
+                    Text(tr("Ultimo risultato: %@", output.text ?? tr("(nessun testo)")))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }

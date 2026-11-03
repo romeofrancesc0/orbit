@@ -59,7 +59,7 @@ struct AgentsSettingsView: View {
     }
 
     var body: some View {
-        SettingsForm(section: .agents, subtitle: "Le sessioni dei tuoi coding agent, sempre sotto gli occhi. Funziona senza configurare nulla.") {
+        SettingsForm(section: .agents, subtitle: tr("Le sessioni dei tuoi coding agent, sempre sotto gli occhi. Funziona senza configurare nulla.")) {
             Section("Nella notch") {
                 Toggle("Mostra le sessioni nella notch chiusa", isOn: showsInClosedNotch)
                 Toggle("Apri la notch direttamente sugli agenti", isOn: isDefaultPage)
@@ -86,8 +86,8 @@ struct AgentsSettingsView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 12)
-                    StatusBadge(text: hooksInstalled ? "Installati" : "Non installati", color: hooksInstalled ? .green : .secondary)
-                    Button(hooksInstalled ? "Rimuovi" : "Installa") { toggleHooks() }
+                    StatusBadge(text: hooksInstalled ? tr("Installati") : tr("Non installati"), color: hooksInstalled ? .green : .secondary)
+                    Button(hooksInstalled ? tr("Rimuovi") : tr("Installa")) { toggleHooks() }
                 }
                 if let hookMessage {
                     Text(hookMessage)
@@ -99,9 +99,9 @@ struct AgentsSettingsView: View {
             Section("Elenco") {
                 Toggle("Mostra anche le sessioni chiuse di recente", isOn: settings.binding(\.agents.showRecent))
                 if settings.config.agents.showRecent {
-                    ValueSlider(title: "Da quante ore", value: settings.binding(\.agents.recentWindowHours), range: 1...72, format: { "\(Int($0)) h" })
+                    ValueSlider(title: tr("Da quante ore"), value: settings.binding(\.agents.recentWindowHours), range: 1...72, format: { "\(Int($0)) h" })
                 }
-                ValueSlider(title: "In pausa dopo", value: settings.binding(\.agents.idleAfterMinutes), range: 1...30, format: { "\(Int($0)) min" })
+                ValueSlider(title: tr("In pausa dopo"), value: settings.binding(\.agents.idleAfterMinutes), range: 1...30, format: { "\(Int($0)) min" })
                 HStack {
                     Text("Sessioni nascoste")
                     Spacer()
@@ -120,13 +120,13 @@ struct AgentsSettingsView: View {
         do {
             if hooksInstalled {
                 try ClaudeHooks.remove()
-                hookMessage = "Hook rimossi. Riavvia le sessioni di Claude Code per applicare la modifica."
+                hookMessage = tr("Hook rimossi. Riavvia le sessioni di Claude Code per applicare la modifica.")
             } else {
                 try ClaudeHooks.install()
-                hookMessage = "Hook installati. Valgono dalle prossime sessioni di Claude Code. Copia di sicurezza: ~/.claude/settings.json.powered-notch-backup"
+                hookMessage = tr("Hook installati. Valgono dalle prossime sessioni di Claude Code. Copia di sicurezza: ~/.claude/settings.json.powered-notch-backup")
             }
         } catch {
-            hookMessage = "Non è stato possibile modificare ~/.claude/settings.json: \(error.localizedDescription)"
+            hookMessage = tr("Non è stato possibile modificare ~/.claude/settings.json: %@", error.localizedDescription)
         }
         hooksInstalled = ClaudeHooks.isInstalled
     }
@@ -151,9 +151,9 @@ private struct ProviderRow: View {
         switch provider.type {
         case "claude-code", "codex":
             switch count {
-            case 0:  return "Nessuna sessione adesso"
-            case 1:  return "1 sessione"
-            default: return "\(count) sessioni"
+            case 0:  return tr("Nessuna sessione adesso")
+            case 1:  return tr("1 sessione")
+            default: return tr("%lld sessioni", count)
             }
         case "inbox":
             return provider.path ?? "~/.powered-notch/inbox"
@@ -233,7 +233,7 @@ private struct AddProviderSheet: View {
                     TextField("Cartella", text: $path)
                         .font(.system(.body, design: .monospaced))
                 }
-                ColorPicker("Colore", selection: $accent, supportsOpacity: false)
+                ColorPicker(tr("Colore"), selection: $accent, supportsOpacity: false)
             }
             .formStyle(.grouped)
             .scrollDisabled(true)
@@ -286,8 +286,8 @@ enum ClaudeHooks {
 
         var errorDescription: String? {
             switch self {
-            case .missingScript:      "script dell'hook non trovato nell'app"
-            case .unreadableSettings: "il file non è un JSON valido, non l'ho toccato"
+            case .missingScript:      tr("script dell'hook non trovato nell'app")
+            case .unreadableSettings: tr("il file non è un JSON valido, non l'ho toccato")
             }
         }
     }

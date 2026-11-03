@@ -332,11 +332,11 @@ struct SessionCard: View {
         if hovering {
             HStack(spacing: 4) {
                 if SessionMenu.canGo(session) {
-                    NotchPillButton(symbol: "arrow.up.forward.app", label: "Vai", tint: session.accentColor) {
+                    NotchPillButton(symbol: "arrow.up.forward.app", label: tr("Vai"), tint: session.accentColor) {
                         SessionMenu.primary(session, navigate: onNavigate)
                     }
                 } else if SessionMenu.canResume(session) {
-                    NotchPillButton(symbol: "play.fill", label: "Riprendi", tint: session.accentColor) {
+                    NotchPillButton(symbol: "play.fill", label: tr("Riprendi"), tint: session.accentColor) {
                         SessionMenu.primary(session, navigate: onNavigate)
                     }
                 }
@@ -386,7 +386,7 @@ struct SessionCard: View {
                     Spacer(minLength: 0)
                 }
                 if let host = session.host {
-                    MetaChip(text: host)
+                    MetaChip(text: tr(host))
                 }
             }
             .transition(.opacity)

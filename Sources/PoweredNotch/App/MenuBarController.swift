@@ -51,7 +51,7 @@ final class MenuBarController: NSObject, NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         guard let services else { return }
         menu.removeAllItems()
-        let toggle = ClosureMenuItem("Apri la notch", symbol: "chevron.down.circle") {
+        let toggle = ClosureMenuItem(tr("Apri la notch"), symbol: "chevron.down.circle") {
             services.notch.open()
         }
         menu.addItem(toggle)

@@ -334,7 +334,7 @@ struct NextEventCompact: View {
                         .foregroundStyle(theme.secondary)
                         .lineLimit(1)
                         .frame(maxWidth: 88, alignment: .leading)
-                    Text(event.isOngoing ? "ora" : Format.duration(event.start.timeIntervalSinceNow))
+                    Text(event.isOngoing ? tr("ora") : Format.duration(event.start.timeIntervalSinceNow))
                         .font(theme.numberFont(10))
                         .foregroundStyle(theme.tertiary)
                 }

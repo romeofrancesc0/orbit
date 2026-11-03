@@ -119,7 +119,7 @@ enum TranscriptScanner {
         case "queue-operation":
             if (event["operation"] as? String) == "enqueue" {
                 scan.status = .working
-                scan.activity = "prompt in coda"
+                scan.activity = tr("prompt in coda")
             }
             return
 
@@ -167,7 +167,7 @@ enum TranscriptScanner {
                 activity = describeTool(name: name, input: block["input"] as? [String: Any])
                 status = .working
             case "thinking", "redacted_thinking":
-                activity = activity ?? "ragiona…"
+                activity = activity ?? tr("ragiona…")
                 status = .working
             case "text":
                 let text = (block["text"] as? String) ?? ""
@@ -192,7 +192,7 @@ enum TranscriptScanner {
             }
         case "max_tokens":
             status = .error
-            activity = "risposta troncata (max tokens)"
+            activity = tr("risposta troncata (max tokens)")
         case "refusal":
             status = .attention
         default:
@@ -201,7 +201,7 @@ enum TranscriptScanner {
 
         scan.status = status
         if let activity {
-            scan.activity = sidechain ? "subagent · \(activity)" : activity
+            scan.activity = sidechain ? tr("subagent · %@", activity) : activity
         }
     }
 
@@ -220,12 +220,12 @@ enum TranscriptScanner {
 
         if isToolResult {
             scan.status = .working
-            let base = isError ? "tool fallito, riprova…" : "elabora i risultati"
-            scan.activity = sidechain ? "subagent · \(base)" : base
+            let base = isError ? tr("tool fallito, riprova…") : tr("elabora i risultati")
+            scan.activity = sidechain ? tr("subagent · %@", base) : base
         } else {
             // Un vero prompt umano: da qui riparte il lavoro.
             scan.status = .working
-            scan.activity = "prompt inviato"
+            scan.activity = tr("prompt inviato")
             if let text = message["content"] as? String, !text.isEmpty {
                 scan.lastPrompt = text
             } else if let blocks = message["content"] as? [[String: Any]] {

@@ -340,7 +340,7 @@ final class MediaBridgeProcess: @unchecked Sendable {
     private func launch() {
         guard shouldRun, process == nil else { return }
         guard let library = Self.libraryPath else {
-            onFailure?("Libreria del ponte non trovata nel bundle")
+            onFailure?(tr("Libreria del ponte non trovata nel bundle"))
             return
         }
 
@@ -367,7 +367,7 @@ final class MediaBridgeProcess: @unchecked Sendable {
                 guard self.shouldRun else { return }
                 self.failures += 1
                 if self.failures > 5 {
-                    self.onFailure?("Il ponte verso Now Playing si chiude di continuo (codice \(finished.terminationStatus))")
+                    self.onFailure?(tr("Il ponte verso Now Playing si chiude di continuo (codice %lld)", Int(finished.terminationStatus)))
                     return
                 }
                 self.queue.asyncAfter(deadline: .now() + 2) { self.launch() }
@@ -378,7 +378,7 @@ final class MediaBridgeProcess: @unchecked Sendable {
             try process.run()
             self.process = process
         } catch {
-            onFailure?("Impossibile avviare il ponte: \(error.localizedDescription)")
+            onFailure?(tr("Impossibile avviare il ponte: %@", error.localizedDescription))
         }
     }
 

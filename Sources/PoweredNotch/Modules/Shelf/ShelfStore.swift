@@ -140,9 +140,9 @@ final class ShelfStore: ObservableObject {
         let directory = AppPaths.shelfStorage
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd 'alle' HH.mm.ss"
+        formatter.dateFormat = tr("yyyy-MM-dd 'alle' HH.mm.ss")
         let ext = NSBitmapImageRep(data: imageData)?.representation(using: .png, properties: [:]) != nil ? "png" : "img"
-        let url = directory.appendingPathComponent("Immagine \(formatter.string(from: Date())).\(ext)")
+        let url = directory.appendingPathComponent(tr("Immagine %@.%@", formatter.string(from: Date()), ext))
         let payload = NSBitmapImageRep(data: imageData)?.representation(using: .png, properties: [:]) ?? imageData
         guard (try? payload.write(to: url)) != nil else { return }
         insert(ShelfItem(kind: .file, name: url.lastPathComponent, value: url.path, ownedCopy: true))

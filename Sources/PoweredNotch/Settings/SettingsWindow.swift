@@ -11,22 +11,22 @@ enum SettingsSection: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .welcome:     "Primi passi"
-        case .layout:      "Layout"
-        case .appearance:  "Aspetto"
-        case .general:     "Comportamento"
-        case .profiles:    "Profili"
-        case .agents:      "Agenti"
-        case .music:       "Musica"
-        case .calendar:    "Calendario"
-        case .shelf:       "Scaffale"
-        case .launcher:    "Collegamenti"
-        case .widgets:     "Widget personalizzati"
-        case .peeks:       "Avvisi"
-        case .hud:         "Volume e luminosità"
-        case .shortcuts:   "Scorciatoie"
-        case .permissions: "Permessi"
-        case .advanced:    "Avanzate"
+        case .welcome:     tr("Primi passi")
+        case .layout:      tr("Layout")
+        case .appearance:  tr("Aspetto")
+        case .general:     tr("Comportamento")
+        case .profiles:    tr("Profili")
+        case .agents:      tr("Agenti")
+        case .music:       tr("Musica")
+        case .calendar:    tr("Calendario")
+        case .shelf:       tr("Scaffale")
+        case .launcher:    tr("Collegamenti")
+        case .widgets:     tr("Widget personalizzati")
+        case .peeks:       tr("Avvisi")
+        case .hud:         tr("Volume e luminosità")
+        case .shortcuts:   tr("Scorciatoie")
+        case .permissions: tr("Permessi")
+        case .advanced:    tr("Avanzate")
         }
     }
 
@@ -138,9 +138,9 @@ struct SettingsRoot: View {
     let services: AppServices
 
     private let groups: [(String, [SettingsSection])] = [
-        ("Notch", [.layout, .appearance, .general, .profiles]),
-        ("Contenuti", [.agents, .music, .calendar, .shelf, .launcher, .widgets]),
-        ("Sistema", [.peeks, .hud, .shortcuts, .permissions, .advanced])
+        (tr("Notch"), [.layout, .appearance, .general, .profiles]),
+        (tr("Contenuti"), [.agents, .music, .calendar, .shelf, .launcher, .widgets]),
+        (tr("Sistema"), [.peeks, .hud, .shortcuts, .permissions, .advanced])
     ]
 
     var body: some View {

@@ -50,10 +50,10 @@ struct CalendarWidget: View {
             Image(systemName: "calendar")
                 .font(.system(size: 20, weight: .medium))
                 .foregroundStyle(theme.tertiary)
-            Text(calendar.eventsAccess == .denied ? "Accesso negato" : "Calendario")
+            Text(calendar.eventsAccess == .denied ? tr("Accesso negato") : tr("Calendario"))
                 .font(theme.font(11, .medium))
                 .foregroundStyle(theme.secondary)
-            NotchPillButton(symbol: nil, label: calendar.eventsAccess == .denied ? "Apri Impostazioni" : "Consenti accesso", tint: theme.accent) {
+            NotchPillButton(symbol: nil, label: calendar.eventsAccess == .denied ? tr("Apri Impostazioni") : tr("Consenti accesso"), tint: theme.accent) {
                 actions.keepOpenDuringSystemPrompt()
                 calendar.requestEventsAccess()
                 calendar.requestRemindersAccess()
@@ -75,9 +75,14 @@ private struct WeekStrip: View {
         return (-1...5).compactMap { calendar.date(byAdding: .day, value: $0, to: today) }
     }
 
+    private static func weekdayLetter(_ day: Date) -> String {
+        weekday.locale = L10n.locale
+        return weekday.string(from: day).uppercased()
+    }
+
     private static let weekday: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "it_IT")
+        formatter.locale = L10n.locale
         formatter.dateFormat = "EEEEE"
         return formatter
     }()
@@ -99,7 +104,7 @@ private struct WeekStrip: View {
             selected = day
         } label: {
             VStack(spacing: 1.5) {
-                Text(Self.weekday.string(from: day).uppercased())
+                Text(Self.weekdayLetter(day))
                     .font(theme.font(8, .semibold))
                     .foregroundStyle(isToday ? theme.accent : theme.tertiary)
                 Text("\(calendar.component(.day, from: day))")
@@ -126,8 +131,8 @@ private struct EventRow: View {
     private var color: Color { Color(hexString: event.colorHex) ?? theme.accent }
 
     private var timeText: String {
-        if event.isAllDay { return "Tutto il giorno" }
-        return event.start.formatted(date: .omitted, time: .shortened)
+        if event.isAllDay { return tr("Tutto il giorno") }
+        return event.start.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale))
     }
 
     var body: some View {
@@ -147,7 +152,7 @@ private struct EventRow: View {
             }
             Spacer(minLength: 2)
             if showJoin, let url = event.meetingURL, event.end > Date() {
-                NotchIconButton(symbol: "video.fill", size: 22, iconSize: 10, tint: color, help: "Entra nella riunione", isActive: true) {
+                NotchIconButton(symbol: "video.fill", size: 22, iconSize: 10, tint: color, help: tr("Entra nella riunione"), isActive: true) {
                     NSWorkspace.shared.open(url)
                     actions.close()
                 }

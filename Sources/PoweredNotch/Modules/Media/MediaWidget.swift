@@ -57,7 +57,7 @@ struct MediaWidget: View {
             }
         }
         .buttonStyle(NotchPressStyle())
-        .help("Apri \(media.nowPlaying?.appName ?? "l'app")")
+        .help(tr("Apri %@", media.nowPlaying?.appName ?? tr("l'app")))
     }
 
     private func titles(_ state: NowPlaying) -> some View {

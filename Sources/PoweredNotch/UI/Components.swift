@@ -796,7 +796,7 @@ enum Format {
         let hours = minutes / 60
         if hours < 10 { return String(format: "%dh %02dm", hours, minutes % 60) }
         if hours < 24 { return "\(hours)h" }
-        return "\(hours / 24)g"
+        return tr("%lldg", hours / 24)
     }
 
     static func elapsed(since date: Date?) -> String? {
@@ -806,14 +806,14 @@ enum Format {
 
     static func ago(_ date: Date) -> String {
         let interval = Date().timeIntervalSince(date)
-        if interval < 8 { return "ora" }
-        return duration(interval) + " fa"
+        if interval < 8 { return tr("ora") }
+        return tr("%@ fa", duration(interval))
     }
 
     static func tokens(_ value: Int) -> String {
         if value < 1000 { return "\(value)" }
         if value < 100_000 {
-            return String(format: "%.1fk", Double(value) / 1000).replacingOccurrences(of: ".", with: ",")
+            return String(format: "%.1fk", locale: L10n.locale, Double(value) / 1000)
         }
         return "\(value / 1000)k"
     }
@@ -861,6 +861,6 @@ enum Format {
 
     /// "tra 12m", "tra 2h".
     static func until(_ date: Date) -> String {
-        "tra " + duration(date.timeIntervalSinceNow)
+        tr("tra %@", duration(date.timeIntervalSinceNow))
     }
 }

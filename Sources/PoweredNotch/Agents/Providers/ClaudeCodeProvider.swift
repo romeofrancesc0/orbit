@@ -72,7 +72,7 @@ actor ClaudeCodeProvider: SessionProvider {
     func fetch(config: AgentsConfig) async -> ProviderResult {
         let fm = FileManager.default
         guard fm.fileExists(atPath: root.path) else {
-            return ProviderResult(error: "cartella \(root.lastPathComponent) non trovata")
+            return ProviderResult(error: tr("cartella %@ non trovata", root.lastPathComponent))
         }
 
         let index = transcriptIndex()
@@ -232,7 +232,7 @@ actor ClaudeCodeProvider: SessionProvider {
         // che il transcript non ha ancora scritto (tipico: permesso in attesa).
         if let hint, hint.at >= updated.addingTimeInterval(-2) {
             if let hinted = hint.status { status = hinted }
-            if let hintedActivity = hint.activity { activity = hintedActivity }
+            if let hintedActivity = hint.activity { activity = Self.localized(hint: hintedActivity) }
             updated = max(updated, hint.at)
         }
 
@@ -275,7 +275,7 @@ actor ClaudeCodeProvider: SessionProvider {
         config: AgentsConfig
     ) -> AgentSession {
         let path = scan.cwd
-        let project = path.map { URL(fileURLWithPath: $0).lastPathComponent } ?? "sessione"
+        let project = path.map { URL(fileURLWithPath: $0).lastPathComponent } ?? tr("sessione")
         let title = desktop?.title
             ?? scan.title
             ?? scan.lastPrompt.map { shorten($0) }
@@ -319,6 +319,13 @@ actor ClaudeCodeProvider: SessionProvider {
         let flat = text.replacingOccurrences(of: "\n", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
         guard flat.count > limit else { return flat }
         return String(flat.prefix(limit)).trimmingCharacters(in: .whitespaces) + "…"
+    }
+
+    /// Hooks write their labels in Italian; they are shown in the language chosen in the settings.
+    private static func localized(hint: String) -> String {
+        let prefix = "permesso: "
+        if hint.hasPrefix(prefix) { return tr("permesso: %@", String(hint.dropFirst(prefix.count))) }
+        return tr(hint)
     }
 
     private func hostLabel(_ entrypoint: String?) -> String? {

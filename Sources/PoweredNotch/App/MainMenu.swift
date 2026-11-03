@@ -7,9 +7,9 @@ enum MainMenu {
     static func install(services: AppServices) {
         let main = NSMenu()
         main.addItem(submenu("Powered Notch", application(services: services)))
-        main.addItem(submenu("Modifica", edit))
+        main.addItem(submenu(tr("Modifica"), edit))
         let window = self.window
-        main.addItem(submenu("Finestra", window))
+        main.addItem(submenu(tr("Finestra"), window))
         NSApp.mainMenu = main
         NSApp.windowsMenu = window
     }
@@ -23,40 +23,40 @@ enum MainMenu {
 
     private static func application(services: AppServices) -> NSMenu {
         let menu = NSMenu()
-        menu.addItem(withTitle: "Informazioni su Powered Notch", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: tr("Informazioni su Powered Notch"), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         menu.addItem(.separator())
-        let settings = ClosureMenuItem("Impostazioni…") {
+        let settings = ClosureMenuItem(tr("Impostazioni…")) {
             SettingsWindowController.shared.show(section: nil, services: services)
         }
         settings.keyEquivalent = ","
         menu.addItem(settings)
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Nascondi Powered Notch", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
-        let others = menu.addItem(withTitle: "Nascondi le altre", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
+        menu.addItem(withTitle: tr("Nascondi Powered Notch"), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        let others = menu.addItem(withTitle: tr("Nascondi le altre"), action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
         others.keyEquivalentModifierMask = [.command, .option]
-        menu.addItem(withTitle: "Mostra tutte", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: tr("Mostra tutte"), action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Esci da Powered Notch", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        menu.addItem(withTitle: tr("Esci da Powered Notch"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         return menu
     }
 
     private static var edit: NSMenu {
         let menu = NSMenu()
-        menu.addItem(withTitle: "Annulla", action: Selector(("undo:")), keyEquivalent: "z")
-        let redo = menu.addItem(withTitle: "Ripeti", action: Selector(("redo:")), keyEquivalent: "z")
+        menu.addItem(withTitle: tr("Annulla"), action: Selector(("undo:")), keyEquivalent: "z")
+        let redo = menu.addItem(withTitle: tr("Ripeti"), action: Selector(("redo:")), keyEquivalent: "z")
         redo.keyEquivalentModifierMask = [.command, .shift]
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Taglia", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        menu.addItem(withTitle: "Copia", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        menu.addItem(withTitle: "Incolla", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        menu.addItem(withTitle: "Seleziona tutto", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        menu.addItem(withTitle: tr("Taglia"), action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        menu.addItem(withTitle: tr("Copia"), action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        menu.addItem(withTitle: tr("Incolla"), action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        menu.addItem(withTitle: tr("Seleziona tutto"), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
         return menu
     }
 
     private static var window: NSMenu {
         let menu = NSMenu()
-        menu.addItem(withTitle: "Contrai", action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
-        menu.addItem(withTitle: "Chiudi", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        menu.addItem(withTitle: tr("Contrai"), action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m")
+        menu.addItem(withTitle: tr("Chiudi"), action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
         return menu
     }
 }

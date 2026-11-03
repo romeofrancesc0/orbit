@@ -31,7 +31,7 @@ MainActor.assumeIsolated {
 
     // L'installazione attiva l'avvio al login una volta sola, come faceva già AgentBar.
     if arguments.contains("--enable-login-item") {
-        print(LoginItem.set(true) ? "avvio al login attivo" : "avvio al login non disponibile")
+        print(LoginItem.set(true) ? tr("avvio al login attivo") : tr("avvio al login non disponibile"))
         exit(0)
     }
 

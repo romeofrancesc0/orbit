@@ -10,7 +10,18 @@ struct GeneralSettingsView: View {
     @State private var loginEnabled = LoginItem.isEnabled
 
     var body: some View {
-        SettingsForm(section: .general, subtitle: "Come e quando la notch si apre, si chiude e si fa da parte.") {
+        SettingsForm(section: .general, subtitle: tr("Come e quando la notch si apre, si chiude e si fa da parte.")) {
+            Section("Lingua") {
+                Picker("Lingua dell'interfaccia", selection: settings.binding(\.language)) {
+                    ForEach(AppLanguage.allCases) { language in
+                        Text(language == .system ? tr("Lingua di sistema") : language.nativeName).tag(language)
+                    }
+                }
+                Text("Il cambio è immediato. Menu e finestre si aggiornano da soli.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Avvio") {
                 Toggle("Avvia Powered Notch al login", isOn: Binding(
                     get: { loginEnabled },
@@ -29,7 +40,7 @@ struct GeneralSettingsView: View {
             Section("Apertura") {
                 Toggle("Apri al passaggio del mouse", isOn: settings.binding(\.behavior.openOnHover))
                 if settings.config.behavior.openOnHover {
-                    ValueSlider(title: "Ritardo", value: settings.binding(\.behavior.hoverDelay), range: 0...1, step: 0.02, format: { "\(Int($0 * 1000)) ms" })
+                    ValueSlider(title: tr("Ritardo"), value: settings.binding(\.behavior.hoverDelay), range: 0...1, step: 0.02, format: { "\(Int($0 * 1000)) ms" })
                 }
                 Toggle("Gesti con il trackpad", isOn: settings.binding(\.behavior.gestures))
                     .help("Due dita in giù sulla notch per aprirla, di lato per cambiare pagina, in su sulla testata per chiuderla")
@@ -39,7 +50,7 @@ struct GeneralSettingsView: View {
             Section("Chiusura") {
                 Toggle("Chiudi quando il mouse esce", isOn: settings.binding(\.behavior.closeOnMouseLeave))
                 if settings.config.behavior.closeOnMouseLeave {
-                    ValueSlider(title: "Ritardo", value: settings.binding(\.behavior.closeDelay), range: 0...2, step: 0.05, format: { "\(Int($0 * 1000)) ms" })
+                    ValueSlider(title: tr("Ritardo"), value: settings.binding(\.behavior.closeDelay), range: 0...2, step: 0.05, format: { "\(Int($0 * 1000)) ms" })
                 }
                 Toggle("Chiudi con un click fuori", isOn: settings.binding(\.behavior.closeOnClickOutside))
             }
@@ -48,7 +59,7 @@ struct GeneralSettingsView: View {
                 Picker("Mostra la notch su", selection: settings.binding(\.behavior.displayMode)) {
                     ForEach(DisplayMode.allCases) { Text($0.label).tag($0) }
                 }
-                ValueSlider(title: "Larghezza sugli schermi senza notch", value: settings.binding(\.behavior.virtualNotchWidth), range: 120...300, step: 5)
+                ValueSlider(title: tr("Larghezza sugli schermi senza notch"), value: settings.binding(\.behavior.virtualNotchWidth), range: 120...300, step: 5)
             }
 
             Section("Discrezione") {
@@ -73,10 +84,10 @@ struct PeeksSettingsView: View {
     private let sounds = ["", "Glass", "Tink", "Pop", "Ping", "Purr", "Hero", "Funk", "Submarine", "Morse", "Bottle", "Frog", "Sosumi", "Blow", "Basso"]
 
     var body: some View {
-        SettingsForm(section: .peeks, subtitle: "I piccoli messaggi che scendono dalla notch. Decidi tu cosa merita di interromperti.") {
+        SettingsForm(section: .peeks, subtitle: tr("I piccoli messaggi che scendono dalla notch. Decidi tu cosa merita di interromperti.")) {
             Section {
                 Toggle("Attiva gli avvisi", isOn: settings.binding(\.peeks.enabled))
-                ValueSlider(title: "Durata", value: settings.binding(\.peeks.duration), range: 1...12, step: 0.5, format: { String(format: "%.1f s", $0) })
+                ValueSlider(title: tr("Durata"), value: settings.binding(\.peeks.duration), range: 1...12, step: 0.5, format: { String(format: "%.1f s", $0) })
             }
 
             Section("Silenzio") {
@@ -97,11 +108,11 @@ struct PeeksSettingsView: View {
                     .help("Anche spento, la notch chiusa si illumina e il pallino cambia colore")
                 Toggle("Un agente va in errore", isOn: settings.binding(\.peeks.agentError))
                 Toggle("Una sessione si chiude", isOn: settings.binding(\.peeks.agentEnded))
-                ValueSlider(title: "Il nuovo stato deve durare", value: settings.binding(\.peeks.agentSettleSeconds), range: 0...15, step: 0.5, format: { String(format: "%.1f s", $0) })
-                ValueSlider(title: "Pausa fra due avvisi della stessa sessione", value: settings.binding(\.peeks.agentCooldownSeconds), range: 0...300, step: 5, format: { Format.duration($0) })
+                ValueSlider(title: tr("Il nuovo stato deve durare"), value: settings.binding(\.peeks.agentSettleSeconds), range: 0...15, step: 0.5, format: { String(format: "%.1f s", $0) })
+                ValueSlider(title: tr("Pausa fra due avvisi della stessa sessione"), value: settings.binding(\.peeks.agentCooldownSeconds), range: 0...300, step: 5, format: { Format.duration($0) })
                 HStack {
                     Picker("Suono", selection: settings.binding(\.peeks.agentSound)) {
-                        ForEach(sounds, id: \.self) { Text($0.isEmpty ? "Nessuno" : $0).tag($0) }
+                        ForEach(sounds, id: \.self) { Text($0.isEmpty ? tr("Nessuno") : $0).tag($0) }
                     }
                     Button {
                         NSSound(named: NSSound.Name(settings.config.peeks.agentSound))?.play()
@@ -132,8 +143,8 @@ struct PeeksSettingsView: View {
                     .textSelection(.enabled)
                 Button("Prova un avviso") {
                     AppServices.shared.notch.show(NotchPeek(
-                        title: "Ecco un avviso",
-                        subtitle: "Così scende dalla notch",
+                        title: tr("Ecco un avviso"),
+                        subtitle: tr("Così scende dalla notch"),
                         icon: .symbol("bell.fill"),
                         tint: nil,
                         duration: settings.config.peeks.duration,
@@ -154,7 +165,7 @@ struct HUDSettingsView: View {
     private let timer = Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        SettingsForm(section: .hud, subtitle: "Sostituisce gli indicatori di sistema di volume, luminosità e tastiera con quelli nella notch.") {
+        SettingsForm(section: .hud, subtitle: tr("Sostituisce gli indicatori di sistema di volume, luminosità e tastiera con quelli nella notch.")) {
             Section {
                 Toggle("Sostituisci gli indicatori di sistema", isOn: Binding(
                     get: { settings.config.hud.replaceSystemHUD },
@@ -181,7 +192,7 @@ struct HUDSettingsView: View {
                 .pickerStyle(.segmented)
                 Toggle("Mostra la percentuale", isOn: settings.binding(\.hud.showPercent))
                 Toggle("Usa il colore d'accento", isOn: settings.binding(\.hud.useAccent))
-                ValueSlider(title: "Resta visibile per", value: settings.binding(\.hud.duration), range: 0.6...4, step: 0.1, format: { String(format: "%.1f s", $0) })
+                ValueSlider(title: tr("Resta visibile per"), value: settings.binding(\.hud.duration), range: 0.6...4, step: 0.1, format: { String(format: "%.1f s", $0) })
                 HStack {
                     Spacer()
                     Button("Prova") {
@@ -206,7 +217,7 @@ struct ShortcutsSettingsView: View {
     @EnvironmentObject private var settings: SettingsStore
 
     var body: some View {
-        SettingsForm(section: .shortcuts, subtitle: "Scorciatoie valide ovunque, anche con un'altra app in primo piano.") {
+        SettingsForm(section: .shortcuts, subtitle: tr("Scorciatoie valide ovunque, anche con un'altra app in primo piano.")) {
             Section {
                 ForEach(settings.config.hotkeys) { hotkey in
                     HStack {
@@ -274,8 +285,8 @@ private struct HotkeyRecorder: View {
     }
 
     private var label: String {
-        if recording { return "Premi i tasti…" }
-        guard let code = binding.keyCode else { return "Nessuna" }
+        if recording { return tr("Premi i tasti…") }
+        guard let code = binding.keyCode else { return tr("Nessuna") }
         return HotKeyCenter.describe(keyCode: code, modifiers: binding.modifiers)
     }
 
@@ -313,7 +324,7 @@ struct ProfilesSettingsView: View {
     @State private var message: String?
 
     var body: some View {
-        SettingsForm(section: .profiles, subtitle: "Un profilo ricorda aspetto e layout. Cambiali con un click, con un Comando rapido o con un filtro Full Immersion.") {
+        SettingsForm(section: .profiles, subtitle: tr("Un profilo ricorda aspetto e layout. Cambiali con un click, con un Comando rapido o con un filtro Full Immersion.")) {
             Section("Pronti all'uso") {
                 ForEach(ProfileConfig.builtIn) { profile in
                     row(profile, removable: false)
@@ -398,16 +409,16 @@ struct ProfilesSettingsView: View {
     private func exportCurrent() {
         let panel = NSSavePanel()
         panel.allowedContentTypes = [.json]
-        panel.nameFieldStringValue = "Profilo Powered Notch.json"
+        panel.nameFieldStringValue = tr("Profilo Powered Notch.json")
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             do {
                 try encoder.encode(currentAsProfile(named: url.deletingPathExtension().lastPathComponent)).write(to: url)
-                message = "Profilo esportato in \(url.lastPathComponent)."
+                message = tr("Profilo esportato in %@.", url.lastPathComponent)
             } catch {
-                message = "Esportazione non riuscita: \(error.localizedDescription)"
+                message = tr("Esportazione non riuscita: %@", error.localizedDescription)
             }
         }
     }
@@ -422,9 +433,9 @@ struct ProfilesSettingsView: View {
                 // Un id nuovo: importare due volte lo stesso file non deve creare ambiguità.
                 profile.id = UUID().uuidString
                 settings.update { $0.profiles.append(profile) }
-                message = "Profilo \"\(profile.name)\" importato."
+                message = tr("Profilo \"%@\" importato.", profile.name)
             } catch {
-                message = "Questo file non è un profilo di Powered Notch."
+                message = tr("Questo file non è un profilo di Powered Notch.")
             }
         }
     }
@@ -439,26 +450,26 @@ struct PermissionsSettingsView: View {
     private let timer = Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        SettingsForm(section: .permissions, subtitle: "Powered Notch chiede solo ciò che serve a ciò che usi, e nulla esce dal tuo Mac.") {
+        SettingsForm(section: .permissions, subtitle: tr("Powered Notch chiede solo ciò che serve a ciò che usi, e nulla esce dal tuo Mac.")) {
             Section {
                 row(
-                    title: "Calendario",
-                    detail: "Mostra i tuoi eventi nel widget Calendario.",
+                    title: tr("Calendario"),
+                    detail: tr("Mostra i tuoi eventi nel widget Calendario."),
                     state: map(calendar.eventsAccess)
                 ) { calendar.requestEventsAccess() }
                 row(
-                    title: "Promemoria",
-                    detail: "Mostra i tuoi promemoria sotto gli eventi.",
+                    title: tr("Promemoria"),
+                    detail: tr("Mostra i tuoi promemoria sotto gli eventi."),
                     state: map(calendar.remindersAccess)
                 ) { calendar.requestRemindersAccess() }
                 row(
-                    title: "Fotocamera",
-                    detail: "Solo per il widget Specchio, e solo mentre lo guardi.",
+                    title: tr("Fotocamera"),
+                    detail: tr("Solo per il widget Specchio, e solo mentre lo guardi."),
                     state: camera.access == .granted ? .granted : (camera.access == .denied ? .denied : .undetermined)
                 ) { camera.requestAccess() }
                 row(
-                    title: "Accessibilità",
-                    detail: "Solo per intercettare i tasti di volume e luminosità.",
+                    title: tr("Accessibilità"),
+                    detail: tr("Solo per intercettare i tasti di volume e luminosità."),
                     state: accessibility ? .granted : .undetermined
                 ) { MediaKeyTap.requestTrust() }
             }
@@ -490,12 +501,12 @@ struct PermissionsSettingsView: View {
             Spacer()
             switch state {
             case .granted:
-                StatusBadge(text: "Consentito", color: .green)
+                StatusBadge(text: tr("Consentito"), color: .green)
             case .denied:
-                StatusBadge(text: "Negato", color: .red)
+                StatusBadge(text: tr("Negato"), color: .red)
                 Button("Apri Impostazioni", action: action)
             case .undetermined:
-                StatusBadge(text: "Non ancora", color: .orange)
+                StatusBadge(text: tr("Non ancora"), color: .orange)
                 Button("Consenti", action: action)
             }
         }
@@ -514,7 +525,7 @@ struct AdvancedSettingsView: View {
     }
 
     var body: some View {
-        SettingsForm(section: .advanced, subtitle: "Ogni impostazione vive in un file JSON leggibile: modificalo a mano e la notch si aggiorna da sola.") {
+        SettingsForm(section: .advanced, subtitle: tr("Ogni impostazione vive in un file JSON leggibile: modificalo a mano e la notch si aggiorna da sola.")) {
             Section("Configurazione") {
                 HStack {
                     Text(Format.path(AppPaths.configFile.path) ?? "")
@@ -547,7 +558,7 @@ struct AdvancedSettingsView: View {
                 }
             }
         }
-        .confirmationDialog("Ripristinare tutte le impostazioni?", isPresented: $confirmingReset) {
+        .confirmationDialog(tr("Ripristinare tutte le impostazioni?"), isPresented: $confirmingReset) {
             Button("Ripristina", role: .destructive) { settings.resetToDefaults() }
         } message: {
             Text("Layout, aspetto e profili salvati tornano come all'inizio. Scaffale e note non vengono toccati.")
@@ -576,13 +587,13 @@ struct WelcomeView: View {
         var symbol: String
     }
 
-    private let choices = [
-        Choice(id: "default", title: "Un po' di tutto", detail: "Agenti, musica e calendario, tutti nella prima pagina", symbol: "moon.stars.fill"),
-        Choice(id: "coding", title: "Prima di tutto gli agenti", detail: "La notch si apre sulle tue sessioni di coding", symbol: "chevron.left.forwardslash.chevron.right"),
-        Choice(id: "music", title: "Prima di tutto la musica", detail: "Il lettore in grande, con i colori della copertina", symbol: "music.note"),
-        Choice(id: "agenda", title: "Prima di tutto la giornata", detail: "Calendario, timer e note", symbol: "calendar"),
-        Choice(id: "minimal", title: "L'essenziale", detail: "Quasi invisibile, finché non serve", symbol: "circle")
-    ]
+    private var choices: [Choice] { [
+        Choice(id: "default", title: tr("Un po' di tutto"), detail: tr("Agenti, musica e calendario, tutti nella prima pagina"), symbol: "moon.stars.fill"),
+        Choice(id: "coding", title: tr("Prima di tutto gli agenti"), detail: tr("La notch si apre sulle tue sessioni di coding"), symbol: "chevron.left.forwardslash.chevron.right"),
+        Choice(id: "music", title: tr("Prima di tutto la musica"), detail: tr("Il lettore in grande, con i colori della copertina"), symbol: "music.note"),
+        Choice(id: "agenda", title: tr("Prima di tutto la giornata"), detail: tr("Calendario, timer e note"), symbol: "calendar"),
+        Choice(id: "minimal", title: tr("L'essenziale"), detail: tr("Quasi invisibile, finché non serve"), symbol: "circle")
+    ] }
 
     @State private var selected = "default"
 

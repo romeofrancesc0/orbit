@@ -190,7 +190,7 @@ struct HUDBelow: View {
 
             VStack(spacing: 5) {
                 HStack(spacing: 0) {
-                    Text(hud.muted ? "Muto" : hud.kind.label)
+                    Text(hud.muted ? tr("Muto") : hud.kind.label)
                         .font(theme.font(10.5, .semibold))
                         .foregroundStyle(theme.secondary)
                     Spacer(minLength: 4)

@@ -29,7 +29,7 @@ actor InboxProvider: SessionProvider {
 
         let keys: [URLResourceKey] = [.contentModificationDateKey]
         guard let files = try? fm.contentsOfDirectory(at: directory, includingPropertiesForKeys: keys) else {
-            return ProviderResult(error: "cartella non leggibile")
+            return ProviderResult(error: tr("cartella non leggibile"))
         }
 
         var sessions: [AgentSession] = []
@@ -64,7 +64,7 @@ actor InboxProvider: SessionProvider {
 
         return ProviderResult(
             sessions: sessions,
-            error: failures > 0 ? "\(failures) file JSON non validi" : nil
+            error: failures > 0 ? tr("%lld file JSON non validi", failures) : nil
         )
     }
 }

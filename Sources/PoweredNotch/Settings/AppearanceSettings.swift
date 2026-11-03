@@ -66,12 +66,12 @@ struct AppearanceSettingsView: View {
                 }
                 switch appearance.surface {
                 case .solid:
-                    HexColorPicker(title: "Colore", hex: settings.binding(\.appearance.solidHex))
+                    HexColorPicker(title: tr("Colore"), hex: settings.binding(\.appearance.solidHex))
                 case .gradient:
                     GradientEditor()
                 case .glass:
                     ValueSlider(
-                        title: "Oscuramento",
+                        title: tr("Oscuramento"),
                         value: settings.binding(\.appearance.glassDim),
                         range: 0...0.9,
                         step: 0.05,
@@ -90,26 +90,26 @@ struct AppearanceSettingsView: View {
                 }
                 if appearance.accentMode != .system {
                     HexColorPicker(
-                        title: appearance.accentMode == .artwork ? "Quando non c'è musica" : "Colore",
+                        title: appearance.accentMode == .artwork ? tr("Quando non c'è musica") : tr("Colore"),
                         hex: settings.binding(\.appearance.accentHex)
                     )
                 }
             }
 
             Section("Forma") {
-                ValueSlider(title: "Larghezza da aperta", value: settings.binding(\.appearance.openWidth), range: 520...1100, step: 10)
-                ValueSlider(title: "Altezza da aperta", value: settings.binding(\.appearance.openHeight), range: 170...420, step: 4)
-                ValueSlider(title: "Angoli da aperta", value: settings.binding(\.appearance.openBottomRadius), range: 8...48)
-                ValueSlider(title: "Raccordo in alto da aperta", value: settings.binding(\.appearance.openEarRadius), range: 0...28)
-                ValueSlider(title: "Angoli da chiusa", value: settings.binding(\.appearance.closedBottomRadius), range: 4...20)
-                ValueSlider(title: "Raccordo in alto da chiusa", value: settings.binding(\.appearance.closedEarRadius), range: 0...14)
-                ValueSlider(title: "Larghezza massima delle ali", value: settings.binding(\.appearance.maxWingWidth), range: 60...320, step: 5)
+                ValueSlider(title: tr("Larghezza da aperta"), value: settings.binding(\.appearance.openWidth), range: 520...1100, step: 10)
+                ValueSlider(title: tr("Altezza da aperta"), value: settings.binding(\.appearance.openHeight), range: 170...420, step: 4)
+                ValueSlider(title: tr("Angoli da aperta"), value: settings.binding(\.appearance.openBottomRadius), range: 8...48)
+                ValueSlider(title: tr("Raccordo in alto da aperta"), value: settings.binding(\.appearance.openEarRadius), range: 0...28)
+                ValueSlider(title: tr("Angoli da chiusa"), value: settings.binding(\.appearance.closedBottomRadius), range: 4...20)
+                ValueSlider(title: tr("Raccordo in alto da chiusa"), value: settings.binding(\.appearance.closedEarRadius), range: 0...14)
+                ValueSlider(title: tr("Larghezza massima delle ali"), value: settings.binding(\.appearance.maxWingWidth), range: 60...320, step: 5)
             }
 
             Section("Profondità") {
-                ValueSlider(title: "Ombra", value: settings.binding(\.appearance.shadow), range: 0...1, step: 0.05, format: { "\(Int($0 * 100))%" })
-                ValueSlider(title: "Bordo luminoso", value: settings.binding(\.appearance.border), range: 0...1, step: 0.05, format: { "\(Int($0 * 100))%" })
-                ValueSlider(title: "Luce ambientale", value: settings.binding(\.appearance.glow), range: 0...1, step: 0.05, format: { "\(Int($0 * 100))%" })
+                ValueSlider(title: tr("Ombra"), value: settings.binding(\.appearance.shadow), range: 0...1, step: 0.05, format: { "\(Int($0 * 100))%" })
+                ValueSlider(title: tr("Bordo luminoso"), value: settings.binding(\.appearance.border), range: 0...1, step: 0.05, format: { "\(Int($0 * 100))%" })
+                ValueSlider(title: tr("Luce ambientale"), value: settings.binding(\.appearance.glow), range: 0...1, step: 0.05, format: { "\(Int($0 * 100))%" })
                 Toggle("Alone quando un agente ti aspetta", isOn: settings.binding(\.appearance.attentionGlow))
             }
 
@@ -118,12 +118,12 @@ struct AppearanceSettingsView: View {
                     ForEach(CardStyle.allCases) { Text($0.label).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                ValueSlider(title: "Angoli delle card", value: settings.binding(\.appearance.cardRadius), range: 4...30)
-                ValueSlider(title: "Spazio fra i widget", value: settings.binding(\.appearance.widgetSpacing), range: 0...20)
+                ValueSlider(title: tr("Angoli delle card"), value: settings.binding(\.appearance.cardRadius), range: 4...30)
+                ValueSlider(title: tr("Spazio fra i widget"), value: settings.binding(\.appearance.widgetSpacing), range: 0...20)
                 Picker("Carattere", selection: settings.binding(\.appearance.font)) {
                     ForEach(FontChoice.allCases) { Text($0.label).font(.system(.body, design: $0.design)).tag($0) }
                 }
-                ValueSlider(title: "Dimensione del testo", value: settings.binding(\.appearance.textScale), range: 0.85...1.25, step: 0.05, format: { "\(Int($0 * 100))%" })
+                ValueSlider(title: tr("Dimensione del testo"), value: settings.binding(\.appearance.textScale), range: 0.85...1.25, step: 0.05, format: { "\(Int($0 * 100))%" })
                 Picker("Pagine nella testata", selection: settings.binding(\.appearance.tabStyle)) {
                     ForEach(TabStyle.allCases) { Text($0.label).tag($0) }
                 }
@@ -134,7 +134,7 @@ struct AppearanceSettingsView: View {
                 Picker("Animazione", selection: settings.binding(\.appearance.motion)) {
                     ForEach(MotionStyle.allCases) { Text($0.label).tag($0) }
                 }
-                ValueSlider(title: "Velocità", value: settings.binding(\.appearance.motionSpeed), range: 0.5...2, step: 0.1, format: { String(format: "%.1f×", $0) })
+                ValueSlider(title: tr("Velocità"), value: settings.binding(\.appearance.motionSpeed), range: 0.5...2, step: 0.1, format: { String(format: "%.1f×", $0) })
                 Toggle("Messa a fuoco del contenuto all'apertura", isOn: settings.binding(\.appearance.contentBlur))
                 Toggle("Piccolo rimbalzo al passaggio del mouse", isOn: settings.binding(\.appearance.hoverBump))
                 Picker("Visualizzatore musicale", selection: settings.binding(\.appearance.visualizer)) {

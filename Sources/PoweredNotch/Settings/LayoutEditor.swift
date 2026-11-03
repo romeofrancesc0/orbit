@@ -24,7 +24,7 @@ struct LayoutEditorView: View {
                 HStack(alignment: .top) {
                     SettingsHeader(
                         section: .layout,
-                        subtitle: "Decidi cosa compare nella notch. Trascina gli elementi nelle zone: le modifiche valgono subito."
+                        subtitle: tr("Decidi cosa compare nella notch. Trascina gli elementi nelle zone: le modifiche valgono subito.")
                     )
                     Toggle("Tieni aperta la notch", isOn: $pinned)
                         .toggleStyle(.switch)
@@ -47,19 +47,19 @@ struct LayoutEditorView: View {
     // MARK: - Notch chiusa
 
     private var closedSection: some View {
-        EditorCard(title: "Notch chiusa", subtitle: "Ciò che si vede ai lati del ritaglio. Un elemento compare solo quando ha qualcosa da dire.") {
+        EditorCard(title: tr("Notch chiusa"), subtitle: tr("Ciò che si vede ai lati del ritaglio. Un elemento compare solo quando ha qualcosa da dire.")) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 0) {
                     CompactZoneView(
                         items: settings.binding(\.layout.closedLeading),
                         alignment: .trailing,
-                        placeholder: "Sinistra"
+                        placeholder: tr("Sinistra")
                     )
                     NotchCutout()
                     CompactZoneView(
                         items: settings.binding(\.layout.closedTrailing),
                         alignment: .leading,
-                        placeholder: "Destra"
+                        placeholder: tr("Destra")
                     )
                 }
                 .padding(.horizontal, 10)
@@ -71,8 +71,8 @@ struct LayoutEditorView: View {
                     used: Set(layout.closedLeading + layout.closedTrailing),
                     custom: custom,
                     destinations: [
-                        ("Aggiungi a sinistra", settings.binding(\.layout.closedLeading)),
-                        ("Aggiungi a destra", settings.binding(\.layout.closedTrailing))
+                        (tr("Aggiungi a sinistra"), settings.binding(\.layout.closedLeading)),
+                        (tr("Aggiungi a destra"), settings.binding(\.layout.closedTrailing))
                     ]
                 )
 
@@ -85,7 +85,7 @@ struct LayoutEditorView: View {
     // MARK: - Pagine
 
     private var pagesSection: some View {
-        EditorCard(title: "Notch aperta", subtitle: "Le pagine e i widget che le compongono. Trascina per riordinare, tira il bordo fra due widget per ridimensionare.") {
+        EditorCard(title: tr("Notch aperta"), subtitle: tr("Le pagine e i widget che le compongono. Trascina per riordinare, tira il bordo fra due widget per ridimensionare.")) {
             VStack(alignment: .leading, spacing: 14) {
                 PageTabsEditor(selectedPageID: $selectedPageID)
 
@@ -115,7 +115,7 @@ struct LayoutEditorView: View {
                     CompactZoneView(
                         items: settings.binding(\.layout.headerTrailing),
                         alignment: .leading,
-                        placeholder: "Trascina qui un elemento",
+                        placeholder: tr("Trascina qui un elemento"),
                         isHeader: true
                     )
                     .padding(8)
@@ -124,7 +124,7 @@ struct LayoutEditorView: View {
                     CompactPalette(
                         used: Set(layout.headerTrailing),
                         custom: custom,
-                        destinations: [("Aggiungi alla testata", settings.binding(\.layout.headerTrailing))]
+                        destinations: [(tr("Aggiungi alla testata"), settings.binding(\.layout.headerTrailing))]
                     )
                 }
             }
@@ -183,7 +183,7 @@ struct LayoutEditorView: View {
     // MARK: - Pagina iniziale
 
     private var startSection: some View {
-        EditorCard(title: "All'apertura", subtitle: "Su quale pagina si apre la notch.") {
+        EditorCard(title: tr("All'apertura"), subtitle: tr("Su quale pagina si apre la notch.")) {
             VStack(alignment: .leading, spacing: 10) {
                 Picker("Pagina iniziale", selection: settings.binding(\.layout.startMode)) {
                     ForEach(StartPageMode.allCases) { Text($0.label).tag($0) }
@@ -191,8 +191,8 @@ struct LayoutEditorView: View {
                 .pickerStyle(.segmented)
 
                 if layout.startMode == .specific {
-                    Picker("Pagina", selection: settings.binding(\.layout.startPageID)) {
-                        ForEach(layout.pages) { Text($0.title).tag(Optional($0.id)) }
+                    Picker(tr("Pagina"), selection: settings.binding(\.layout.startPageID)) {
+                        ForEach(layout.pages) { Text(tr($0.title)).tag(Optional($0.id)) }
                     }
                 }
                 Text(layout.startMode.help)
@@ -379,7 +379,7 @@ private struct CompactPalette: View {
     var body: some View {
         let all = ModuleCatalog.allCompacts(custom: custom)
         let groups = Dictionary(grouping: all, by: \.group)
-        let order = ["Agenti", "Musica", "Calendario", "Sistema", "Strumenti", "Personalizzati"]
+        let order = [tr("Agenti"), tr("Musica"), tr("Calendario"), tr("Sistema"), tr("Strumenti"), tr("Personalizzati")]
 
         VStack(alignment: .leading, spacing: 6) {
             ForEach(order.filter { groups[$0] != nil }, id: \.self) { group in
@@ -516,7 +516,7 @@ private struct PageTabsEditor: View {
                 } label: {
                     HStack(spacing: 5) {
                         Image(systemName: page.symbol).font(.system(size: 11, weight: .semibold))
-                        Text(page.title).font(.callout.weight(.medium)).lineLimit(1)
+                        Text(tr(page.title)).font(.callout.weight(.medium)).lineLimit(1)
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
@@ -568,7 +568,7 @@ private struct PageTabsEditor: View {
         let id = UUID().uuidString
         let number = settings.config.layout.pages.count + 1
         settings.update {
-            $0.layout.pages.append(PageConfig(id: id, title: "Pagina \(number)", symbol: "square.grid.2x2.fill", widgets: []))
+            $0.layout.pages.append(PageConfig(id: id, title: tr("Pagina %lld", number), symbol: "square.grid.2x2.fill", widgets: []))
         }
         selectedPageID = id
     }

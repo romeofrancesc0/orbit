@@ -118,6 +118,11 @@ enum URLRouter {
             services.setQuiet(target)
         case "profile":
             if let id = value("id") { _ = services.applyProfile(id: id) }
+        case "language":
+            // A language code ("it", "en", "es", "fr", "de") or "system".
+            if let id = value("id"), let language = AppLanguage.allCases.first(where: { $0.rawValue == id || $0.code == id }) {
+                services.settings.update { $0.language = language }
+            }
         case "theme":
             if let preset = value("id").flatMap(ThemePreset.preset) {
                 services.settings.update { preset.apply(to: &$0.appearance) }

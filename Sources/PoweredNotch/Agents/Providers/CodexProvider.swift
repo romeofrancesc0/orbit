@@ -278,7 +278,7 @@ enum CodexScanner {
                 }
             case "reasoning":
                 scan.status = .working
-                scan.activity = "ragiona…"
+                scan.activity = tr("ragiona…")
             default:
                 break
             }
@@ -293,7 +293,7 @@ enum CodexScanner {
         switch type {
         case "task_started":
             scan.status = .working
-            scan.activity = "prompt inviato"
+            scan.activity = tr("prompt inviato")
         case "task_complete":
             scan.status = .attention
             if let message = payload["last_agent_message"] as? String {
@@ -301,7 +301,7 @@ enum CodexScanner {
             }
         case "turn_aborted":
             scan.status = .attention
-            scan.activity = "turno interrotto"
+            scan.activity = tr("turno interrotto")
         case "user_message":
             if let message = payload["message"] as? String, !message.isEmpty { scan.lastPrompt = message }
         case "agent_message":
@@ -319,7 +319,7 @@ enum CodexScanner {
         default:
             if type.contains("approval_request") {
                 scan.status = .blocked
-                scan.activity = "permesso richiesto"
+                scan.activity = tr("permesso richiesto")
             }
         }
     }

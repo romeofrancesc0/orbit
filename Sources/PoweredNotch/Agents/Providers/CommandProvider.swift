@@ -30,7 +30,7 @@ actor CommandProvider: SessionProvider {
 
     func fetch(config: AgentsConfig) async -> ProviderResult {
         guard !command.isEmpty else {
-            return ProviderResult(error: "nessun comando configurato")
+            return ProviderResult(error: tr("nessun comando configurato"))
         }
 
         let outcome = await run()
@@ -52,7 +52,7 @@ actor CommandProvider: SessionProvider {
                 }
                 return ProviderResult(sessions: sessions)
             } catch {
-                return ProviderResult(error: "JSON non valido")
+                return ProviderResult(error: tr("JSON non valido"))
             }
         }
     }
@@ -103,7 +103,7 @@ actor CommandProvider: SessionProvider {
                     let message = String(data: errorData, encoding: .utf8)?
                         .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     continuation.resume(returning: .failure(
-                        message.isEmpty ? "uscita con codice \(process.terminationStatus)" : String(message.prefix(140))
+                        message.isEmpty ? tr("uscita con codice %lld", Int(process.terminationStatus)) : String(message.prefix(140))
                     ))
                     return
                 }

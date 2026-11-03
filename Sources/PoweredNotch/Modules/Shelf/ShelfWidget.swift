@@ -26,7 +26,7 @@ struct ShelfWidget: View {
                     .frame(maxHeight: .infinity)
                 }
                 VStack {
-                    NotchIconButton(symbol: "trash", size: 24, iconSize: 10.5, help: "Svuota lo scaffale") {
+                    NotchIconButton(symbol: "trash", size: 24, iconSize: 10.5, help: tr("Svuota lo scaffale")) {
                         shelf.clear()
                     }
                     Spacer()
@@ -90,7 +90,7 @@ private struct AirDropTile: View {
             .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         }
         .buttonStyle(NotchPressStyle())
-        .help(shelf.items.isEmpty ? "Trascina qui un file per inviarlo" : "Invia tutto lo scaffale")
+        .help(shelf.items.isEmpty ? tr("Trascina qui un file per inviarlo") : tr("Invia tutto lo scaffale"))
         .onHover { hovering = $0 }
         .onDrop(of: [.fileURL, .url], isTargeted: $targeted) { _ in
             let files = ShelfStore.droppedFiles()

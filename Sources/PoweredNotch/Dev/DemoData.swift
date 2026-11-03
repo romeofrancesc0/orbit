@@ -5,7 +5,7 @@ import SwiftUI
 /// un layout senza mostrare i propri progetti. Non legge né scrive nulla di reale.
 @MainActor
 enum DemoData {
-    static let notes = "Rivedere il giro di hotfix\nChiamare il commercialista"
+    static let notes = "Review the hotfix round\nCall the accountant"
 
     static var sessions: [AgentSession] {
         let now = Date()
@@ -35,21 +35,21 @@ enum DemoData {
             )
         }
         return [
-            session("a", title: "Aggiorna il flusso di autenticazione", project: "atlas-api", branch: "feat/auth", status: .blocked, activity: "Bash · rm -rf build/", ago: 12, tokens: 88_000),
-            session("b", title: "Nuova pagina dei prezzi", project: "website", status: .attention, activity: "Ho finito la pagina, controllo anche il mobile?", ago: 95, tokens: 142_000, host: "Terminale"),
-            session("c", title: "Migrazione del database", project: "orbit", branch: "db/v2", status: .working, activity: "Edit · schema.prisma", ago: 3, tokens: 61_000),
-            session("d", provider: "Codex", accent: "#10A37F", title: "Test di integrazione del checkout", project: "shop-core", status: .working, activity: "pnpm test --filter checkout", ago: 8, tokens: 37_000, host: "Codex"),
-            session("e", title: "Refactor del parser", project: "compiler", branch: "refactor/parser", status: .idle, activity: nil, ago: 900, tokens: 120_000, host: "VS Code"),
-            session("f", title: "Indicizzazione delle note", project: "notes-ai", status: .ended, activity: nil, ago: 7200, tokens: 54_000, host: nil)
+            session("a", title: "Update the authentication flow", project: "atlas-api", branch: "feat/auth", status: .blocked, activity: "Bash · rm -rf build/", ago: 12, tokens: 88_000),
+            session("b", title: "New pricing page", project: "website", status: .attention, activity: "The page is done, should I check mobile too?", ago: 95, tokens: 142_000, host: "Terminale"),
+            session("c", title: "Database migration", project: "orbit", branch: "db/v2", status: .working, activity: "Edit · schema.prisma", ago: 3, tokens: 61_000),
+            session("d", provider: "Codex", accent: "#10A37F", title: "Checkout integration tests", project: "shop-core", status: .working, activity: "pnpm test --filter checkout", ago: 8, tokens: 37_000, host: "Codex"),
+            session("e", title: "Parser refactor", project: "compiler", branch: "refactor/parser", status: .idle, activity: nil, ago: 900, tokens: 120_000, host: "VS Code"),
+            session("f", title: "Notes indexing", project: "notes-ai", status: .ended, activity: nil, ago: 7200, tokens: 54_000, host: nil)
         ]
     }
 
     static func seed(_ services: AppServices) {
         services.media.seedForPreview(
             NowPlaying(
-                title: "Notturno in fa minore",
+                title: "Nocturne in F minor",
                 artist: "Powered Notch Ensemble",
-                album: "Mezzanotte",
+                album: "Midnight",
                 duration: 248,
                 elapsed: 71,
                 rate: 1,
@@ -57,7 +57,7 @@ enum DemoData {
                 isPlaying: true,
                 bundleID: "com.apple.Music",
                 parentBundleID: nil,
-                appName: "Musica",
+                appName: "Music",
                 artworkID: "demo",
                 shuffle: 1,
                 repeatMode: 1
@@ -73,12 +73,12 @@ enum DemoData {
         let soon = Date().addingTimeInterval(1500)
         services.calendar.seedForPreview(
             events: [
-                CalendarEventItem(id: "1", title: "Daily del team", start: soon, end: soon.addingTimeInterval(900), isAllDay: false, colorHex: "#5AC8FA", calendarName: "Lavoro", meetingURL: URL(string: "https://meet.google.com/demo")),
-                CalendarEventItem(id: "2", title: "Revisione del design", start: soon.addingTimeInterval(5400), end: soon.addingTimeInterval(9000), isAllDay: false, colorHex: "#FF8A5C", calendarName: "Lavoro"),
-                CalendarEventItem(id: "3", title: "Palestra", start: at(19), end: at(20, 30), isAllDay: false, colorHex: "#4ADE80", calendarName: "Personale")
+                CalendarEventItem(id: "1", title: "Team standup", start: soon, end: soon.addingTimeInterval(900), isAllDay: false, colorHex: "#5AC8FA", calendarName: "Work", meetingURL: URL(string: "https://meet.google.com/demo")),
+                CalendarEventItem(id: "2", title: "Design review", start: soon.addingTimeInterval(5400), end: soon.addingTimeInterval(9000), isAllDay: false, colorHex: "#FF8A5C", calendarName: "Work"),
+                CalendarEventItem(id: "3", title: "Gym", start: at(19), end: at(20, 30), isAllDay: false, colorHex: "#4ADE80", calendarName: "Personal")
             ],
             reminders: [
-                ReminderItem(id: "r1", title: "Inviare la fattura", due: nil, colorHex: "#FFC145")
+                ReminderItem(id: "r1", title: "Send the invoice", due: nil, colorHex: "#FFC145")
             ]
         )
 
@@ -96,12 +96,12 @@ enum DemoData {
         ))
         services.shelf.seedForPreview([
             ShelfItem(kind: .link, name: "developer.apple.com", value: "https://developer.apple.com"),
-            ShelfItem(kind: .text, name: "Bozza della risposta al cliente", value: "Bozza della risposta al cliente")
+            ShelfItem(kind: .text, name: "Draft reply to the client", value: "Draft reply to the client")
         ])
         services.clipboard.seedForPreview([
-            ClipboardEntry(content: .text("git rebase -i HEAD~3"), sourceApp: "Terminale", copiedAt: Date()),
+            ClipboardEntry(content: .text("git rebase -i HEAD~3"), sourceApp: "Terminal", copiedAt: Date()),
             ClipboardEntry(content: .text("https://github.com/"), sourceApp: "Safari", copiedAt: Date()),
-            ClipboardEntry(content: .text("Ci vediamo alle 15 per la revisione"), sourceApp: "Messaggi", copiedAt: Date())
+            ClipboardEntry(content: .text("See you at 3 for the review"), sourceApp: "Messages", copiedAt: Date())
         ])
     }
 
