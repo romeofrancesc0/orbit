@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Segnala una sessione a Powered Notch da qualunque script, agent o hook.
+"""Report a session to Powered Notch from any script, agent or hook.
 
-Scrive un file nella inbox (~/.powered-notch/inbox): il provider `inbox` lo legge
-subito, senza che Powered Notch debba sapere nulla di te.
+Writes a file into the inbox (~/.powered-notch/inbox). The `inbox` provider picks it
+up right away; Powered Notch needs to know nothing else about your agent.
 
-    powered-notch-report --id build --title "Compilo il backend" \\
+    powered-notch-report --id build --title "Building the backend" \\
                     --status working --project api --path "$PWD" \\
                     --activity "docker build ."
 
-    powered-notch-report --id build --status attention --activity "serve una risposta"
+    powered-notch-report --id build --status attention --activity "needs an answer"
     powered-notch-report --id build --remove
 
-Stati validi: working, attention, blocked, idle, ended, error.
+Valid statuses: working, attention, blocked, idle, ended, error.
 """
 
 import argparse
@@ -25,7 +25,7 @@ INBOX = os.path.expanduser(os.environ.get("POWERED_NOTCH_INBOX", "~/.powered-not
 
 def main() -> int:
     parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument("--id", required=True, help="identificativo stabile della sessione")
+    parser.add_argument("--id", required=True, help="stable identifier of the session")
     parser.add_argument("--title")
     parser.add_argument("--project")
     parser.add_argument("--path")
@@ -34,12 +34,12 @@ def main() -> int:
     parser.add_argument("--status", default="working")
     parser.add_argument("--activity")
     parser.add_argument("--detail")
-    parser.add_argument("--provider", help="nome mostrato al posto di 'Inbox'")
-    parser.add_argument("--accent", help="colore esadecimale, es. #8B5CF6")
+    parser.add_argument("--provider", help="name shown instead of 'Inbox'")
+    parser.add_argument("--accent", help="hex color, e.g. #8B5CF6")
     parser.add_argument("--tokens", type=int)
     parser.add_argument("--token-limit", type=int)
     parser.add_argument("--pid", type=int)
-    parser.add_argument("--remove", action="store_true", help="rimuove la sessione dalla notch")
+    parser.add_argument("--remove", action="store_true", help="remove the session from the notch")
     args = parser.parse_args()
 
     safe_id = "".join(c if c.isalnum() or c in "-_." else "-" for c in args.id)

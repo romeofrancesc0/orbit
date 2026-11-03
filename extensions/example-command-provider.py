@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Esempio di provider `command`: stampa su stdout le sessioni in JSON.
+"""Example `command` provider: prints sessions as JSON on stdout.
 
-Powered Notch esegue questo script a ogni giro di polling e mostra ciò che stampa.
-Per attivarlo, aggiungi in ~/.config/powered-notch/config.json:
+Powered Notch runs this script on every polling round and shows what it prints.
+To enable it, add this to the providers in ~/.config/powered-notch/config.json:
 
     {
-      "id": "mio-agent",
+      "id": "my-agent",
       "type": "command",
-      "name": "Mio Agent",
+      "name": "My Agent",
       "accent": "#22C55E",
-      "command": "/Users/tu/PoweredNotch/extensions/example-command-provider.py"
+      "command": "/path/to/powered-notch/extensions/example-command-provider.py"
     }
 
-Regole del contratto:
-  • stdout = un array JSON (oppure {"sessions": [...]}, oppure un solo oggetto);
-  • uscita diversa da 0 → il messaggio su stderr compare come errore nel pannello;
-  • lo script deve terminare in fretta (timeout 8 secondi).
+The contract:
+  - stdout is a JSON array (or {"sessions": [...]}, or a single object);
+  - a non-zero exit code shows the message on stderr as an error in the panel;
+  - the script must finish quickly (8 second timeout).
 
-Ogni campo è opzionale tranne `id`.
+Every field is optional except `id`.
 """
 
 import json
@@ -27,9 +27,9 @@ import time
 
 
 def running_agents():
-    """Esempio reale: cerca processi di un agent e ne fa una sessione a testa.
+    """A real example: finds an agent's processes and turns each into a session.
 
-    Qui si cercano processi `aider`; sostituisci il filtro con il tuo.
+    It looks for `aider` processes here; replace the filter with your own.
     """
     try:
         output = subprocess.run(
@@ -50,7 +50,7 @@ def running_agents():
             "title": args[:70],
             "project": "aider",
             "status": "working",
-            "activity": "sessione aider attiva",
+            "activity": "aider session running",
             "pid": int(pid),
             "updatedAt": int(time.time() * 1000),
         })
@@ -58,20 +58,20 @@ def running_agents():
 
 
 def demo_session():
-    """Riga dimostrativa: toglila quando colleghi dati veri."""
+    """Placeholder row: remove it once you plug in real data."""
     return {
         "id": "demo-1",
-        "title": "Sessione di esempio del provider command",
-        "project": "esempio",
+        "title": "Example session from the command provider",
+        "project": "example",
         "path": "~/Projects",
         "branch": "main",
         "model": "gpt-5",
         "status": "attention",
-        "activity": "in attesa di una risposta",
+        "activity": "waiting for an answer",
         "updatedAt": int(time.time() * 1000),
         "tokens": {"used": 42000, "limit": 200000},
         "actions": [
-            {"label": "Apri log", "command": "open ~/Library/Logs", "symbol": "doc.text"}
+            {"label": "Open logs", "command": "open ~/Library/Logs", "symbol": "doc.text"}
         ],
     }
 

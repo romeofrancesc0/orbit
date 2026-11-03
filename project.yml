@@ -1,6 +1,6 @@
-# Definizione del progetto: `xcodegen generate` produce PoweredNotch.xcodeproj.
-# Serve Xcode (e non solo SwiftPM) per le App Intents: Comandi rapidi, Spotlight
-# e filtri Full Immersion richiedono i metadati che genera solo il suo build system.
+# Project definition: `xcodegen generate` produces PoweredNotch.xcodeproj.
+# Xcode (not just SwiftPM) is required for App Intents: Shortcuts, Spotlight and
+# Focus filters need metadata that only its build system generates.
 name: PoweredNotch
 options:
   bundleIdPrefix: com.francescoromeo
@@ -13,7 +13,7 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
     SWIFT_VERSION: "5.0"
-    # La firma la applica build.sh, che sceglie l'identità disponibile.
+    # build.sh applies the signature, picking whichever identity is available.
     CODE_SIGNING_ALLOWED: "NO"
     ENABLE_HARDENED_RUNTIME: "NO"
     ENABLE_USER_SCRIPT_SANDBOXING: "NO"
@@ -29,7 +29,7 @@ targets:
       - path: extensions/claude-code-hooks/powered_notch_hook.py
         buildPhase: resources
     dependencies:
-      # Solo copiata nel bundle: la carica /usr/bin/perl, l'app non deve collegarsi a lei.
+      # Only copied into the bundle: /usr/bin/perl loads it, the app must not link against it.
       - target: PoweredNotchMediaBridge
         link: false
         embed: true
@@ -51,11 +51,11 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSMinimumSystemVersion: "14.0"
-        # Vive nella notch: niente Dock, tranne quando è aperta la finestra delle impostazioni.
+        # Lives in the notch: no Dock icon, except while the settings window is open.
         LSUIElement: true
         NSHighResolutionCapable: true
         LSApplicationCategoryType: public.app-category.utilities
-        NSHumanReadableCopyright: Francesco Romeo
+        NSHumanReadableCopyright: Copyright © 2026 Francesco Romeo. MIT License.
         NSCalendarsFullAccessUsageDescription: Powered Notch mostra i tuoi prossimi eventi nella notch. I dati restano sul Mac.
         NSRemindersFullAccessUsageDescription: Powered Notch mostra i tuoi promemoria nella notch. I dati restano sul Mac.
         NSCameraUsageDescription: Lo specchio di Powered Notch usa la fotocamera per mostrarti come appari. Non registra nulla.

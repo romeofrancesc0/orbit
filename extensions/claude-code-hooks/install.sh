@@ -1,15 +1,15 @@
 #!/bin/bash
-# Installa gli hook opzionali di Powered Notch in ~/.claude/settings.json.
-# Lo stesso lo fa l'app: Impostazioni → Agenti → Hook di Claude Code.
+# Installs the optional Powered Notch hooks into ~/.claude/settings.json.
+# The app does the same from Settings → Agenti → Hook di Claude Code.
 #
-# Sono facoltativi: senza di essi Powered Notch funziona già leggendo i transcript.
-# Servono a vedere *subito* una richiesta di permesso ancora pendente.
+# They are optional: without them Powered Notch already works by reading the
+# transcripts. They only make a still-pending permission request show up *right away*.
 #
-#   ./install.sh            → installa
-#   ./install.sh --remove   → disinstalla
+#   ./install.sh            -> install
+#   ./install.sh --remove   -> uninstall
 #
-# Gli hook già presenti (statusline, altri strumenti…) non vengono toccati:
-# il file viene fuso, non riscritto, e ne viene salvata una copia.
+# Hooks that are already there (status line, other tools…) are left alone: the file
+# is merged, not rewritten, and a backup copy is saved first.
 
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -25,7 +25,7 @@ if [ "$MODE" = "install" ]; then
   mkdir -p "$TARGET_DIR"
   cp powered_notch_hook.py "$SCRIPT"
   chmod +x "$SCRIPT"
-  echo "▸ script copiato in $SCRIPT"
+  echo "▸ script copied to $SCRIPT"
 fi
 
 MODE="$MODE" SCRIPT="$SCRIPT" SETTINGS="$SETTINGS" /usr/bin/env python3 <<'PY'
@@ -83,14 +83,14 @@ with open(settings_path, "w", encoding="utf-8") as handle:
     json.dump(settings, handle, indent=2)
     handle.write("\n")
 
-print(f"▸ {mode}: {changed} eventi aggiornati in {settings_path}")
-print("  (copia di sicurezza: " + settings_path + ".powered-notch-backup)")
+print(f"▸ {mode}: {changed} events updated in {settings_path}")
+print("  (backup: " + settings_path + ".powered-notch-backup)")
 PY
 
 if [ "$MODE" = "remove" ]; then
   rm -f "$SCRIPT"
   rm -rf "$HOME/.powered-notch/hints"
-  echo "▸ hook rimossi"
+  echo "▸ hooks removed"
 fi
 
-echo "▸ riavvia le sessioni di Claude Code per applicare la modifica"
+echo "▸ restart your Claude Code sessions to apply the change"

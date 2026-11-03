@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Ponte fra gli hook di Claude Code e Powered Notch.
+"""Bridge between Claude Code hooks and Powered Notch.
 
-Claude Code passa il JSON dell'evento su stdin; il nome dell'evento arriva come
-primo argomento. Lo script traduce l'evento in un "suggerimento" che Powered Notch
-legge in ~/.powered-notch/hints/<session_id>.json e sovrappone al transcript.
+Claude Code passes the event JSON on stdin and the event name as the first
+argument. The script turns the event into a "hint" that Powered Notch reads from
+~/.powered-notch/hints/<session_id>.json and layers over the transcript.
 
-Serve per gli stati che nel transcript non compaiono: soprattutto una richiesta
-di permesso ancora pendente, che altrimenti si vedrebbe solo come "in esecuzione".
+It covers states the transcript never records, above all a permission request
+that is still pending and would otherwise look like "running".
 """
 
 import json
@@ -16,14 +16,15 @@ import time
 
 HINTS_DIR = os.path.expanduser("~/.powered-notch/hints")
 
-# Eventi che accendono uno stato, e come descriverlo.
+# Events that raise a state, and how to describe it. The labels are shown as-is in the
+# (Italian) interface.
 RAISE = {
     "PermissionRequest": ("blocked", "permesso richiesto"),
     "PermissionDenied": ("attention", "permesso negato"),
     "Notification": ("attention", "attende te"),
 }
 
-# Tutto il resto significa "il blocco è passato": il suggerimento va rimosso.
+# Any other event means "the block is over": the hint is removed.
 
 
 def main() -> int:

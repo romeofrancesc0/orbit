@@ -1,176 +1,189 @@
-<p align="center"><img src="docs/icona.png" width="128" alt="Icona di Powered Notch"></p>
+<p align="center"><img src="docs/icon.png" width="128" alt="Powered Notch icon"></p>
 
 <h1 align="center">Powered Notch</h1>
 
-<p align="center">La notch del tuo Mac, fatta a modo tuo.<br>Musica, calendario, scaffale e le sessioni dei tuoi coding agent, sempre sotto gli occhi.</p>
+<p align="center">Your Mac's notch, made your way.<br>Music, calendar, a shelf for files, and the sessions of your coding agents, always in view.</p>
 
-![La notch aperta](docs/aperta.png)
+<p align="center">
+  <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-black">
+  <img alt="Swift" src="https://img.shields.io/badge/Swift-SwiftUI-orange">
+  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue">
+</p>
 
-Powered Notch parte dall'idea di [Boring Notch](https://github.com/TheBoredTeam/boring.notch), scritta da zero, con tre idee in più: **ogni cosa si può spostare, togliere e aggiungere**, sembra una parte di macOS, e sa cosa stanno facendo i tuoi agenti.
+![The open notch](docs/open.png)
 
-| Notch chiusa: si allarga solo se ha qualcosa da dire | Un agente ti chiama |
+Powered Notch takes its starting point from [Boring Notch](https://github.com/TheBoredTeam/boring.notch) and is written from scratch with three extra ideas: **everything can be moved, removed and added**, it feels like a part of macOS, and it knows what your coding agents are doing.
+
+| Closed notch: it only widens when it has something to say | An agent calls for you |
 |---|---|
-| ![Notch chiusa](docs/chiusa.png) | ![Avviso](docs/avviso.png) |
+| ![Closed notch](docs/closed.png) | ![Alert](docs/alert.png) |
+
+> **A note on language.** The app's interface is currently in **Italian**, and so are the screenshots and the comments in the source code. This README gives the English name of every feature and, where it helps, the Italian label you will see in the app in *italics*. Translations are very welcome; see [Contributing](#contributing).
 
 ---
 
-## Installazione
+## Installation
 
-Servono Xcode e [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+You need Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
 brew install xcodegen
-```
-
-```bash
+git clone https://github.com/romeofrancesc0/powered-notch.git
+cd powered-notch
 ./build.sh --install
 ```
 
-L'app finisce in `~/Applications/PoweredNotch.app` e parte subito. Requisiti: macOS 14 o successivo; su macOS 26 e 27 usa Liquid Glass.
+The app lands in `~/Applications/PoweredNotch.app` and starts right away.
 
-**Se usi Boring Notch**, chiudilo: due app sulla stessa notch si coprono a vicenda. Powered Notch se ne accorge e ti offre un pulsante per farlo.
+**Requirements:** macOS 14 or later. On macOS 26 and 27 it uses Liquid Glass.
+
+**Code signing.** `build.sh` signs with the first *Apple Development* certificate it finds in your keychain. To choose another one, set `POWERED_NOTCH_SIGN_IDENTITY`. With no certificate it falls back to ad-hoc signing, which works but makes macOS ask for permissions again after every build.
+
+**If you use Boring Notch,** quit it: two apps on the same notch cover each other. Powered Notch notices and offers a button to do it for you.
 
 ---
 
-## Cosa c'è dentro
+## What's inside
 
 | | |
 |---|---|
-| **Agenti** | Le sessioni di Claude Code e Codex, senza configurare nulla. Stato, attività, contesto usato, e un click ti porta nella chat giusta. |
-| **Musica** | Qualunque app che riproduce: Musica, Spotify, Safari, YouTube. Copertina, avanzamento trascinabile, visualizzatore, colori dalla copertina. |
-| **Calendario** | La settimana, gli eventi, i promemoria, il pulsante per entrare nelle riunioni. |
-| **Scaffale** | Trascina file, link o testo sulla notch e li ritrovi lì. Con AirDrop, Quick Look e condivisione di sistema. |
-| **Volume e luminosità** | Sostituisce gli indicatori di sistema con quelli nella notch. |
-| **Avvisi** | Discreti di serie: scende solo ciò che richiede te (un permesso, un errore). Il resto resta nella notch chiusa come alone e pallini. Caricatore, Bluetooth, cambio brano, eventi e timer si attivano a scelta. |
-| **Altri widget** | Specchio, batteria, sistema, appunti, timer, note, collegamenti, orologio. |
-| **I tuoi widget** | Se lo puoi scrivere in uno script, lo puoi mettere nella notch. |
+| **Agents** | The sessions of Claude Code and Codex, with no configuration. Status, current activity and context used, and one click takes you to the right chat. |
+| **Music** | Any app that plays: Music, Spotify, Safari, YouTube. Artwork, draggable progress, a visualizer, and colors taken from the cover. |
+| **Calendar** | The week, your events and reminders, and a button to join meetings. |
+| **Shelf** | Drag files, links or text onto the notch and find them there again. With AirDrop, Quick Look and system sharing. |
+| **Volume and brightness** | Replaces the system indicators with ones in the notch: a fluid meter that reacts to every key press, with a handle that pops out while you adjust and a bounce at the limits. |
+| **Alerts** | Discreet by default: only what needs you (a permission, an error) comes down. The rest stays in the closed notch as a glow and dots. Charger, Bluetooth, track changes, events and timers are opt-in. |
+| **More widgets** | Mirror, battery, system stats, clipboard, timer, notes, launcher, clock. |
+| **Your own widgets** | If you can write it in a script, you can put it in the notch. |
 
 ---
 
-## Personalizzare tutto
+## Customize everything
 
-La personalizzazione è il motivo per cui esiste Powered Notch. Tasto destro sulla notch → **Personalizza la notch**.
+Customization is the reason Powered Notch exists. Right-click the notch → *Customize the notch* (*Personalizza la notch*).
 
-![L'editor del layout](docs/layout.png)
+![The layout editor](docs/layout.png)
 
-**Notch chiusa.** Due zone ai lati del ritaglio: ci trascini quello che vuoi. Un elemento compare solo quando ha qualcosa da dire, così la notch resta invisibile finché non serve.
+**Closed notch.** Two zones on either side of the cutout: drag whatever you want into them. An item only shows up when it has something to say, so the notch stays invisible until it's needed.
 
-**Notch aperta.** Crea tutte le pagine che vuoi e riempile di widget. Trascina per riordinare, tira il bordo fra due widget per ridimensionarli, impilane due nella stessa colonna. L'anteprima è la notch vera: quello che vedi è quello che otterrai.
+**Open notch.** Create as many pages as you like and fill them with widgets. Drag to reorder, pull the edge between two widgets to resize them, stack two in the same column. The preview is the real notch: what you see is what you get.
 
-**Aspetto.** Nove temi come punto di partenza, poi ogni dettaglio: materiale (tinta unita, sfumatura, Liquid Glass, copertina), accento, angoli, misure, ombra, bordo, luce, card, carattere, velocità e stile delle animazioni.
+**Appearance.** Nine themes as a starting point, then every detail: material (solid, gradient, Liquid Glass, cover art), accent, corners, sizes, shadow, border, glow, cards, typeface, and the speed and style of the animations.
 
-![I temi](docs/temi.png)
+![Themes](docs/themes.png)
 
-**Profili.** Un profilo ricorda aspetto e layout. Cambialo con un click, con una scorciatoia, con un Comando rapido o con un **filtro Full Immersion**: al lavoro gli agenti, la sera la musica, senza toccare nulla. Si possono esportare e importare come file.
+**Profiles.** A profile remembers appearance and layout. Switch with a click, a keyboard shortcut, a Shortcuts action or a **Focus filter**: agents at work, music in the evening, without touching anything. Profiles can be exported and imported as files.
 
-**Comportamento.** Apertura al passaggio del mouse o solo con un click, ritardi, gesti del trackpad, risposta tattile, quali schermi, tutto schermo, registrazioni dello schermo, scorciatoie globali.
+**Behavior.** Open on hover or only on click, delays, trackpad gestures, haptic feedback, which displays to use, full-screen apps, screen recording, global shortcuts.
 
-**Tutto è un file.** `~/.config/powered-notch/config.json`: modificalo a mano e la notch si aggiorna da sola. Una chiave mancante prende il valore predefinito, una sezione illeggibile non trascina giù le altre.
+**Everything is a file.** `~/.config/powered-notch/config.json`: edit it by hand and the notch updates by itself. A missing key falls back to its default, and an unreadable section doesn't take the others down with it.
 
 ---
 
-## I coding agent
+## Coding agents
 
-![La pagina degli agenti](docs/agenti.png)
+![The agents page](docs/agents.png)
 
-Di serie compaiono nella notch chiusa, nella prima pagina e in una pagina tutta loro. Per metterli in primo piano: Impostazioni → Agenti → *Apri la notch direttamente sugli agenti*.
+Out of the box they appear in the closed notch, on the first page, and on a page of their own. To put them front and center: Settings → Agents → *Open the notch directly on agents* (*Apri la notch direttamente sugli agenti*).
 
-| Stato | Significato |
+Each session is a card: a status badge, the project and branch, what the agent is doing right now, and how much of its context window is used. Hover a card for its actions (go to the chat, resume, open in Terminal, your editor or Finder, hide); right-click for the full menu.
+
+| Status | Meaning |
 |---|---|
-| **in esecuzione** (blu) | L'agent sta lavorando: si vede anche il tool in uso |
-| **attende te** (ambra) | Ha finito il turno, la palla è tua |
-| **permesso richiesto** (rosso) | Bloccato in attesa di un'approvazione (serve l'hook, sotto) |
-| **in pausa** (grigio) | Sessione aperta ma ferma da più di 6 minuti |
-| **terminata** | Sessione chiusa di recente, riprendibile |
+| **running** (blue, *in esecuzione*) | The agent is working. The tool in use is shown too. |
+| **waiting for you** (amber, *attende te*) | It finished its turn: the ball is in your court. |
+| **permission requested** (red, *permesso richiesto*) | Blocked, waiting for an approval (needs the hook, see below). |
+| **paused** (gray, *in pausa*) | Session still open but idle for more than 6 minutes. |
+| **ended** (*terminata*) | Recently closed session, can be resumed. |
 
-Quando un agente passa a *attende te* o *permesso richiesto* la notch fa scendere un avviso, si illumina finché la situazione non cambia e con un click ti porta **dentro quella chat**: Claude Desktop e Codex hanno il deep link diretto.
+When an agent moves to *waiting for you* or *permission requested*, the notch drops an alert, glows until the situation changes, and a click takes you **into that very chat**: Claude Desktop and Codex have direct deep links.
 
-Gli aggiornamenti arrivano da FSEvents appena i file cambiano, senza interrogare il disco di continuo.
+Updates arrive through FSEvents as soon as files change, with no constant polling of the disk.
 
-### Hook di Claude Code
+### Claude Code hooks
 
-Il transcript non registra le richieste di permesso ancora pendenti: senza hook una sessione bloccata appare "in esecuzione". Impostazioni → Agenti → **Installa**.
+The transcript doesn't record permission requests that are still pending: without the hook, a blocked session looks "running". Settings → Agents → **Install** (*Installa*).
 
-L'installazione **fonde** la configurazione in `~/.claude/settings.json` senza toccare gli hook già presenti e ne salva una copia in `settings.json.powered-notch-backup`. Gli hook sono asincroni e non rallentano Claude Code. Parte solo se lo chiedi tu.
+The installer **merges** its configuration into `~/.claude/settings.json` without touching the hooks already there, and saves a copy as `settings.json.powered-notch-backup`. The hooks are asynchronous and don't slow Claude Code down. Nothing is installed unless you ask for it. You can also run `extensions/claude-code-hooks/install.sh` (and `install.sh --remove`) by hand.
 
-### Collegare un altro agent
+### Connecting another agent
 
-Powered Notch non sa nulla di chi produce le sessioni: legge dei **provider**, che si aggiungono da Impostazioni → Agenti.
+Powered Notch knows nothing about whoever produces the sessions: it reads **providers**, which you add from Settings → Agents.
 
-**`inbox`: chiunque scrive un file.** Ogni file JSON in `~/.powered-notch/inbox/` è una sessione.
+**`inbox`: anyone writes a file.** Every JSON file in `~/.powered-notch/inbox/` is a session.
 
 ```bash
-extensions/powered-notch-report --id build-api --title "Compilo il backend" \
+extensions/powered-notch-report --id build-api --title "Building the backend" \
     --status working --project api --path "$PWD" --activity "docker build ."
 
-extensions/powered-notch-report --id build-api --status attention --activity "serve una risposta"
+extensions/powered-notch-report --id build-api --status attention --activity "needs an answer"
 extensions/powered-notch-report --id build-api --remove
 ```
 
-**`command`: un comando che stampa JSON.** Powered Notch lo esegue a ogni giro. Template commentato in [`extensions/example-command-provider.py`](extensions/example-command-provider.py).
+**`command`: a command that prints JSON.** Powered Notch runs it on every round. A commented template lives in [`extensions/example-command-provider.py`](extensions/example-command-provider.py).
 
-Lo schema di una sessione (solo `id` è obbligatorio):
+The schema of a session (only `id` is required):
 
 ```jsonc
 {
-  "id": "sess-1",                   // stabile nel tempo: identifica la sessione
-  "title": "Refactor autenticazione",
-  "project": "api",                 // se manca: ultimo componente di path
-  "path": "/Users/tu/dev/api",      // abilita Terminale/Editor/Finder/Copia
+  "id": "sess-1",                   // stable over time: identifies the session
+  "title": "Refactor authentication",
+  "project": "api",                 // if missing: the last component of path
+  "path": "/Users/you/dev/api",     // enables Terminal / Editor / Finder / Copy
   "branch": "main",
   "model": "gpt-5",
   "status": "working",              // working | attention | blocked | idle | ended | error
-  "activity": "Edit · auth.ts",     // riga sotto lo stato
-  "detail": "testo lungo",
-  "startedAt": "2026-08-03T09:00:00Z",  // ISO-8601, oppure epoch s/ms
+  "activity": "Edit · auth.ts",     // the line under the status
+  "detail": "long text",
+  "startedAt": "2026-08-03T09:00:00Z",  // ISO-8601, or epoch seconds/milliseconds
   "updatedAt": 1785754830967,
   "tokens": { "used": 148320, "limit": 200000 },
-  "pid": 4211,                      // se il processo muore, la sessione passa a "terminata"
-  "provider": "Codex",              // nome mostrato al posto di quello del provider
-  "accent": "#8B5CF6",              // colore della barretta laterale
-  "openURL": "miaapp://session/42", // deep link aperto dal click
-  "actions": [                      // voci extra nel menu contestuale
-    { "label": "Approva", "command": "mio-cli approve $POWERED_NOTCH_SESSION", "symbol": "checkmark.circle" }
+  "pid": 4211,                      // if the process dies, the session becomes "ended"
+  "provider": "Codex",              // name shown instead of the provider's own
+  "accent": "#8B5CF6",              // the provider's accent color
+  "openURL": "myapp://session/42",  // deep link opened by the click
+  "actions": [                      // extra entries in the context menu
+    { "label": "Approve", "command": "my-cli approve $POWERED_NOTCH_SESSION", "symbol": "checkmark.circle" }
   ]
 }
 ```
 
-I comandi delle `actions` girano con `/bin/sh -lc` nella cartella della sessione, con `$POWERED_NOTCH_PATH`, `$POWERED_NOTCH_SESSION` e `$POWERED_NOTCH_PROVIDER` nell'ambiente.
+The commands in `actions` run with `/bin/sh -lc` in the session's folder, with `$POWERED_NOTCH_PATH`, `$POWERED_NOTCH_SESSION` and `$POWERED_NOTCH_PROVIDER` in the environment.
 
 ---
 
-## Widget da script
+## Widgets from scripts
 
-Impostazioni → Widget personalizzati. Il comando stampa testo (la prima riga è il valore, le altre vanno sotto) oppure JSON:
+Settings → Custom widgets (*Widget personalizzati*). The command prints text (the first line is the value, the others go below it) or JSON:
 
 ```json
 {
-  "text": "22°", "subtitle": "Milano",
+  "text": "22°", "subtitle": "Milan",
   "symbol": "sun.max.fill", "tint": "#FFD60A",
   "progress": 0.4,
-  "rows": [{ "title": "Domani", "value": "19°", "symbol": "cloud.fill" }],
+  "rows": [{ "title": "Tomorrow", "value": "19°", "symbol": "cloud.fill" }],
   "url": "https://…",
   "compact": "22°", "active": true
 }
 ```
 
-Il widget compare fra quelli disponibili in Layout, sia come widget sia nella notch chiusa. Ci sono modelli pronti per meteo, pull request, uptime e IP pubblico.
+The widget shows up among the available ones in Layout, both as a widget and in the closed notch. Ready-made templates exist for weather, pull requests, uptime and public IP.
 
 ---
 
-## Integrazione con macOS
+## macOS integration
 
-- **Comandi rapidi, Spotlight e Siri**: apri una pagina, manda un avviso, avvia un timer, cambia profilo, conta le sessioni attive.
-- **Filtri Full Immersion**: ogni modalità può avere il suo profilo.
-- **Liquid Glass** nelle impostazioni, nell'icona e, se vuoi, nella notch stessa.
-- **Riduci movimento** e gli altri controlli di sistema vengono rispettati.
-- **`powerednotch://`** per i tuoi script. Espone solo azioni innocue, mai l'esecuzione di comandi:
+- **Shortcuts, Spotlight and Siri:** open a page, send an alert, start a timer, switch profile, count the active sessions.
+- **Focus filters:** every Focus can have its own profile.
+- **Liquid Glass** in the settings, in the icon and, if you want, in the notch itself.
+- **Reduce Motion** and the other system accessibility controls are respected.
+- **`powerednotch://`** for your own scripts. It only exposes harmless actions and never runs commands:
 
 ```bash
-open 'powerednotch://peek?title=Build&subtitle=Finita&symbol=hammer.fill&tint=%234ADE80'
+open 'powerednotch://peek?title=Build&subtitle=Done&symbol=hammer.fill&tint=%234ADE80'
 ```
 
-| Azione | Parametri |
+| Action | Parameters |
 |---|---|
 | `open` | `page` |
 | `close`, `toggle` | |
@@ -179,99 +192,108 @@ open 'powerednotch://peek?title=Build&subtitle=Finita&symbol=hammer.fill&tint=%2
 | `profile` | `id` |
 | `theme` | `id` |
 | `settings` | `section` |
-| `quiet` | `on` (`1` silenzia, `0` riattiva, senza parametro inverte) |
+| `quiet` | `on` (`1` silences, `0` unsilences, no parameter toggles) |
 
 ---
 
-## Avvisi discreti
+## Discreet alerts
 
-Un avviso che scende a ogni cambiamento diventa rumore in fretta, quindi:
+An alert that drops on every change turns into noise quickly, so:
 
-- **Silenzio automatico.** Mentre guardi un video (un'app che non fa solo musica, in primo piano) o, se vuoi, con un'app a tutto schermo, gli avvisi non scendono e non vengono rimandati. Restano l'alone e i pallini nella notch chiusa.
-- **Silenzio a mano.** Tasto destro sulla notch → *Silenzia gli avvisi*, il link `powerednotch://quiet`, o l'azione per i Comandi rapidi. macOS non lascia leggere i Focus alle app: per legarlo a uno, crea un'automazione "quando attivo il Focus → Silenzia gli avvisi della notch".
-- **Stati stabili.** Un agente avvisa solo se il nuovo stato regge qualche secondo, e la stessa sessione non avvisa più di una volta al minuto. Si regola in Impostazioni → Avvisi.
-- **Video fuori dalle ali.** Copertina e visualizzatore compaiono nella notch chiusa solo per le app di musica, non per un video nel browser.
+- **Automatic quiet.** While you watch a video (a foreground app that does more than play music) or, if you choose, with a full-screen app, alerts neither drop nor get queued for later. The glow and dots in the closed notch remain.
+- **Manual quiet.** Right-click the notch → *Silence alerts* (*Silenzia gli avvisi*), the `powerednotch://quiet` link, or the Shortcuts action. macOS doesn't let apps read your Focus, so to tie it to one, create an automation "when I turn on this Focus → silence the notch alerts".
+- **Stable states.** An agent only alerts if its new state holds for a few seconds, and the same session never alerts more than once a minute. Tune it in Settings → Alerts (*Avvisi*).
+- **Videos stay out of the wings.** Artwork and the visualizer appear in the closed notch only for music apps, not for a video in the browser.
 
 ---
 
-## Gesti
+## Gestures
 
-| Gesto | Effetto |
+| Gesture | Effect |
 |---|---|
-| Mouse sulla notch | Si apre |
-| Due dita in giù sulla notch | Si apre |
-| Due dita di lato | Cambia pagina |
-| Due dita in su sulla testata | Si chiude |
-| Click su una sessione | Ti porta nella chat |
-| Tasto destro su una sessione | Terminale, editor, Finder, copia percorso, togli dall'elenco |
-| Tasto destro sulla notch | Personalizza, profili, impostazioni |
-| `⌃⌥N` | Apre o chiude la notch |
-| `⌃⌥A` | Apre gli agenti |
-| `esc` | Chiude |
+| Mouse over the notch | Opens it |
+| Two fingers down on the notch | Opens it |
+| Two fingers sideways | Changes page |
+| Two fingers up on the header | Closes it |
+| Click a session | Takes you to the chat |
+| Right-click a session | Terminal, editor, Finder, copy path, hide from the list |
+| Right-click the notch | Customize, profiles, settings |
+| `⌃⌥N` | Opens or closes the notch |
+| `⌃⌥A` | Opens the agents page |
+| `esc` | Closes it |
 
 ---
 
-## Consumi
+## Resource usage
 
-Nella notch chiusa tutto ciò che si muove (pallini, visualizzatore, icona, testo che scorre) è un'animazione di Core Animation: gira sulla GPU senza svegliare l'app, che a riposo sta sotto l'1% di CPU anche con diverse sessioni al lavoro. Ogni modulo gira solo se è nel tuo layout: se togli la musica, il ponte verso Now Playing non parte nemmeno.
+In the closed notch, everything that moves (dots, visualizer, icon, scrolling text) is a Core Animation animation: it runs on the GPU without waking the app, which at rest stays under 1% CPU even with several sessions at work. Every module runs only if it's in your layout: remove music and the Now Playing bridge doesn't even start.
 
 ---
 
-## Permessi e riservatezza
+## Permissions and privacy
 
-Powered Notch chiede solo ciò che serve a ciò che usi, quando lo usi. Nulla esce dal tuo Mac, a parte quello che fanno i widget da script che aggiungi tu.
+Powered Notch asks only for what the features you use need, when you use them. Nothing leaves your Mac, apart from whatever the script widgets you add yourself do.
 
-| Permesso | Serve per |
+| Permission | Used for |
 |---|---|
-| Calendario, Promemoria | Il widget Calendario |
-| Fotocamera | Il widget Specchio, solo mentre lo guardi |
-| Accessibilità | Solo per sostituire gli indicatori di volume e luminosità |
-| Bluetooth | Solo per gli avvisi sui dispositivi, spenti di serie |
+| Calendar, Reminders | The Calendar widget |
+| Camera | The Mirror widget, only while you're looking at it |
+| Accessibility | Only to replace the volume and brightness indicators |
+| Bluetooth | Only for device alerts, which are off by default |
 
-Gli appunti restano solo in memoria e saltano ciò che le app segnano come riservato, per esempio le password copiate da un gestore. Le note e lo scaffale restano in `~/.config/powered-notch/`.
+The clipboard history lives in memory only and skips anything apps mark as confidential, such as passwords copied from a password manager. Notes and the shelf stay in `~/.config/powered-notch/`.
 
 ---
 
-## Sviluppo
+## Development
 
 ```bash
-./build.sh --run                              # bundle in dist/ e avvio
-dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # verifica le regole che non si vedono a occhio
-dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # cosa vedono i provider di agenti
-dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --probe-controls   # volume, luminosità, calendario
-open dist/PoweredNotch.app --args --demo           # la notch con dati inventati, per gli screenshot
-open dist/PoweredNotch.app --args --virtual-notch  # come su uno schermo senza notch
+./build.sh --run                              # bundle in dist/ and launch
+dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # check the rules you can't see by eye
+dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # what the agent providers see
+dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --probe-controls   # volume, brightness, calendar
+open dist/PoweredNotch.app --args --demo           # the notch with made-up data, for screenshots
+open dist/PoweredNotch.app --args --virtual-notch  # as on a display without a notch
 ```
 
-Il progetto Xcode si genera da `project.yml`. Serve Xcode e non solo SwiftPM perché Comandi rapidi e filtri Full Immersion richiedono i metadati che genera solo il suo build system.
+The Xcode project is generated from `project.yml`. It needs Xcode and not just SwiftPM because Shortcuts and Focus filters require metadata that only Xcode's build system generates.
 
 ```
 Sources/PoweredNotch/
-  App/        avvio, servizi, menu, link powerednotch://, Comandi rapidi
-  Config/     il modello di tutto ciò che si personalizza
-  Notch/      finestra, forma, stati, mouse e gesti
-  Modules/    musica, calendario, scaffale, widget, catalogo
-  Agents/     modello delle sessioni e provider
-  Settings/   impostazioni ed editor del layout
-  System/     volume, luminosità, tasti, scorciatoie, Bluetooth, fotocamera
-  UI/         componenti e tema
-  Dev/        diagnostica e dati dimostrativi
-Sources/PoweredNotchMediaBridge/   ponte verso Now Playing
-extensions/   powered-notch-report, provider di esempio, hook di Claude Code
+  App/        launch, services, menus, powerednotch:// links, Shortcuts
+  Config/     the model of everything you can customize
+  Notch/      window, shape, state, mouse and gestures, volume/brightness HUD
+  Modules/    music, calendar, shelf, widgets, catalog
+  Agents/     session model, providers and session cards
+  Settings/   settings and the layout editor
+  System/     volume, brightness, keys, shortcuts, Bluetooth, camera
+  UI/         components and theme
+  Dev/        diagnostics and demo data
+Sources/PoweredNotchMediaBridge/   bridge to Now Playing
+extensions/   powered-notch-report, an example provider, Claude Code hooks
 ```
 
 ### Now Playing
 
-Da macOS 15.4 MediaRemote risponde con dati vuoti ai processi qualunque. Per questo `PoweredNotchMediaBridge` viene caricato da `/usr/bin/perl`, che ha ancora accesso, e scrive una riga JSON a ogni cambiamento. I comandi (play, avanti, scrub) non hanno questo limite e partono direttamente dall'app.
+Since macOS 15.4, MediaRemote answers with empty data to ordinary processes. That's why `PoweredNotchMediaBridge` is loaded by `/usr/bin/perl`, which still has access, and writes a line of JSON on every change. Commands (play, next, scrub) don't have this limit and go straight from the app.
 
-## Limiti noti
+## Known limitations
 
-- Usa API private per Now Playing, luminosità, spazi a tutto schermo e schermata di blocco. Sono caricate a runtime: se un aggiornamento di macOS le togliesse, quella funzione smetterebbe di funzionare ma l'app no. Per lo stesso motivo non può stare nel Mac App Store.
-- La firma ad-hoc fa perdere i permessi a ogni build: `build.sh` usa un certificato Apple Development se lo trova, oppure quello indicato in `POWERED_NOTCH_SIGN_IDENTITY`.
-- Senza gli hook, "permesso richiesto" non viene distinto da "in esecuzione".
-- Il visualizzatore musicale è un'animazione a tempo, non analizza l'audio: farlo richiederebbe il permesso di registrare l'audio di sistema.
-- "Mostra sulla schermata di blocco" è sperimentale.
+- It uses private APIs for Now Playing, brightness, full-screen spaces and the lock screen. They are loaded at runtime: if a macOS update removed them, that feature would stop working but the app would not. For the same reason it can't be in the Mac App Store.
+- Ad-hoc signing makes macOS forget permissions on every build. `build.sh` uses an Apple Development certificate if it finds one, or the one named in `POWERED_NOTCH_SIGN_IDENTITY`.
+- Without the hooks, "permission requested" can't be told apart from "running".
+- The music visualizer is a timed animation, not an audio analysis: doing that would require the permission to record system audio.
+- "Show on the lock screen" is experimental.
+- The interface and the source comments are in Italian for now.
 
-## Ringraziamenti
+## Contributing
 
-L'idea e l'elenco delle funzioni vengono da [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (GPL-3.0). Powered Notch non ne riusa il codice: è scritta da zero, consultandolo solo per capire quali API di sistema funzionano ancora.
+Issues and pull requests are welcome. The most useful contribution right now is **localization**: moving the user-facing strings out of the views and into string catalogs, starting with English. If you'd like to take that on, please open an issue first so we can agree on the approach.
+
+## Acknowledgments
+
+The idea and the feature list come from [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (GPL-3.0). Powered Notch does not reuse its code: it is written from scratch, consulting Boring Notch only to learn which system APIs still work.
+
+## License
+
+[MIT](LICENSE) © 2026 Francesco Romeo
