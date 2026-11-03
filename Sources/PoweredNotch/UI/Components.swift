@@ -283,7 +283,7 @@ struct LevelBar: View {
             ZStack(alignment: .leading) {
                 Capsule().fill(.white.opacity(0.16))
                 Capsule()
-                    .fill(tint)
+                    .fill(LinearGradient(colors: [tint.opacity(0.6), tint], startPoint: .leading, endPoint: .trailing))
                     .frame(width: max(height, geometry.size.width * min(1, max(0, fraction))))
             }
         }

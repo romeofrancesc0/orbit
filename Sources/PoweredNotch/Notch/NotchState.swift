@@ -40,15 +40,15 @@ struct NotchHUD: Equatable {
             }
         }
 
+        /// Le onde e i raggi si accendono in proporzione al livello (valore variabile dell'SF Symbol).
+        var usesVariableValue: Bool { self != .keyboard }
+
         func symbol(level: Double, muted: Bool) -> String {
             switch self {
             case .volume:
-                if muted || level <= 0 { return "speaker.slash.fill" }
-                if level < 0.34 { return "speaker.wave.1.fill" }
-                if level < 0.67 { return "speaker.wave.2.fill" }
-                return "speaker.wave.3.fill"
+                return muted || level <= 0 ? "speaker.slash.fill" : "speaker.wave.3.fill"
             case .brightness:
-                return level < 0.5 ? "sun.min.fill" : "sun.max.fill"
+                return "sun.max.fill"
             case .keyboard:
                 return level <= 0 ? "light.min" : "light.max"
             }
@@ -217,7 +217,7 @@ final class NotchState: ObservableObject {
     }
 
     static let peekHeight: CGFloat = 46
-    static let hudBelowHeight: CGFloat = 38
+    static let hudBelowHeight: CGFloat = 46
 
     private func peekWidth(_ peek: NotchPeek) -> CGFloat {
         // Stima sufficiente: la forma non deve seguire il testo al pixel, deve solo contenerlo.

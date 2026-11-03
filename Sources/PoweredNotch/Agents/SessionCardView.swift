@@ -133,7 +133,7 @@ struct SessionRow: View {
             }
         }
         .padding(.horizontal, 7)
-        .padding(.vertical, 4.5)
+        .padding(.vertical, 4)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(hovering ? theme.hoverFill : .clear)
@@ -157,6 +157,8 @@ struct SessionRow: View {
 }
 
 /// Card completa, per quando gli agenti hanno una pagina tutta per loro.
+/// Lo stato è il protagonista: un badge colorato, un alone che sale dall'angolo e
+/// una riga che dice cosa sta succedendo. Il resto resta sullo sfondo finché non serve.
 struct SessionCard: View {
     let session: AgentSession
     var onNavigate: () -> Void
@@ -165,6 +167,8 @@ struct SessionCard: View {
     @Environment(\.notchTheme) private var theme
     @State private var hovering = false
 
+    private var tint: Color { session.status.tint }
+
     private var activityText: String? {
         guard let activity = session.activity, !activity.isEmpty,
               activity.caseInsensitiveCompare(session.status.label) != .orderedSame
@@ -172,76 +176,157 @@ struct SessionCard: View {
         return activity
     }
 
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: max(theme.cardRadius - 2, 10), style: .continuous)
+    }
+
+    /// Quanto deve farsi sentire l'alone: forte per ciò che richiede te, tenue per il resto.
+    private var glow: Double {
+        if session.status.needsYou { return 0.26 }
+        return session.status == .working ? 0.16 : 0.06
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(spacing: 5) {
-                PulseDot(status: session.status, size: 7)
-                    .frame(width: 13, height: 13)
-                Text(session.project)
-                    .font(theme.font(12.5, .semibold))
-                    .foregroundStyle(theme.primary)
-                    .lineLimit(1)
-                if let branch = session.branch, branch != "HEAD", !branch.isEmpty {
-                    MetaChip(text: branch, symbol: "arrow.triangle.branch")
-                        .layoutPriority(-1)
-                }
-                Spacer(minLength: 2)
-                ElapsedLabel(date: session.updatedAt, size: 10)
-            }
-
-            Text(session.title)
-                .font(theme.font(11, .medium))
-                .foregroundStyle(theme.primary.opacity(0.82))
-                .lineLimit(1)
-
-            HStack(spacing: 4) {
-                Image(systemName: session.status.symbol)
-                    .font(.system(size: 8.5, weight: .semibold))
-                    .foregroundStyle(session.status.tint)
-                Text(session.status.label)
-                    .font(theme.font(10, .semibold))
-                    .foregroundStyle(session.status.tint)
-                    .lineLimit(1)
-                    .fixedSize()
-                if let activityText {
-                    Text("·").font(theme.font(10)).foregroundStyle(theme.tertiary)
-                    Text(activityText)
-                        .font(theme.font(10))
-                        .foregroundStyle(theme.secondary)
-                        .lineLimit(1)
-                }
-                Spacer(minLength: 0)
-            }
-
+        VStack(alignment: .leading, spacing: 6) {
+            header
+            statusLine
             footer
-                .frame(height: 22)
+                .frame(height: 18)
         }
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 11)
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.white.opacity(hovering ? 0.1 : 0.055))
-        )
-        .overlay(alignment: .leading) {
-            Capsule()
-                .fill(session.accentColor.opacity(session.status == .ended ? 0.35 : 0.95))
-                .frame(width: 2.5)
-                .padding(.vertical, 12)
-                .padding(.leading, 3)
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(session.status.needsYou ? session.status.tint.opacity(0.42) : .white.opacity(hovering ? 0.12 : 0.05), lineWidth: 0.8)
-        )
-        .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(background)
+        .overlay(border)
+        .shadow(color: .black.opacity(hovering ? 0.38 : 0.16), radius: hovering ? 12 : 4, y: hovering ? 6 : 2)
+        .scaleEffect(hovering ? 1.014 : 1)
+        .contentShape(shape)
         .onTapGesture { SessionMenu.primary(session, navigate: onNavigate) }
         .onHover { hovering = $0 }
-        .animation(.easeOut(duration: 0.14), value: hovering)
+        .animation(.spring(response: 0.3, dampingFraction: 0.78), value: hovering)
         .contextMenu { SessionContextMenu(session: session, navigate: onNavigate, hide: onHide) }
     }
 
-    /// A riposo mostra quanto contesto è consumato; al passaggio del mouse lascia il posto alle azioni.
+    // MARK: - Superficie
+
+    private var background: some View {
+        shape
+            .fill(
+                LinearGradient(
+                    colors: [.white.opacity(hovering ? 0.125 : 0.09), .white.opacity(hovering ? 0.065 : 0.035)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .overlay(
+                RadialGradient(
+                    colors: [tint.opacity(glow), .clear],
+                    center: .topLeading,
+                    startRadius: 0,
+                    endRadius: 170
+                )
+                .clipShape(shape)
+            )
+    }
+
+    /// Un filo di luce sul bordo alto, come il vetro: più nitido sopra, sparisce sotto.
+    private var border: some View {
+        shape.strokeBorder(
+            LinearGradient(
+                colors: session.status.needsYou
+                    ? [tint.opacity(0.65), tint.opacity(0.14)]
+                    : [.white.opacity(hovering ? 0.26 : 0.17), .white.opacity(0.03)],
+                startPoint: .top,
+                endPoint: .bottom
+            ),
+            lineWidth: 0.8
+        )
+    }
+
+    // MARK: - Testata
+
+    private var header: some View {
+        HStack(alignment: .center, spacing: 10) {
+            statusBadge
+
+            VStack(alignment: .leading, spacing: 1.5) {
+                HStack(spacing: 6) {
+                    Text(session.project)
+                        .font(theme.font(13, .semibold))
+                        .foregroundStyle(theme.primary)
+                        .lineLimit(1)
+                    if let branch = session.branch, branch != "HEAD", !branch.isEmpty {
+                        MetaChip(text: branch, symbol: "arrow.triangle.branch")
+                            .layoutPriority(-1)
+                    }
+                }
+                Text(session.title)
+                    .font(theme.font(10.5))
+                    .foregroundStyle(theme.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 4)
+
+            ElapsedLabel(date: session.updatedAt, size: 10)
+        }
+    }
+
+    /// L'icona dello stato in un quadrato dai bordi morbidi; chi è vivo ha un pallino che respira.
+    private var statusBadge: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(LinearGradient(colors: [tint.opacity(0.34), tint.opacity(0.10)], startPoint: .topLeading, endPoint: .bottomTrailing))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(tint.opacity(0.28), lineWidth: 0.7)
+            Image(systemName: session.status.symbol)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(tint)
+        }
+        .frame(width: 30, height: 30)
+        .overlay(alignment: .topTrailing) {
+            if session.status.animates {
+                PulseDot(status: session.status, size: 5.5)
+                    .frame(width: 13, height: 13)
+                    .offset(x: 4, y: -4)
+            }
+        }
+    }
+
+    // MARK: - Stato e attività
+
+    /// Cosa sta succedendo, in una riga sola. Per ciò che richiede te la riga si tinge.
+    private var statusLine: some View {
+        HStack(spacing: 7) {
+            Text(session.status.label)
+                .font(theme.font(10.5, .semibold))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .fixedSize()
+            if let activityText {
+                Capsule()
+                    .fill(.white.opacity(0.16))
+                    .frame(width: 1, height: 10)
+                Text(activityText)
+                    .font(theme.font(10.5))
+                    .foregroundStyle(theme.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 9)
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(session.status.needsYou ? tint.opacity(0.13) : Color.black.opacity(0.22))
+        )
+    }
+
+    // MARK: - Piede
+
+    /// A riposo mostra provider e contesto consumato; al passaggio del mouse lascia il posto alle azioni.
     @ViewBuilder
     private var footer: some View {
         if hovering {
@@ -278,18 +363,26 @@ struct SessionCard: View {
             }
             .transition(.opacity)
         } else {
-            HStack(spacing: 6) {
+            HStack(spacing: 7) {
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(session.accentColor)
+                        .frame(width: 5, height: 5)
+                    Text(session.providerName)
+                        .font(theme.font(9.5, .medium))
+                        .foregroundStyle(theme.tertiary)
+                        .lineLimit(1)
+                }
+                .fixedSize()
                 if let fraction = session.contextFraction {
-                    LevelBar(fraction: fraction, tint: session.status.tint.opacity(0.9), height: 3)
+                    LevelBar(fraction: fraction, tint: fraction > 0.85 ? Color(hex: 0xFF5A63) : tint.opacity(0.9), height: 3)
                     if let used = session.tokensUsed {
                         Text(Format.tokens(used))
                             .font(theme.numberFont(9))
                             .foregroundStyle(theme.tertiary)
+                            .fixedSize()
                     }
                 } else {
-                    Text(session.providerName)
-                        .font(theme.font(9.5))
-                        .foregroundStyle(theme.tertiary)
                     Spacer(minLength: 0)
                 }
                 if let host = session.host {
