@@ -24,7 +24,9 @@ Powered Notch takes its starting point from [Boring Notch](https://github.com/Th
 
 ## Installation
 
-You need Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+**Download.** Get `PoweredNotch.dmg` from the [latest release](https://github.com/romeofrancesc0/powered-notch/releases/latest) or from the [website](https://www.romeo-francesco.it/powerednotch), open it and drag the app into Applications. It runs on Apple Silicon and Intel. The app is not notarized by Apple yet, so the first time macOS says it can't verify the developer: go to System Settings → Privacy & Security and click **Open Anyway**.
+
+**Build from source.** You need Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
 brew install xcodegen
@@ -250,6 +252,7 @@ The clipboard history lives in memory only and skips anything apps mark as confi
 ## Development
 
 ```bash
+scripts/release.sh                            # universal dist/release/PoweredNotch.dmg (--publish: GitHub release)
 ./build.sh --run                              # bundle in dist/ and launch
 dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # check the rules you can't see by eye
 dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # what the agent providers see
@@ -275,6 +278,7 @@ Sources/PoweredNotch/
   Dev/        diagnostics and demo data
 Sources/PoweredNotchMediaBridge/   bridge to Now Playing
 extensions/   powered-notch-report, an example provider, Claude Code hooks
+scripts/      release.sh: the downloadable disk image
 ```
 
 ### Now Playing
