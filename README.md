@@ -1,6 +1,6 @@
-<p align="center"><img src="docs/icon.png" width="128" alt="Powered Notch icon"></p>
+<p align="center"><img src="docs/icon.png" width="128" alt="Orbit icon"></p>
 
-<h1 align="center">Powered Notch</h1>
+<h1 align="center">Orbit</h1>
 
 <p align="center">Your Mac's notch, made your way.<br>Music, calendar, a shelf for files, and the sessions of your coding agents, always in view.</p>
 
@@ -12,7 +12,7 @@
 
 ![The open notch](docs/open.png)
 
-Powered Notch takes its starting point from [Boring Notch](https://github.com/TheBoredTeam/boring.notch) and is written from scratch with three extra ideas: **everything can be moved, removed and added**, it feels like a part of macOS, and it knows what your coding agents are doing.
+Orbit takes its starting point from [Boring Notch](https://github.com/TheBoredTeam/boring.notch) and is written from scratch with three extra ideas: **everything can be moved, removed and added**, it feels like a part of macOS, and it knows what your coding agents are doing.
 
 | Closed notch: it only widens when it has something to say | An agent calls for you |
 |---|---|
@@ -24,26 +24,26 @@ Powered Notch takes its starting point from [Boring Notch](https://github.com/Th
 
 ## Installation
 
-**Download.** Get `PoweredNotch.dmg` from the [latest release](https://github.com/romeofrancesc0/powered-notch/releases/latest) or from the [website](https://www.romeo-francesco.it/powerednotch), open it and drag the app into Applications. It runs on Apple Silicon and Intel. The app is not notarized by Apple yet, so the first time macOS says it can't verify the developer: go to System Settings → Privacy & Security and click **Open Anyway**.
+**Download.** Get `Orbit.dmg` from the [latest release](https://github.com/romeofrancesc0/orbit/releases/latest) or from the [website](https://www.romeo-francesco.it/orbit), open it and drag the app into Applications. It runs on Apple Silicon and Intel. The app is not notarized by Apple yet, so the first time macOS says it can't verify the developer: go to System Settings → Privacy & Security and click **Open Anyway**.
 
-**Updates.** Once installed, Powered Notch keeps itself up to date: once a day it checks for a new release on GitHub, and with your OK it downloads it, verifies its signature and installs it. Settings → Behavior → Updates turns the daily check off; *Check for Updates…* is in the notch's menu.
+**Updates.** Once installed, Orbit keeps itself up to date: once a day it checks for a new release on GitHub, and with your OK it downloads it, verifies its signature and installs it. Settings → Behavior → Updates turns the daily check off; *Check for Updates…* is in the notch's menu.
 
 **Build from source.** You need Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
 brew install xcodegen
-git clone https://github.com/romeofrancesc0/powered-notch.git
-cd powered-notch
+git clone https://github.com/romeofrancesc0/orbit.git
+cd orbit
 ./build.sh --install
 ```
 
-The app lands in `~/Applications/PoweredNotch.app` and starts right away.
+The app lands in `~/Applications/Orbit.app` and starts right away.
 
 **Requirements:** macOS 14 or later. On macOS 26 and 27 it uses Liquid Glass.
 
-**Code signing.** `build.sh` signs with the first *Apple Development* certificate it finds in your keychain. To choose another one, set `POWERED_NOTCH_SIGN_IDENTITY`. With no certificate it falls back to ad-hoc signing, which works but makes macOS ask for permissions again after every build.
+**Code signing.** `build.sh` signs with the first *Apple Development* certificate it finds in your keychain. To choose another one, set `ORBIT_SIGN_IDENTITY`. With no certificate it falls back to ad-hoc signing, which works but makes macOS ask for permissions again after every build.
 
-**If you use Boring Notch,** quit it: two apps on the same notch cover each other. Powered Notch notices and offers a button to do it for you.
+**If you use Boring Notch,** quit it: two apps on the same notch cover each other. Orbit notices and offers a button to do it for you.
 
 ---
 
@@ -65,7 +65,7 @@ The app lands in `~/Applications/PoweredNotch.app` and starts right away.
 
 ## Customize everything
 
-Customization is the reason Powered Notch exists. Right-click the notch → *Customize the notch*.
+Customization is the reason Orbit exists. Right-click the notch → *Customize the notch*.
 
 ![The layout editor](docs/layout.png)
 
@@ -81,7 +81,7 @@ Customization is the reason Powered Notch exists. Right-click the notch → *Cus
 
 **Behavior.** Open on hover or only on click, delays, trackpad gestures, haptic feedback, which displays to use, full-screen apps, screen recording, global shortcuts.
 
-**Everything is a file.** `~/.config/powered-notch/config.json`: edit it by hand and the notch updates by itself. A missing key falls back to its default, and an unreadable section doesn't take the others down with it.
+**Everything is a file.** `~/.config/orbit/config.json`: edit it by hand and the notch updates by itself. A missing key falls back to its default, and an unreadable section doesn't take the others down with it.
 
 ---
 
@@ -112,23 +112,23 @@ Updates arrive through FSEvents as soon as files change, with no constant pollin
 
 The transcript doesn't record permission requests that are still pending: without the hook, a blocked session looks "running". Settings → Agents → **Install**.
 
-The installer **merges** its configuration into `~/.claude/settings.json` without touching the hooks already there, and saves a copy as `settings.json.powered-notch-backup`. The hooks are asynchronous and don't slow Claude Code down. Nothing is installed unless you ask for it. You can also run `extensions/claude-code-hooks/install.sh` (and `install.sh --remove`) by hand.
+The installer **merges** its configuration into `~/.claude/settings.json` without touching the hooks already there, and saves a copy as `settings.json.orbit-backup`. The hooks are asynchronous and don't slow Claude Code down. Nothing is installed unless you ask for it. You can also run `extensions/claude-code-hooks/install.sh` (and `install.sh --remove`) by hand.
 
 ### Connecting another agent
 
-Powered Notch knows nothing about whoever produces the sessions: it reads **providers**, which you add from Settings → Agents.
+Orbit knows nothing about whoever produces the sessions: it reads **providers**, which you add from Settings → Agents.
 
-**`inbox`: anyone writes a file.** Every JSON file in `~/.powered-notch/inbox/` is a session.
+**`inbox`: anyone writes a file.** Every JSON file in `~/.orbit/inbox/` is a session.
 
 ```bash
-extensions/powered-notch-report --id build-api --title "Building the backend" \
+extensions/orbit-report --id build-api --title "Building the backend" \
     --status working --project api --path "$PWD" --activity "docker build ."
 
-extensions/powered-notch-report --id build-api --status attention --activity "needs an answer"
-extensions/powered-notch-report --id build-api --remove
+extensions/orbit-report --id build-api --status attention --activity "needs an answer"
+extensions/orbit-report --id build-api --remove
 ```
 
-**`command`: a command that prints JSON.** Powered Notch runs it on every round. A commented template lives in [`extensions/example-command-provider.py`](extensions/example-command-provider.py).
+**`command`: a command that prints JSON.** Orbit runs it on every round. A commented template lives in [`extensions/example-command-provider.py`](extensions/example-command-provider.py).
 
 The schema of a session (only `id` is required):
 
@@ -151,12 +151,12 @@ The schema of a session (only `id` is required):
   "accent": "#8B5CF6",              // the provider's accent color
   "openURL": "myapp://session/42",  // deep link opened by the click
   "actions": [                      // extra entries in the context menu
-    { "label": "Approve", "command": "my-cli approve $POWERED_NOTCH_SESSION", "symbol": "checkmark.circle" }
+    { "label": "Approve", "command": "my-cli approve $ORBIT_SESSION", "symbol": "checkmark.circle" }
   ]
 }
 ```
 
-The commands in `actions` run with `/bin/sh -lc` in the session's folder, with `$POWERED_NOTCH_PATH`, `$POWERED_NOTCH_SESSION` and `$POWERED_NOTCH_PROVIDER` in the environment.
+The commands in `actions` run with `/bin/sh -lc` in the session's folder, with `$ORBIT_PATH`, `$ORBIT_SESSION` and `$ORBIT_PROVIDER` in the environment.
 
 ---
 
@@ -185,10 +185,10 @@ The widget shows up among the available ones in Layout, both as a widget and in 
 - **Focus filters:** every Focus can have its own profile.
 - **Liquid Glass** in the settings, in the icon and, if you want, in the notch itself.
 - **Reduce Motion** and the other system accessibility controls are respected.
-- **`powerednotch://`** for your own scripts. It only exposes harmless actions and never runs commands:
+- **`orbit://`** for your own scripts. It only exposes harmless actions and never runs commands:
 
 ```bash
-open 'powerednotch://peek?title=Build&subtitle=Done&symbol=hammer.fill&tint=%234ADE80'
+open 'orbit://peek?title=Build&subtitle=Done&symbol=hammer.fill&tint=%234ADE80'
 ```
 
 | Action | Parameters |
@@ -210,7 +210,7 @@ open 'powerednotch://peek?title=Build&subtitle=Done&symbol=hammer.fill&tint=%234
 An alert that drops on every change turns into noise quickly, so:
 
 - **Automatic quiet.** While you watch a video (a foreground app that does more than play music) or, if you choose, with a full-screen app, alerts neither drop nor get queued for later. The glow and dots in the closed notch remain.
-- **Manual quiet.** Right-click the notch → *Silence alerts*, the `powerednotch://quiet` link, or the Shortcuts action. macOS doesn't let apps read your Focus, so to tie it to one, create an automation "when I turn on this Focus → silence the notch alerts".
+- **Manual quiet.** Right-click the notch → *Silence alerts*, the `orbit://quiet` link, or the Shortcuts action. macOS doesn't let apps read your Focus, so to tie it to one, create an automation "when I turn on this Focus → silence the notch alerts".
 - **Stable states.** An agent only alerts if its new state holds for a few seconds, and the same session never alerts more than once a minute. Tune it in Settings → Alerts.
 - **Videos stay out of the wings.** Artwork and the visualizer appear in the closed notch only for music apps, not for a video in the browser.
 
@@ -241,7 +241,7 @@ In the closed notch, everything that moves (dots, visualizer, icon, scrolling te
 
 ## Permissions and privacy
 
-Powered Notch asks only for what the features you use need, when you use them. Nothing leaves your Mac, apart from whatever the script widgets you add yourself do. The only request the app makes on its own is the daily update check, which downloads a small feed from GitHub and sends nothing about you; you can turn it off in Settings → Behavior.
+Orbit asks only for what the features you use need, when you use them. Nothing leaves your Mac, apart from whatever the script widgets you add yourself do. The only request the app makes on its own is the daily update check, which downloads a small feed from GitHub and sends nothing about you; you can turn it off in Settings → Behavior.
 
 | Permission | Used for |
 |---|---|
@@ -250,7 +250,7 @@ Powered Notch asks only for what the features you use need, when you use them. N
 | Accessibility | Only to replace the volume and brightness indicators |
 | Bluetooth | Only for device alerts, which are off by default |
 
-The clipboard history lives in memory only and skips anything apps mark as confidential, such as passwords copied from a password manager. Notes and the shelf stay in `~/.config/powered-notch/`.
+The clipboard history lives in memory only and skips anything apps mark as confidential, such as passwords copied from a password manager. Notes and the shelf stay in `~/.config/orbit/`.
 
 ---
 
@@ -259,19 +259,19 @@ The clipboard history lives in memory only and skips anything apps mark as confi
 ```bash
 scripts/release.sh --publish 1.0.1           # new version: universal .dmg + update feed, published as a GitHub release
 ./build.sh --run                              # bundle in dist/ and launch
-dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # check the rules you can't see by eye
-dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # what the agent providers see
-dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --probe-controls   # volume, brightness, calendar
-open dist/PoweredNotch.app --args --demo           # the notch with made-up data, for screenshots
-open dist/PoweredNotch.app --args --demo --language=de   # …in another language, without touching your settings
-open dist/PoweredNotch.app --args --virtual-notch  # as on a display without a notch
+dist/Orbit.app/Contents/MacOS/Orbit --selftest         # check the rules you can't see by eye
+dist/Orbit.app/Contents/MacOS/Orbit --dump             # what the agent providers see
+dist/Orbit.app/Contents/MacOS/Orbit --probe-controls   # volume, brightness, calendar
+open dist/Orbit.app --args --demo           # the notch with made-up data, for screenshots
+open dist/Orbit.app --args --demo --language=de   # …in another language, without touching your settings
+open dist/Orbit.app --args --virtual-notch  # as on a display without a notch
 ```
 
 The Xcode project is generated from `project.yml`. It needs Xcode and not just SwiftPM because Shortcuts and Focus filters require metadata that only Xcode's build system generates.
 
 ```
-Sources/PoweredNotch/
-  App/        launch, services, menus, powerednotch:// links, Shortcuts
+Sources/Orbit/
+  App/        launch, services, menus, orbit:// links, Shortcuts
   Config/     the model of everything you can customize
   Notch/      window, shape, state, mouse and gestures, volume/brightness HUD
   Modules/    music, calendar, shelf, widgets, catalog
@@ -281,19 +281,19 @@ Sources/PoweredNotch/
   UI/         components and theme
   Localization/   language selection and string lookup
   Dev/        diagnostics and demo data
-Sources/PoweredNotchMediaBridge/   bridge to Now Playing
-extensions/   powered-notch-report, an example provider, Claude Code hooks
+Sources/OrbitMediaBridge/   bridge to Now Playing
+extensions/   orbit-report, an example provider, Claude Code hooks
 scripts/      release.sh: the downloadable disk image and the update feed (Sparkle)
 ```
 
 ### Now Playing
 
-Since macOS 15.4, MediaRemote answers with empty data to ordinary processes. That's why `PoweredNotchMediaBridge` is loaded by `/usr/bin/perl`, which still has access, and writes a line of JSON on every change. Commands (play, next, scrub) don't have this limit and go straight from the app.
+Since macOS 15.4, MediaRemote answers with empty data to ordinary processes. That's why `OrbitMediaBridge` is loaded by `/usr/bin/perl`, which still has access, and writes a line of JSON on every change. Commands (play, next, scrub) don't have this limit and go straight from the app.
 
 ## Known limitations
 
 - It uses private APIs for Now Playing, brightness, full-screen spaces and the lock screen. They are loaded at runtime: if a macOS update removed them, that feature would stop working but the app would not. For the same reason it can't be in the Mac App Store.
-- Ad-hoc signing makes macOS forget permissions on every build. `build.sh` uses an Apple Development certificate if it finds one, or the one named in `POWERED_NOTCH_SIGN_IDENTITY`.
+- Ad-hoc signing makes macOS forget permissions on every build. `build.sh` uses an Apple Development certificate if it finds one, or the one named in `ORBIT_SIGN_IDENTITY`.
 - Without the hooks, "permission requested" can't be told apart from "running".
 - The music visualizer is a timed animation, not an audio analysis: doing that would require the permission to record system audio.
 - "Show on the lock screen" is experimental.
@@ -304,11 +304,11 @@ Since macOS 15.4, MediaRemote answers with empty data to ordinary processes. Tha
 
 Issues and pull requests are welcome.
 
-**Translations.** Every user-facing string lives in `Resources/Localization/<language>.lproj/Localizable.strings`. The key is the original Italian text, which is also what the code contains, so Italian needs no table of its own. To fix a translation, edit the matching line. To add a language, add a `<code>.lproj` folder with a `Localizable.strings` and an `InfoPlist.strings`, add the code to `AppLanguage` in `Sources/PoweredNotch/Localization/Localization.swift`, and to `CFBundleLocalizations` in `project.yml`. In code, wrap strings you build by hand in `tr("…")`; SwiftUI `Text("…")` literals are looked up automatically.
+**Translations.** Every user-facing string lives in `Resources/Localization/<language>.lproj/Localizable.strings`. The key is the original Italian text, which is also what the code contains, so Italian needs no table of its own. To fix a translation, edit the matching line. To add a language, add a `<code>.lproj` folder with a `Localizable.strings` and an `InfoPlist.strings`, add the code to `AppLanguage` in `Sources/Orbit/Localization/Localization.swift`, and to `CFBundleLocalizations` in `project.yml`. In code, wrap strings you build by hand in `tr("…")`; SwiftUI `Text("…")` literals are looked up automatically.
 
 ## Acknowledgments
 
-The idea and the feature list come from [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (GPL-3.0). Powered Notch does not reuse its code: it is written from scratch, consulting Boring Notch only to learn which system APIs still work.
+The idea and the feature list come from [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (GPL-3.0). Orbit does not reuse its code: it is written from scratch, consulting Boring Notch only to learn which system APIs still work.
 
 ## License
 

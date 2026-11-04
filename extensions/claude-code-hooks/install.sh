@@ -1,8 +1,8 @@
 #!/bin/bash
-# Installs the optional Powered Notch hooks into ~/.claude/settings.json.
+# Installs the optional Orbit hooks into ~/.claude/settings.json.
 # The app does the same from Settings → Agenti → Hook di Claude Code.
 #
-# They are optional: without them Powered Notch already works by reading the
+# They are optional: without them Orbit already works by reading the
 # transcripts. They only make a still-pending permission request show up *right away*.
 #
 #   ./install.sh            -> install
@@ -15,15 +15,15 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 SETTINGS="$HOME/.claude/settings.json"
-TARGET_DIR="$HOME/.powered-notch/hooks"
-SCRIPT="$TARGET_DIR/powered_notch_hook.py"
+TARGET_DIR="$HOME/.orbit/hooks"
+SCRIPT="$TARGET_DIR/orbit_hook.py"
 
 MODE="install"
 [ "${1:-}" = "--remove" ] && MODE="remove"
 
 if [ "$MODE" = "install" ]; then
   mkdir -p "$TARGET_DIR"
-  cp powered_notch_hook.py "$SCRIPT"
+  cp orbit_hook.py "$SCRIPT"
   chmod +x "$SCRIPT"
   echo "▸ script copied to $SCRIPT"
 fi
@@ -40,7 +40,7 @@ events_clear = ["PostToolUse", "Stop", "UserPromptSubmit", "SessionEnd"]
 
 settings = {}
 if os.path.exists(settings_path):
-    shutil.copy2(settings_path, settings_path + ".powered-notch-backup")
+    shutil.copy2(settings_path, settings_path + ".orbit-backup")
     with open(settings_path, encoding="utf-8") as handle:
         settings = json.load(handle)
 
@@ -53,7 +53,9 @@ def command_for(event):
 
 def is_ours(entry):
     for hook in entry.get("hooks", []):
-        if "powered_notch_hook.py" in str(hook.get("command", "")):
+        command = str(hook.get("command", ""))
+        # "powered_notch_hook.py" is the name before Orbit: replace it instead of duplicating it
+        if "orbit_hook.py" in command or "powered_notch_hook.py" in command:
             return True
     return False
 
@@ -84,12 +86,12 @@ with open(settings_path, "w", encoding="utf-8") as handle:
     handle.write("\n")
 
 print(f"▸ {mode}: {changed} events updated in {settings_path}")
-print("  (backup: " + settings_path + ".powered-notch-backup)")
+print("  (backup: " + settings_path + ".orbit-backup)")
 PY
 
 if [ "$MODE" = "remove" ]; then
   rm -f "$SCRIPT"
-  rm -rf "$HOME/.powered-notch/hints"
+  rm -rf "$HOME/.orbit/hints"
   echo "▸ hooks removed"
 fi
 

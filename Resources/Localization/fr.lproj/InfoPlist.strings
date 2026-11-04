@@ -1,4 +1,4 @@
-"NSCalendarsFullAccessUsageDescription" = "Powered Notch affiche vos prochains événements dans le notch. Les données restent sur votre Mac.";
-"NSRemindersFullAccessUsageDescription" = "Powered Notch affiche vos rappels dans le notch. Les données restent sur votre Mac.";
-"NSCameraUsageDescription" = "Le miroir de Powered Notch utilise la caméra pour vous montrer votre allure. Rien n'est enregistré.";
-"NSBluetoothAlwaysUsageDescription" = "Powered Notch vous alerte dans le notch quand un appareil Bluetooth se connecte ou se déconnecte.";
+"NSCalendarsFullAccessUsageDescription" = "Orbit affiche vos prochains événements dans le notch. Les données restent sur votre Mac.";
+"NSRemindersFullAccessUsageDescription" = "Orbit affiche vos rappels dans le notch. Les données restent sur votre Mac.";
+"NSCameraUsageDescription" = "Le miroir de Orbit utilise la caméra pour vous montrer votre allure. Rien n'est enregistré.";
+"NSBluetoothAlwaysUsageDescription" = "Orbit vous alerte dans le notch quand un appareil Bluetooth se connecte ou se déconnecte.";

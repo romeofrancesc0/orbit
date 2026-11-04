@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Example `command` provider: prints sessions as JSON on stdout.
 
-Powered Notch runs this script on every polling round and shows what it prints.
-To enable it, add this to the providers in ~/.config/powered-notch/config.json:
+Orbit runs this script on every polling round and shows what it prints.
+To enable it, add this to the providers in ~/.config/orbit/config.json:
 
     {
       "id": "my-agent",
       "type": "command",
       "name": "My Agent",
       "accent": "#22C55E",
-      "command": "/path/to/powered-notch/extensions/example-command-provider.py"
+      "command": "/path/to/orbit/extensions/example-command-provider.py"
     }
 
 The contract:

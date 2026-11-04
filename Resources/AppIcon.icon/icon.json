@@ -14,8 +14,8 @@
       "layers" : [
         {
           "glass" : true,
-          "image-name" : "powerednotch.png",
-          "name" : "powerednotch"
+          "image-name" : "orbit.png",
+          "name" : "orbit"
         }
       ],
       "shadow" : {

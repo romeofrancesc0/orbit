@@ -1,4 +1,4 @@
-/* Powered Notch — user-facing strings. The key is the Italian source text. */
+/* Orbit — user-facing strings. The key is the Italian source text. */
 
 "in esecuzione" = "läuft";
 "attende te" = "wartet auf dich";
@@ -49,12 +49,12 @@
 "Terminale" = "Terminal";
 "Modifica" = "Bearbeiten";
 "Finestra" = "Fenster";
-"Informazioni su Powered Notch" = "Über Powered Notch";
+"Informazioni su Orbit" = "Über Orbit";
 "Impostazioni…" = "Einstellungen…";
-"Nascondi Powered Notch" = "Powered Notch ausblenden";
+"Nascondi Orbit" = "Orbit ausblenden";
 "Nascondi le altre" = "Andere ausblenden";
 "Mostra tutte" = "Alle einblenden";
-"Esci da Powered Notch" = "Powered Notch beenden";
+"Esci da Orbit" = "Orbit beenden";
 "Annulla" = "Widerrufen";
 "Ripeti" = "Wiederholen";
 "Taglia" = "Ausschneiden";
@@ -235,9 +235,9 @@
 "Aspetto…" = "Erscheinungsbild…";
 "Riattiva gli avvisi" = "Hinweise wieder aktivieren";
 "Silenzia gli avvisi" = "Hinweise stummschalten";
-"Riavvia Powered Notch" = "Powered Notch neu starten";
+"Riavvia Orbit" = "Orbit neu starten";
 "Boring Notch è aperto" = "Boring Notch ist geöffnet";
-"Si sovrappone a Powered Notch" = "Es überdeckt Powered Notch";
+"Si sovrappone a Orbit" = "Es überdeckt Orbit";
 "Chiudilo" = "Beenden";
 "In carica" = "Wird geladen";
 "A batteria" = "Batteriebetrieb";
@@ -274,7 +274,7 @@
 "Sessioni nascoste" = "Ausgeblendete Sitzungen";
 "Rimettile in elenco" = "Wieder in die Liste aufnehmen";
 "Hook rimossi. Riavvia le sessioni di Claude Code per applicare la modifica." = "Hooks entfernt. Starte deine Claude-Code-Sitzungen neu, um die Änderung zu übernehmen.";
-"Hook installati. Valgono dalle prossime sessioni di Claude Code. Copia di sicurezza: ~/.claude/settings.json.powered-notch-backup" = "Hooks installiert. Sie gelten ab deinen nächsten Claude-Code-Sitzungen. Sicherung: ~/.claude/settings.json.powered-notch-backup";
+"Hook installati. Valgono dalle prossime sessioni di Claude Code. Copia di sicurezza: ~/.claude/settings.json.orbit-backup" = "Hooks installiert. Sie gelten ab deinen nächsten Claude-Code-Sitzungen. Sicherung: ~/.claude/settings.json.orbit-backup";
 "Non è stato possibile modificare ~/.claude/settings.json: %@" = "~/.claude/settings.json konnte nicht geändert werden: %@";
 "Nessuna sessione adesso" = "Gerade keine Sitzungen";
 "1 sessione" = "1 Sitzung";
@@ -283,7 +283,7 @@
 "Aggiungi un agent" = "Agent hinzufügen";
 "Nome" = "Name";
 "Mio Agent" = "Mein Agent";
-"Come parla con Powered Notch" = "Wie er mit Powered Notch spricht";
+"Come parla con Orbit" = "Wie er mit Orbit spricht";
 "Un comando che stampa JSON" = "Ein Befehl, der JSON ausgibt";
 "Una cartella di file JSON" = "Ein Ordner mit JSON-Dateien";
 "Comando" = "Befehl";
@@ -384,7 +384,7 @@
 "Da quanto è acceso il Mac" = "Wie lange der Mac schon läuft";
 "IP pubblico" = "Öffentliche IP";
 "L'indirizzo con cui esci su Internet" = "Die Adresse, mit der du ins Internet gehst";
-"Se lo puoi scrivere in uno script, lo puoi mettere nella notch. Il comando stampa testo o JSON, Powered Notch lo mostra." = "Was du in einem Skript schreiben kannst, kannst du in den Notch bringen. Der Befehl gibt Text oder JSON aus, Powered Notch zeigt es an.";
+"Se lo puoi scrivere in uno script, lo puoi mettere nella notch. Il comando stampa testo o JSON, Orbit lo mostra." = "Was du in einem Skript schreiben kannst, kannst du in den Notch bringen. Der Befehl gibt Text oder JSON aus, Orbit zeigt es an.";
 "I tuoi widget" = "Deine Widgets";
 "Nessun widget. Parti da un modello qui sotto o creane uno vuoto." = "Keine Widgets. Starte mit einer Vorlage unten oder lege ein leeres an.";
 "Nuovo widget" = "Neues Widget";
@@ -443,7 +443,7 @@
 "Contenuti" = "Inhalte";
 "Come e quando la notch si apre, si chiude e si fa da parte." = "Wie und wann sich der Notch öffnet, schließt und zurücktritt.";
 "Avvio" = "Start";
-"Avvia Powered Notch al login" = "Powered Notch beim Anmelden starten";
+"Avvia Orbit al login" = "Orbit beim Anmelden starten";
 "Icona nella barra dei menu" = "Symbol in der Menüleiste";
 "Numero di sessioni attive accanto all'icona" = "Anzahl aktiver Sitzungen neben dem Symbol";
 "Apertura" = "Öffnen";
@@ -508,7 +508,7 @@
 "Con ⌥⇧ i tasti si muovono a passi più piccoli, come nell'indicatore di sistema." = "Mit ⌥⇧ bewegen sich die Tasten in kleineren Schritten, wie bei der Systemanzeige.";
 "Scorciatoie valide ovunque, anche con un'altra app in primo piano." = "Tastenkürzel, die überall funktionieren, auch wenn eine andere App im Vordergrund ist.";
 "Con i Comandi rapidi" = "Mit Kurzbefehle";
-"Powered Notch aggiunge le sue azioni all'app Comandi rapidi e a Spotlight: apri una pagina, manda un avviso, cambia profilo, conta le sessioni attive." = "Powered Notch fügt seine Aktionen der Kurzbefehle-App und Spotlight hinzu: Seite öffnen, Hinweis senden, Profil wechseln, aktive Sitzungen zählen.";
+"Orbit aggiunge le sue azioni all'app Comandi rapidi e a Spotlight: apri una pagina, manda un avviso, cambia profilo, conta le sessioni attive." = "Orbit fügt seine Aktionen der Kurzbefehle-App und Spotlight hinzu: Seite öffnen, Hinweis senden, Profil wechseln, aktive Sitzungen zählen.";
 "Togli la scorciatoia" = "Tastenkürzel entfernen";
 "Premi i tasti…" = "Tasten drücken…";
 "Un profilo ricorda aspetto e layout. Cambiali con un click, con un Comando rapido o con un filtro Full Immersion." = "Ein Profil merkt sich Erscheinungsbild und Layout. Wechsle mit einem Klick, einem Kurzbefehl oder einem Fokus-Filter.";
@@ -521,12 +521,12 @@
 "Importa un profilo…" = "Profil importieren…";
 "In uso" = "In Verwendung";
 "Applica" = "Anwenden";
-"Profilo Powered Notch.json" = "Powered-Notch-Profil.json";
+"Profilo Orbit.json" = "Orbit-Profil.json";
 "Profilo esportato in %@." = "Profil exportiert nach %@.";
 "Esportazione non riuscita: %@" = "Export fehlgeschlagen: %@";
 "Profilo \"%@\" importato." = "Profil \"%@\" importiert.";
-"Questo file non è un profilo di Powered Notch." = "Diese Datei ist kein Powered-Notch-Profil.";
-"Powered Notch chiede solo ciò che serve a ciò che usi, e nulla esce dal tuo Mac." = "Powered Notch fragt nur nach dem, was die genutzten Funktionen brauchen, und nichts verlässt deinen Mac.";
+"Questo file non è un profilo di Orbit." = "Diese Datei ist kein Orbit-Profil.";
+"Orbit chiede solo ciò che serve a ciò che usi, e nulla esce dal tuo Mac." = "Orbit fragt nur nach dem, was die genutzten Funktionen brauchen, und nichts verlässt deinen Mac.";
 "Mostra i tuoi eventi nel widget Calendario." = "Zeigt deine Termine im Kalender-Widget.";
 "Mostra i tuoi promemoria sotto gli eventi." = "Zeigt deine Erinnerungen unter den Terminen.";
 "Fotocamera" = "Kamera";
@@ -553,7 +553,7 @@
 "Calendario, timer e note" = "Kalender, Timer und Notizen";
 "L'essenziale" = "Nur das Nötigste";
 "Quasi invisibile, finché non serve" = "Fast unsichtbar, bis du es brauchst";
-"Ti diamo il benvenuto in Powered Notch" = "Willkommen bei Powered Notch";
+"Ti diamo il benvenuto in Orbit" = "Willkommen bei Orbit";
 "La notch diventa la parte più utile dello schermo. Passaci sopra col mouse per aprirla." = "Der Notch wird zum nützlichsten Teil deines Bildschirms. Fahr mit der Maus darüber, um ihn zu öffnen.";
 "Da dove vuoi partire?" = "Womit möchtest du beginnen?";
 "Puoi cambiare tutto in qualsiasi momento." = "Du kannst jederzeit alles ändern.";
@@ -572,7 +572,7 @@
 "Pagina" = "Seite";
 "Apri o chiudi la notch" = "Notch öffnen oder schließen";
 "Pagina della notch" = "Notch-Seite";
-"Profilo di Powered Notch" = "Powered-Notch-Profil";
+"Profilo di Orbit" = "Orbit-Profil";
 "Apre la notch se è chiusa e la chiude se è aperta." = "Öffnet den Notch, wenn er geschlossen ist, und schließt ihn, wenn er offen ist.";
 "Apri una pagina della notch" = "Notch-Seite öffnen";
 "Apre la notch sulla pagina scelta." = "Öffnet den Notch auf der gewählten Seite.";
@@ -583,7 +583,7 @@
 "Silenzia gli avvisi della notch" = "Notch-Hinweise stummschalten";
 "Silenzia o riattiva gli avvisi. Con un'automazione dei Comandi rapidi lo puoi legare a un Focus di macOS." = "Schaltet Hinweise stumm oder wieder ein. Mit einer Kurzbefehle-Automation kannst du es an einen macOS-Fokus koppeln.";
 "Silenzia" = "Stummschalten";
-"Cambia profilo di Powered Notch" = "Powered-Notch-Profil wechseln";
+"Cambia profilo di Orbit" = "Orbit-Profil wechseln";
 "Applica aspetto e layout di un profilo." = "Wendet Erscheinungsbild und Layout eines Profils an.";
 "Conta le sessioni attive" = "Aktive Sitzungen zählen";
 "Restituisce quante sessioni dei coding agent stanno lavorando o ti aspettano." = "Gibt zurück, wie viele Coding-Agent-Sitzungen arbeiten oder auf dich warten.";
@@ -591,7 +591,7 @@
 "Avvia un timer visibile anche a notch chiusa." = "Startet einen Timer, der auch bei geschlossenem Notch sichtbar ist.";
 "Minuti" = "Minuten";
 "Etichetta" = "Bezeichnung";
-"Cambia il profilo di Powered Notch quando attivi questa modalità Full Immersion." = "Wechselt das Powered-Notch-Profil, wenn du diesen Fokus aktivierst.";
+"Cambia il profilo di Orbit quando attivi questa modalità Full Immersion." = "Wechselt das Orbit-Profil, wenn du diesen Fokus aktivierst.";
 "Nessun cambiamento" = "Keine Änderung";
 "Apri o chiudi" = "Öffnen oder schließen";
 "Sessioni attive" = "Aktive Sitzungen";
