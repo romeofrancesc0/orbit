@@ -8,6 +8,11 @@ options:
     macOS: "14.0"
   createIntermediateGroups: true
   developmentLanguage: it
+packages:
+  # Automatic updates: the app reads appcast.xml from the latest GitHub release (scripts/release.sh).
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.6.0"
 settings:
   base:
     MARKETING_VERSION: "1.0.0"
@@ -32,6 +37,7 @@ targets:
       - path: extensions/claude-code-hooks/powered_notch_hook.py
         buildPhase: resources
     dependencies:
+      - package: Sparkle
       # Only copied into the bundle: /usr/bin/perl loads it, the app must not link against it.
       - target: PoweredNotchMediaBridge
         link: false
@@ -65,6 +71,11 @@ targets:
         NSRemindersFullAccessUsageDescription: Powered Notch mostra i tuoi promemoria nella notch. I dati restano sul Mac.
         NSCameraUsageDescription: Lo specchio di Powered Notch usa la fotocamera per mostrarti come appari. Non registra nulla.
         NSBluetoothAlwaysUsageDescription: Powered Notch ti avvisa nella notch quando un dispositivo Bluetooth si collega o si scollega.
+        # Sparkle: where to look for updates, the key that signs them, a check a day.
+        SUFeedURL: https://github.com/romeofrancesc0/powered-notch/releases/latest/download/appcast.xml
+        SUPublicEDKey: Zq4anDZxeLRzGdLyvCrB0bGHOGnm+z9S0nUYbcklimU=
+        SUEnableAutomaticChecks: true
+        SUScheduledCheckInterval: 86400
         CFBundleURLTypes:
           - CFBundleURLName: com.francescoromeo.powerednotch
             CFBundleURLSchemes:

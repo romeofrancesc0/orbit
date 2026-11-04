@@ -394,6 +394,9 @@ struct NotchContextMenu: View {
         Button("Impostazioni…") {
             SettingsWindowController.shared.show(section: nil, services: services)
         }
+        if Updater.shared.isAvailable {
+            Button("Controlla aggiornamenti…") { Updater.shared.checkForUpdates() }
+        }
         Button("Esci da Powered Notch") { NSApp.terminate(nil) }
     }
 }
@@ -432,6 +435,11 @@ enum NotchMenu {
         menu.addItem(ClosureMenuItem(tr("Impostazioni…"), symbol: "gearshape") {
             SettingsWindowController.shared.show(section: nil, services: services)
         })
+        if Updater.shared.isAvailable {
+            menu.addItem(ClosureMenuItem(tr("Controlla aggiornamenti…"), symbol: "arrow.down.circle") {
+                Updater.shared.checkForUpdates()
+            })
+        }
         menu.addItem(ClosureMenuItem(tr("Riavvia Powered Notch"), symbol: "arrow.clockwise") {
             AppServices.relaunch()
         })

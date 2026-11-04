@@ -601,3 +601,13 @@
 "%lld finite" = "%lld done";
 "Segna come vista" = "Mark as seen";
 "Altre sessioni" = "Other sessions";
+
+/* Updates (Sparkle) */
+"Controlla aggiornamenti…" = "Check for Updates…";
+"Aggiornamento disponibile" = "Update available";
+"Aggiornamenti" = "Updates";
+"Controlla automaticamente gli aggiornamenti" = "Check for updates automatically";
+"Versione %@" = "Version %@";
+"Controlla adesso" = "Check Now";
+"Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso." = "New versions download and install on their own, after asking you.";
+"Vedi" = "View";

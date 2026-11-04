@@ -74,6 +74,7 @@ final class AppServices {
             .store(in: &cancellables)
 
         notch.start()
+        Updater.shared.start(enabled: !isDemo)
         MainMenu.install(services: self)
         MenuBarController.shared.start(services: self)
         HotKeyCenter.shared.perform = { [weak self] action in self?.perform(action) }

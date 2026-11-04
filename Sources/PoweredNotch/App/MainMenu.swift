@@ -24,6 +24,9 @@ enum MainMenu {
     private static func application(services: AppServices) -> NSMenu {
         let menu = NSMenu()
         menu.addItem(withTitle: tr("Informazioni su Powered Notch"), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        if Updater.shared.isAvailable {
+            menu.addItem(ClosureMenuItem(tr("Controlla aggiornamenti…")) { Updater.shared.checkForUpdates() })
+        }
         menu.addItem(.separator())
         let settings = ClosureMenuItem(tr("Impostazioni…")) {
             SettingsWindowController.shared.show(section: nil, services: services)

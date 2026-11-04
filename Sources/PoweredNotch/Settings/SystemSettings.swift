@@ -7,6 +7,7 @@ import UniformTypeIdentifiers
 
 struct GeneralSettingsView: View {
     @EnvironmentObject private var settings: SettingsStore
+    @ObservedObject private var updater = Updater.shared
     @State private var loginEnabled = LoginItem.isEnabled
 
     var body: some View {
@@ -34,6 +35,22 @@ struct GeneralSettingsView: View {
                 Toggle("Icona nella barra dei menu", isOn: settings.binding(\.behavior.showMenuBarIcon))
                 if settings.config.behavior.showMenuBarIcon {
                     Toggle("Numero di sessioni attive accanto all'icona", isOn: settings.binding(\.behavior.menuBarShowsAgentCount))
+                }
+            }
+
+            if updater.isAvailable {
+                Section("Aggiornamenti") {
+                    Toggle("Controlla automaticamente gli aggiornamenti", isOn: $updater.automaticallyChecks)
+                    HStack {
+                        Text(tr("Versione %@", updater.currentVersion))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Controlla adesso") { updater.checkForUpdates() }
+                            .disabled(!updater.canCheckForUpdates)
+                    }
+                    Text("Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
 

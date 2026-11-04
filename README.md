@@ -26,6 +26,8 @@ Powered Notch takes its starting point from [Boring Notch](https://github.com/Th
 
 **Download.** Get `PoweredNotch.dmg` from the [latest release](https://github.com/romeofrancesc0/powered-notch/releases/latest) or from the [website](https://www.romeo-francesco.it/powerednotch), open it and drag the app into Applications. It runs on Apple Silicon and Intel. The app is not notarized by Apple yet, so the first time macOS says it can't verify the developer: go to System Settings → Privacy & Security and click **Open Anyway**.
 
+**Updates.** Once installed, Powered Notch keeps itself up to date: once a day it checks for a new release on GitHub, and with your OK it downloads it, verifies its signature and installs it. Settings → Behavior → Updates turns the daily check off; *Check for Updates…* is in the notch's menu.
+
 **Build from source.** You need Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
@@ -239,7 +241,7 @@ In the closed notch, everything that moves (dots, visualizer, icon, scrolling te
 
 ## Permissions and privacy
 
-Powered Notch asks only for what the features you use need, when you use them. Nothing leaves your Mac, apart from whatever the script widgets you add yourself do.
+Powered Notch asks only for what the features you use need, when you use them. Nothing leaves your Mac, apart from whatever the script widgets you add yourself do. The only request the app makes on its own is the daily update check, which downloads a small feed from GitHub and sends nothing about you; you can turn it off in Settings → Behavior.
 
 | Permission | Used for |
 |---|---|
@@ -255,7 +257,7 @@ The clipboard history lives in memory only and skips anything apps mark as confi
 ## Development
 
 ```bash
-scripts/release.sh                            # universal dist/release/PoweredNotch.dmg (--publish: GitHub release)
+scripts/release.sh --publish 1.0.1           # new version: universal .dmg + update feed, published as a GitHub release
 ./build.sh --run                              # bundle in dist/ and launch
 dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --selftest         # check the rules you can't see by eye
 dist/PoweredNotch.app/Contents/MacOS/PoweredNotch --dump             # what the agent providers see
@@ -281,7 +283,7 @@ Sources/PoweredNotch/
   Dev/        diagnostics and demo data
 Sources/PoweredNotchMediaBridge/   bridge to Now Playing
 extensions/   powered-notch-report, an example provider, Claude Code hooks
-scripts/      release.sh: the downloadable disk image
+scripts/      release.sh: the downloadable disk image and the update feed (Sparkle)
 ```
 
 ### Now Playing

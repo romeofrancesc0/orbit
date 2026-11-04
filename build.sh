@@ -61,8 +61,21 @@ if [ -z "$IDENTITY" ]; then
 fi
 IDENTITY="${IDENTITY:--}"
 
+# Sparkle.framework arrives with its signature broken (Xcode strips its headers when embedding it):
+# sign its pieces again, inside out, in the order Sparkle's documentation gives.
+sign_sparkle() {
+  local fw="$1/Contents/Frameworks/Sparkle.framework"; shift
+  [ -d "$fw" ] || return 0
+  local v="$fw/Versions/B"
+  for item in "$v/XPCServices/Installer.xpc" "$v/XPCServices/Downloader.xpc" "$v/Autoupdate" "$v/Updater.app"; do
+    [ -e "$item" ] && codesign "$@" --preserve-metadata=entitlements "$item" >/dev/null 2>&1
+  done
+  codesign "$@" "$fw" >/dev/null 2>&1
+}
+
 MEDIA_LIB="$(find "$APP/Contents" -name 'libPoweredNotchMediaBridge.dylib' | head -1)"
 [ -n "$MEDIA_LIB" ] && codesign --force --sign "$IDENTITY" "$MEDIA_LIB" >/dev/null 2>&1
+sign_sparkle "$APP" --force --sign "$IDENTITY"
 codesign --force --sign "$IDENTITY" "$APP" >/dev/null 2>&1 || echo "  (signing failed, not fatal)"
 if [ "$IDENTITY" = "-" ]; then
   echo "▸ signed ad hoc (macOS will ask for permissions again after each build)"

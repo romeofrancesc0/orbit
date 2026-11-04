@@ -601,3 +601,13 @@
 "%lld finite" = "%lld terminées";
 "Segna come vista" = "Marquer comme vue";
 "Altre sessioni" = "Autres sessions";
+
+/* Updates (Sparkle) */
+"Controlla aggiornamenti…" = "Rechercher les mises à jour…";
+"Aggiornamento disponibile" = "Mise à jour disponible";
+"Aggiornamenti" = "Mises à jour";
+"Controlla automaticamente gli aggiornamenti" = "Rechercher automatiquement les mises à jour";
+"Versione %@" = "Version %@";
+"Controlla adesso" = "Rechercher maintenant";
+"Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso." = "Les nouvelles versions se téléchargent et s’installent d’elles-mêmes, après vous avoir demandé.";
+"Vedi" = "Voir";
