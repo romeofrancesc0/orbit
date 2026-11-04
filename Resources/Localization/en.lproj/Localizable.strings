@@ -595,3 +595,9 @@
 "Nessun cambiamento" = "No change";
 "Apri o chiudi" = "Open or close";
 "Sessioni attive" = "Active sessions";
+"finita" = "done";
+"ti fa una domanda" = "asks you a question";
+"piano da approvare" = "plan to approve";
+"%lld finite" = "%lld done";
+"Segna come vista" = "Mark as seen";
+"Altre sessioni" = "Other sessions";

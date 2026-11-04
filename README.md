@@ -94,12 +94,15 @@ Each session is a card: a status badge, the project and branch, what the agent i
 | Status | Meaning |
 |---|---|
 | **running** (blue, *in esecuzione*) | The agent is working. The tool in use is shown too. |
-| **waiting for you** (amber, *attende te*) | It finished its turn: the ball is in your court. |
+| **waiting for you** (amber, *attende te*) | The agent genuinely needs you: it asked a question (a closing "?" or the question tool) or wants a plan approved. |
+| **done** (green, *finita*) | It finished its turn without asking anything. Shown, but it never lights the notch. |
 | **permission requested** (red, *permesso richiesto*) | Blocked, waiting for an approval (needs the hook, see below). |
-| **paused** (gray, *in pausa*) | Session still open but idle for more than 6 minutes. |
+| **paused** (gray, *in pausa*) | Session still open but silent for more than 6 minutes, whatever it was doing before. |
 | **ended** | Recently closed session, can be resumed. |
 
 When an agent moves to *waiting for you* or *permission requested*, the notch drops an alert, glows until the situation changes, and a click takes you **into that very chat**: Claude Desktop and Codex have direct deep links.
+
+Opening a session (or choosing *Mark as seen* in its menu) quiets it until something new happens in that chat, so a question you already dealt with stops calling you. Running sessions and the ones that need you get full cards; the rest (done, paused, ended) collapse into compact rows under *Other sessions*.
 
 Updates arrive through FSEvents as soon as files change, with no constant polling of the disk.
 
@@ -135,7 +138,7 @@ The schema of a session (only `id` is required):
   "path": "/Users/you/dev/api",     // enables Terminal / Editor / Finder / Copy
   "branch": "main",
   "model": "gpt-5",
-  "status": "working",              // working | attention | blocked | idle | ended | error
+  "status": "working",              // working | attention | done | blocked | idle | ended | error
   "activity": "Edit · auth.ts",     // the line under the status
   "detail": "long text",
   "startedAt": "2026-08-03T09:00:00Z",  // ISO-8601, or epoch seconds/milliseconds

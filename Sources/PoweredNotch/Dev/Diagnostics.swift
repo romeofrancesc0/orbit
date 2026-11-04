@@ -120,8 +120,19 @@ enum Diagnostics {
             handle.write(Data(finished[middle...].utf8))
             try? handle.close()
             cursor = TranscriptScanner.advance(cursor, url: transcript)
-            check(cursor.scan.status == .attention, "completata la riga, il turno risulta finito")
+            check(cursor.scan.status == .done, "completata la riga, il turno risulta finito (senza chiamare)")
         }
+        try? line("assistant", stop: "end_turn", text: "Vuoi che faccia il push?").write(to: transcript, atomically: true, encoding: .utf8)
+        cursor = TranscriptScanner.advance(cursor, url: transcript)
+        check(cursor.scan.status == .attention, "una domanda in fondo al turno chiama l'utente")
+        try? """
+        {"type":"assistant","timestamp":"2026-10-31T10:01:00Z","message":{"stop_reason":"tool_use","content":[{"type":"tool_use","name":"AskUserQuestion","input":{"questions":[{"question":"Quale database?"}]}}]}}
+
+        """.write(to: transcript, atomically: true, encoding: .utf8)
+        cursor = TranscriptScanner.start(url: transcript)
+        check(cursor.scan.status == .attention && cursor.scan.activity == "Quale database?", "AskUserQuestion aspetta una risposta")
+        check(TranscriptScanner.endsWithQuestion("Procedo con **il push?**"), "il markdown in coda non nasconde la domanda")
+        check(!TranscriptScanner.endsWithQuestion("Se vuoi, faccio il push."), "un'offerta senza domanda non chiama")
         try? line("assistant", stop: nil, text: "x").write(to: transcript, atomically: true, encoding: .utf8)
         cursor = TranscriptScanner.advance(cursor, url: transcript)
         check(cursor.scan.status == .working, "un file riscritto si rilegge da capo")
@@ -137,7 +148,7 @@ enum Diagnostics {
         CodexScanner.absorb(["type": "event_msg", "payload": ["type": "exec_approval_request"]], into: &codex)
         check(codex.status == .blocked, "una richiesta di approvazione blocca la sessione")
         CodexScanner.absorb(["type": "event_msg", "payload": ["type": "task_complete", "last_agent_message": "fatto"]], into: &codex)
-        check(codex.status == .attention && codex.activity == "fatto", "task_complete passa la palla all'umano")
+        check(codex.status == .done && codex.activity == "fatto", "task_complete senza domanda chiude il turno")
 
         print("── Widget da script")
         let json = CustomWidgetStore.parse(Data(#"{"text":"22°","symbol":"sun.max","progress":0.5}"#.utf8))

@@ -137,6 +137,7 @@ actor CodexProvider: SessionProvider {
             status = .idle
         case .blocked where age > config.idleAfterMinutes * 60,
              .attention where age > config.idleAfterMinutes * 60,
+             .done where age > config.idleAfterMinutes * 60,
              .error where age > config.idleAfterMinutes * 60,
              .idle where age > config.idleAfterMinutes * 60:
             status = .ended
@@ -295,12 +296,13 @@ enum CodexScanner {
             scan.status = .working
             scan.activity = tr("prompt inviato")
         case "task_complete":
-            scan.status = .attention
-            if let message = payload["last_agent_message"] as? String {
+            let message = payload["last_agent_message"] as? String
+            scan.status = message.map(TranscriptScanner.endsWithQuestion) == true ? .attention : .done
+            if let message {
                 scan.activity = TranscriptScanner.snippet(message)
             }
         case "turn_aborted":
-            scan.status = .attention
+            scan.status = .done
             scan.activity = tr("turno interrotto")
         case "user_message":
             if let message = payload["message"] as? String, !message.isEmpty { scan.lastPrompt = message }

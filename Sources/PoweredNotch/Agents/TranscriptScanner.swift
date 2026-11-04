@@ -159,12 +159,22 @@ enum TranscriptScanner {
 
         var activity: String?
         var status: SessionStatus = .working
+        // Un tool che per natura aspetta una persona: finché non arriva la risposta,
+        // la palla è all'umano anche se il turno tecnicamente non è chiuso.
+        var asksYou = false
+        var lastText: String?
 
         for block in blocks {
             switch block["type"] as? String {
             case "tool_use":
                 let name = (block["name"] as? String) ?? "tool"
-                activity = describeTool(name: name, input: block["input"] as? [String: Any])
+                let input = block["input"] as? [String: Any]
+                if !sidechain, let prompt = humanPrompt(name: name, input: input) {
+                    activity = prompt
+                    asksYou = true
+                } else {
+                    activity = describeTool(name: name, input: input)
+                }
                 status = .working
             case "thinking", "redacted_thinking":
                 activity = activity ?? tr("ragiona…")
@@ -173,6 +183,7 @@ enum TranscriptScanner {
                 let text = (block["text"] as? String) ?? ""
                 if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     activity = activity ?? snippet(text)
+                    lastText = text
                 }
             default:
                 break
@@ -186,9 +197,9 @@ enum TranscriptScanner {
             // Turno concluso senza tool: tocca all'umano. Non se a finire è un subagent:
             // lì il lavoro continua, e un falso "attende te" accenderebbe la notch per niente.
             if !sidechain, !blocks.contains(where: { ($0["type"] as? String) == "tool_use" }) {
-                // L'etichetta di stato dice già "attende te": qui resta al più
-                // l'ultima frase dell'agent, che è informativa.
-                status = .attention
+                // Un turno chiuso non è una chiamata: "attende te" solo se l'agent ha
+                // fatto una domanda. Altrimenti ha finito, e se vuoi altro lo dirai tu.
+                status = lastText.map(endsWithQuestion) == true ? .attention : .done
             }
         case "max_tokens":
             status = .error
@@ -198,6 +209,7 @@ enum TranscriptScanner {
         default:
             break
         }
+        if asksYou { status = .attention }
 
         scan.status = status
         if let activity {
@@ -233,6 +245,31 @@ enum TranscriptScanner {
                 if !text.isEmpty { scan.lastPrompt = text }
             }
         }
+    }
+
+    // MARK: - Chiamate all'umano
+
+    /// Il testo che l'agent sta mostrando a una persona, se il tool è una richiesta e non un lavoro.
+    private static func humanPrompt(name: String, input: [String: Any]?) -> String? {
+        switch name {
+        case "AskUserQuestion":
+            let questions = input?["questions"] as? [[String: Any]]
+            if let question = questions?.first?["question"] as? String, !question.isEmpty {
+                return snippet(question)
+            }
+            return tr("ti fa una domanda")
+        case "ExitPlanMode":
+            return tr("piano da approvare")
+        default:
+            return nil
+        }
+    }
+
+    /// L'ultima frase è una domanda? Si ignorano gli ornamenti di markdown in coda.
+    static func endsWithQuestion(_ text: String) -> Bool {
+        let ornaments = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "*_`\"')”’»)]"))
+        let trimmed = text.trimmingCharacters(in: ornaments)
+        return trimmed.hasSuffix("?") || trimmed.hasSuffix("？")
     }
 
     // MARK: - Etichette

@@ -1,6 +1,9 @@
 import Foundation
 
-/// Sessioni tolte a mano dall'elenco.
+/// Sessioni tolte a mano dall'elenco, oppure già viste dall'utente.
+///
+/// Stesso meccanismo per due usi, con due file diversi: "nascosta" e "vista" valgono
+/// entrambe fino al prossimo evento della sessione.
 ///
 /// Non si cancella niente: si annota *quando* una sessione è stata rimossa.
 /// Finché la sessione resta ferma a prima di quel momento, sparisce; appena
@@ -30,6 +33,11 @@ final class DismissedStore {
         entries[session.id] = max(Date(), session.updatedAt.addingTimeInterval(0.001))
         save()
     }
+
+    /// La sessione è stata vista e da allora non è successo nulla.
+    func isSeen(_ session: AgentSession) -> Bool { isHidden(session) }
+
+    func markSeen(_ session: AgentSession) { dismiss(session) }
 
     func restoreAll() {
         guard !entries.isEmpty else { return }

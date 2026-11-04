@@ -237,7 +237,8 @@ actor ClaudeCodeProvider: SessionProvider {
         }
 
         let stale = Date().timeIntervalSince(updated) > config.idleAfterMinutes * 60
-        if stale && status != .error { status = .idle }
+        // Anche un errore scade: una risposta troncata di un'ora fa non chiama più nessuno.
+        if stale { status = .idle }
 
         let project = URL(fileURLWithPath: entry.cwd).lastPathComponent
         let title = preferredTitle(scan: scan, entry: entry, desktop: desktop, project: project)

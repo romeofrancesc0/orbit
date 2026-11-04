@@ -1,6 +1,11 @@
 import AppKit
 import ServiceManagement
 
+extension Notification.Name {
+    /// `object` è l'id della sessione che l'utente ha aperto o segnato come vista.
+    static let sessionSeen = Notification.Name("powerednotch.sessionSeen")
+}
+
 /// Azioni eseguibili su una sessione.
 enum SessionActions {
     // MARK: - Apertura
@@ -47,11 +52,17 @@ enum SessionActions {
     /// Apre *quella* sessione: se il provider ha dato un deep link si va dritti
     /// nella chat giusta, altrimenti si ripiega sull'app che la ospita.
     static func focus(_ session: AgentSession) {
+        markSeen(session)
         if let raw = session.openURL, let url = URL(string: raw) {
             NSWorkspace.shared.open(url)
             return
         }
         focusHost(of: session)
+    }
+
+    /// L'utente ha visto la sessione: smette di chiamarlo finché non succede qualcosa di nuovo.
+    static func markSeen(_ session: AgentSession) {
+        NotificationCenter.default.post(name: .sessionSeen, object: session.id)
     }
 
     /// Porta in primo piano l'app che ospita la sessione.
@@ -121,6 +132,7 @@ enum SessionActions {
     /// Riprende una sessione di Claude Code in una nuova finestra di Terminale.
     static func resumeClaudeCode(session: AgentSession) {
         guard let sessionID = session.nativeID else { return }
+        markSeen(session)
         let command = """
         if ! command -v claude >/dev/null 2>&1; then
           echo "Comando 'claude' non trovato nel PATH."; exec $SHELL -l

@@ -63,6 +63,10 @@ final class SessionStore: ObservableObject {
     let summary = SessionSummary()
     private(set) var config: AgentsConfig
     private let dismissed: DismissedStore
+    /// Sessioni che l'utente ha già guardato: non chiamano finché non succede altro.
+    private let seen: DismissedStore
+    private var latest: [AgentSession] = []
+    private var seenObserver: NSObjectProtocol?
     private var providers: [SessionProvider] = []
     private var providerSignature: [ProviderConfig] = []
     private var timer: Timer?
@@ -77,14 +81,24 @@ final class SessionStore: ObservableObject {
     init(config: AgentsConfig) {
         self.config = config
         dismissed = DismissedStore()
+        seen = DismissedStore(file: AppPaths.configDirectory.appendingPathComponent("seen.json"))
         isPreview = false
         rebuildProviders()
+        seenObserver = NotificationCenter.default.addObserver(forName: .sessionSeen, object: nil, queue: .main) { [weak self] note in
+            guard let id = note.object as? String else { return }
+            MainActor.assumeIsolated { self?.markSeen(id: id) }
+        }
+    }
+
+    deinit {
+        if let seenObserver { NotificationCenter.default.removeObserver(seenObserver) }
     }
 
     /// Store statico con dati finti, usato per le anteprime e per gli screenshot.
     init(preview sessions: [AgentSession]) {
         config = AgentsConfig()
         dismissed = DismissedStore(file: FileManager.default.temporaryDirectory.appendingPathComponent("powerednotch-preview-dismissed.json"))
+        seen = DismissedStore(file: FileManager.default.temporaryDirectory.appendingPathComponent("powerednotch-preview-seen.json"))
         isPreview = true
         self.sessions = AgentSession.ordered(sessions)
         summary.update(from: self.sessions)
@@ -222,8 +236,21 @@ final class SessionStore: ObservableObject {
         var deduped: [String: AgentSession] = [:]
         for session in incoming { deduped[session.id] = session }
 
+        latest = Array(deduped.values)
         dismissed.prune(knownIDs: Set(deduped.keys))
-        let all = Array(deduped.values)
+        seen.prune(knownIDs: Set(deduped.keys))
+        // Una chiamata già vista si ridimensiona: la sessione resta in elenco, ma non
+        // accende la notch. Un permesso ancora pendente invece continua a chiamare.
+        let all = deduped.values.map { session -> AgentSession in
+            guard seen.isSeen(session) else { return session }
+            var calmer = session
+            switch session.status {
+            case .attention: calmer.status = .done
+            case .error:     calmer.status = .idle
+            default:         break
+            }
+            return calmer
+        }
         let visible = all.filter { !dismissed.isHidden($0) }
         let hidden = all.count - visible.count
         if hidden != hiddenCount { hiddenCount = hidden }
@@ -253,6 +280,7 @@ final class SessionStore: ObservableObject {
     var activeSessions: [AgentSession] { sessions.filter { $0.status.isActive } }
     var workingCount: Int { sessions.filter { $0.status == .working }.count }
     var attentionCount: Int { sessions.filter { $0.status.needsYou }.count }
+    var doneCount: Int { sessions.filter { $0.status == .done }.count }
     var idleCount: Int { sessions.filter { $0.status == .idle }.count }
 
     /// Stato riassuntivo: vince ciò che richiede attenzione.
@@ -268,6 +296,7 @@ final class SessionStore: ObservableObject {
         var parts: [String] = []
         if workingCount > 0 { parts.append(tr("%lld al lavoro", workingCount)) }
         if attentionCount > 0 { parts.append(tr("%lld in attesa", attentionCount)) }
+        if doneCount > 0 { parts.append(tr("%lld finite", doneCount)) }
         if idleCount > 0 { parts.append(tr("%lld in pausa", idleCount)) }
         if parts.isEmpty {
             let ended = sessions.count
@@ -285,6 +314,13 @@ final class SessionStore: ObservableObject {
         sessions.removeAll { $0.id == session.id }
         summary.update(from: sessions)
         hiddenCount += 1
+    }
+
+    /// L'utente ha aperto la sessione (o l'ha segnata come vista).
+    private func markSeen(id: String) {
+        guard let session = latest.first(where: { $0.id == id }), session.status.needsYou else { return }
+        seen.markSeen(session)
+        apply(sessions: latest, errors: providerErrors)
     }
 
     func restoreHidden() {

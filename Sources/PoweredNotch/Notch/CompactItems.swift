@@ -212,6 +212,7 @@ struct AgentsStatusGlyph: View {
         case .attention: "hand.raised.fill"
         case .blocked:   "lock.fill"
         case .error:     "exclamationmark.triangle.fill"
+        case .done:      "checkmark.circle.fill"
         case .idle:      "moon.zzz.fill"
         case .ended:     "checkmark"
         }

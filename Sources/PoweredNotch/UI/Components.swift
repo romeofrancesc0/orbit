@@ -44,6 +44,7 @@ extension SessionStatus {
         case .working:   Color(hex: 0x4FC3F7)
         case .attention: Color(hex: 0xFFC145)
         case .blocked:   Color(hex: 0xFF6B6B)
+        case .done:      Color(hex: 0x5BD08A)
         case .idle:      Color(hex: 0x8E9BAE)
         case .ended:     Color(hex: 0x6B7789)
         case .error:     Color(hex: 0xFF5A63)

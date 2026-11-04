@@ -66,6 +66,9 @@ private struct SessionContextMenu: View {
             }
         }
         Divider()
+        if session.status.needsYou {
+            Button("Segna come vista") { SessionActions.markSeen(session) }
+        }
         Button("Togli dall'elenco", action: hide)
     }
 }
@@ -358,6 +361,12 @@ struct SessionCard: View {
                     .help("Mostra nel Finder")
                 }
                 Spacer(minLength: 0)
+                if session.status.needsYou {
+                    NotchPillButton(symbol: "checkmark", label: "", tint: nil) {
+                        SessionActions.markSeen(session)
+                    }
+                    .help("Segna come vista")
+                }
                 NotchPillButton(symbol: "eye.slash", label: "", tint: nil, action: onHide)
                     .help("Togli dall'elenco · ricompare se riprendi questa chat")
             }
@@ -474,19 +483,44 @@ struct AgentsWidget: View {
         .fadingBottom()
     }
 
+    /// Le card sono per chi lavora o ti chiama. Il resto (finite, in pausa, chiuse) sta in
+    /// righe compatte sotto: restano a portata di mano senza riempire la pagina.
     private func board(width: CGFloat) -> some View {
         let columns = width > 880 ? 3 : 2
         let grid = Array(repeating: GridItem(.flexible(), spacing: 7), count: columns)
+        let shown = store.filteredSessions
+        let featured = shown.filter { $0.status.isActive }
+        let quiet = shown.filter { !$0.status.isActive }
         return ScrollView(.vertical, showsIndicators: false) {
-            LazyVGrid(columns: grid, spacing: 7) {
-                ForEach(store.filteredSessions) { session in
-                    SessionCard(session: session, onNavigate: actions.close) {
-                        withAnimation(.spring(response: 0.3)) { store.hide(session) }
+            VStack(alignment: .leading, spacing: 8) {
+                if !featured.isEmpty {
+                    LazyVGrid(columns: grid, spacing: 7) {
+                        ForEach(featured) { session in
+                            SessionCard(session: session, onNavigate: actions.close) {
+                                withAnimation(.spring(response: 0.3)) { store.hide(session) }
+                            }
+                            .transition(.scale(scale: 0.96).combined(with: .opacity))
+                        }
                     }
-                    .transition(.scale(scale: 0.96).combined(with: .opacity))
+                }
+                if !quiet.isEmpty {
+                    if !featured.isEmpty {
+                        Text("Altre sessioni")
+                            .font(theme.font(10, .semibold))
+                            .foregroundStyle(theme.tertiary)
+                            .padding(.horizontal, 4)
+                    }
+                    LazyVGrid(columns: grid, spacing: 1) {
+                        ForEach(quiet) { session in
+                            SessionRow(session: session, onNavigate: actions.close) {
+                                withAnimation(.spring(response: 0.3)) { store.hide(session) }
+                            }
+                            .transition(.opacity)
+                        }
+                    }
                 }
             }
-            .animation(.spring(response: 0.34, dampingFraction: 0.85), value: store.filteredSessions.map(\.id))
+            .animation(.spring(response: 0.34, dampingFraction: 0.85), value: shown.map(\.id))
             .padding(.bottom, 10)
         }
         .fadingBottom(18)

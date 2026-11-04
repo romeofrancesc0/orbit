@@ -41,6 +41,11 @@ def main() -> int:
 
     path = os.path.join(HINTS_DIR, session_id + ".json")
 
+    # Claude Code sends an "idle_prompt" Notification a minute after every finished turn
+    # ("Claude is waiting for your input"). It is not a call to action, so it clears the hint.
+    if event == "Notification" and payload.get("notification_type") == "idle_prompt":
+        event = ""
+
     if event not in RAISE:
         try:
             os.remove(path)

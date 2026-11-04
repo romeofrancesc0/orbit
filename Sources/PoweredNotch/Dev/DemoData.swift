@@ -39,6 +39,7 @@ enum DemoData {
             session("b", title: "New pricing page", project: "website", status: .attention, activity: "The page is done, should I check mobile too?", ago: 95, tokens: 142_000, host: "Terminale"),
             session("c", title: "Database migration", project: "orbit", branch: "db/v2", status: .working, activity: "Edit · schema.prisma", ago: 3, tokens: 61_000),
             session("d", provider: "Codex", accent: "#10A37F", title: "Checkout integration tests", project: "shop-core", status: .working, activity: "pnpm test --filter checkout", ago: 8, tokens: 37_000, host: "Codex"),
+            session("g", title: "Release notes draft", project: "docs-site", branch: "main", status: .done, activity: "Done: the draft is in docs/releases.md", ago: 240, tokens: 47_000, host: "Desktop"),
             session("e", title: "Parser refactor", project: "compiler", branch: "refactor/parser", status: .idle, activity: nil, ago: 900, tokens: 120_000, host: "VS Code"),
             session("f", title: "Notes indexing", project: "notes-ai", status: .ended, activity: nil, ago: 7200, tokens: 54_000, host: nil)
         ]

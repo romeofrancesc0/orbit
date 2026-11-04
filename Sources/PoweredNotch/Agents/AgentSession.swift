@@ -4,8 +4,10 @@ import Foundation
 enum SessionStatus: String, Codable, Sendable, CaseIterable {
     /// L'agent sta lavorando (tool in esecuzione, risposta in streaming).
     case working
-    /// L'agent ha finito il turno: la palla è al giocatore umano.
+    /// L'agent ti aspetta davvero: una domanda, un piano da approvare.
     case attention
+    /// Il turno è finito e non c'è niente da decidere: una notizia, non una chiamata.
+    case done
     /// L'agent è bloccato in attesa di un permesso/approvazione.
     case blocked
     /// Sessione viva ma ferma da un po'.
@@ -19,6 +21,7 @@ enum SessionStatus: String, Codable, Sendable, CaseIterable {
         switch self {
         case .working:   tr("in esecuzione")
         case .attention: tr("attende te")
+        case .done:      tr("finita")
         case .blocked:   tr("permesso richiesto")
         case .idle:      tr("in pausa")
         case .ended:     tr("terminata")
@@ -30,6 +33,7 @@ enum SessionStatus: String, Codable, Sendable, CaseIterable {
         switch self {
         case .working:   "bolt.fill"
         case .attention: "hand.raised.fill"
+        case .done:      "checkmark.circle.fill"
         case .blocked:   "lock.fill"
         case .idle:      "moon.zzz.fill"
         case .ended:     "checkmark"
@@ -50,8 +54,9 @@ enum SessionStatus: String, Codable, Sendable, CaseIterable {
         case .error:     1
         case .attention: 2
         case .working:   3
-        case .idle:      4
-        case .ended:     5
+        case .done:      4
+        case .idle:      5
+        case .ended:     6
         }
     }
 
@@ -65,6 +70,8 @@ enum SessionStatus: String, Codable, Sendable, CaseIterable {
             return .attention
         case "blocked", "permission", "permission_request", "approval", "confirm", "paused_permission":
             return .blocked
+        case "turn_done", "turn-done":
+            return .done
         case "idle", "paused", "sleeping", "stale":
             return .idle
         case "ended", "done", "finished", "complete", "completed", "closed", "exited":
