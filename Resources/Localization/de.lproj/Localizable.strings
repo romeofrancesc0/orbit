@@ -611,3 +611,29 @@
 "Controlla adesso" = "Jetzt suchen";
 "Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso." = "Neue Versionen werden nach deiner Zustimmung automatisch geladen und installiert.";
 "Vedi" = "Ansehen";
+
+/* Onboarding */
+"In un minuto la rendi tua: scegli cosa mostra, come appare e come si usa." = "In einer Minute gehört er dir: Wähle, was er zeigt, wie er aussieht und wie du ihn bedienst.";
+"Cominciamo" = "Los geht's";
+"Avanti" = "Weiter";
+"Indietro" = "Zurück";
+"L'anteprima si aggiorna a ogni scelta. Puoi cambiare tutto in qualsiasi momento." = "Die Vorschau aktualisiert sich bei jeder Wahl. Du kannst jederzeit alles ändern.";
+"Che aspetto deve avere?" = "Wie soll er aussehen?";
+"Scegli un tema: l'anteprima cambia subito." = "Wähle ein Thema: Die Vorschau ändert sich sofort.";
+"Come si usa" = "So funktioniert's";
+"Cinque cose da sapere, poi è tutta tua." = "Fünf Dinge, die du wissen solltest – dann gehört er dir.";
+"Apri con il mouse" = "Mit der Maus öffnen";
+"Porta il puntatore sulla notch, oppure clicca: si apre. Allontanalo e si chiude." = "Fahr mit dem Zeiger auf den Notch oder klicke: Er öffnet sich. Zieh den Zeiger weg, und er schließt sich.";
+"Provala" = "Ausprobieren";
+"Guarda in alto…" = "Schau nach oben …";
+"Scorri le pagine" = "Seiten durchblättern";
+"A notch aperta, scorri a sinistra e a destra con due dita per cambiare pagina." = "Bei geöffnetem Notch wischst du mit zwei Fingern nach links und rechts, um die Seite zu wechseln.";
+"Dalla tastiera" = "Per Tastatur";
+"%@ apre e chiude la notch da qualsiasi app." = "%@ öffnet und schließt den Notch in jeder App.";
+"Assegna una scorciatoia da Impostazioni › Scorciatoie." = "Lege ein Tastenkürzel in Einstellungen › Tastenkürzel fest.";
+"Trascina i file" = "Dateien hineinziehen";
+"Porta un file verso la notch: finisce nello Scaffale, pronto da riprendere." = "Zieh eine Datei zum Notch: Sie landet in der Ablage, bereit zum Wiederaufnehmen.";
+"Le impostazioni" = "Die Einstellungen";
+"L'icona di Orbit nella barra dei menu apre le impostazioni quando vuoi." = "Das Orbit-Symbol in der Menüleiste öffnet die Einstellungen, wann du willst.";
+"Ultimi ritocchi" = "Letzter Schliff";
+"Due permessi facoltativi, poi hai finito." = "Zwei optionale Berechtigungen, dann bist du fertig.";

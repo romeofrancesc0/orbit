@@ -611,3 +611,29 @@
 "Controlla adesso" = "Check Now";
 "Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso." = "New versions download and install on their own, after asking you.";
 "Vedi" = "View";
+
+/* Onboarding */
+"In un minuto la rendi tua: scegli cosa mostra, come appare e come si usa." = "In a minute it's yours: choose what it shows, how it looks and how to use it.";
+"Cominciamo" = "Let's go";
+"Avanti" = "Next";
+"Indietro" = "Back";
+"L'anteprima si aggiorna a ogni scelta. Puoi cambiare tutto in qualsiasi momento." = "The preview updates with every choice. You can change everything at any time.";
+"Che aspetto deve avere?" = "What should it look like?";
+"Scegli un tema: l'anteprima cambia subito." = "Pick a theme: the preview changes right away.";
+"Come si usa" = "How it works";
+"Cinque cose da sapere, poi è tutta tua." = "Five things to know, then it's all yours.";
+"Apri con il mouse" = "Open with the mouse";
+"Porta il puntatore sulla notch, oppure clicca: si apre. Allontanalo e si chiude." = "Move the pointer onto the notch, or click it: it opens. Move away and it closes.";
+"Provala" = "Try it";
+"Guarda in alto…" = "Look up…";
+"Scorri le pagine" = "Swipe through pages";
+"A notch aperta, scorri a sinistra e a destra con due dita per cambiare pagina." = "With the notch open, swipe left and right with two fingers to change page.";
+"Dalla tastiera" = "From the keyboard";
+"%@ apre e chiude la notch da qualsiasi app." = "%@ opens and closes the notch from any app.";
+"Assegna una scorciatoia da Impostazioni › Scorciatoie." = "Set a shortcut in Settings › Shortcuts.";
+"Trascina i file" = "Drag files in";
+"Porta un file verso la notch: finisce nello Scaffale, pronto da riprendere." = "Drag a file toward the notch: it lands on the Shelf, ready to pick up again.";
+"Le impostazioni" = "Settings";
+"L'icona di Orbit nella barra dei menu apre le impostazioni quando vuoi." = "Orbit's icon in the menu bar opens the settings whenever you like.";
+"Ultimi ritocchi" = "Final touches";
+"Due permessi facoltativi, poi hai finito." = "Two optional permissions, then you're done.";

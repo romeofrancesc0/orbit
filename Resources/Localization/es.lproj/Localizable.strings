@@ -611,3 +611,29 @@
 "Controlla adesso" = "Buscar ahora";
 "Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso." = "Las nuevas versiones se descargan e instalan solas, después de preguntarte.";
 "Vedi" = "Ver";
+
+/* Onboarding */
+"In un minuto la rendi tua: scegli cosa mostra, come appare e come si usa." = "En un minuto es tuya: elige qué muestra, cómo se ve y cómo se usa.";
+"Cominciamo" = "Vamos";
+"Avanti" = "Siguiente";
+"Indietro" = "Atrás";
+"L'anteprima si aggiorna a ogni scelta. Puoi cambiare tutto in qualsiasi momento." = "La vista previa se actualiza con cada elección. Puedes cambiarlo todo en cualquier momento.";
+"Che aspetto deve avere?" = "¿Qué aspecto debe tener?";
+"Scegli un tema: l'anteprima cambia subito." = "Elige un tema: la vista previa cambia al instante.";
+"Come si usa" = "Cómo se usa";
+"Cinque cose da sapere, poi è tutta tua." = "Cinco cosas que saber, y es toda tuya.";
+"Apri con il mouse" = "Ábrela con el ratón";
+"Porta il puntatore sulla notch, oppure clicca: si apre. Allontanalo e si chiude." = "Lleva el puntero a la notch, o haz clic: se abre. Aléjalo y se cierra.";
+"Provala" = "Pruébala";
+"Guarda in alto…" = "Mira arriba…";
+"Scorri le pagine" = "Desliza entre páginas";
+"A notch aperta, scorri a sinistra e a destra con due dita per cambiare pagina." = "Con la notch abierta, desliza a izquierda y derecha con dos dedos para cambiar de página.";
+"Dalla tastiera" = "Desde el teclado";
+"%@ apre e chiude la notch da qualsiasi app." = "%@ abre y cierra la notch desde cualquier app.";
+"Assegna una scorciatoia da Impostazioni › Scorciatoie." = "Asigna una combinación de teclas en Ajustes › Combinaciones de teclas.";
+"Trascina i file" = "Arrastra archivos";
+"Porta un file verso la notch: finisce nello Scaffale, pronto da riprendere." = "Lleva un archivo hacia la notch: acaba en el Estante, listo para recuperarlo.";
+"Le impostazioni" = "Los ajustes";
+"L'icona di Orbit nella barra dei menu apre le impostazioni quando vuoi." = "El icono de Orbit en la barra de menús abre los ajustes cuando quieras.";
+"Ultimi ritocchi" = "Últimos retoques";
+"Due permessi facoltativi, poi hai finito." = "Dos permisos opcionales y listo.";

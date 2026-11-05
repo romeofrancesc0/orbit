@@ -35,9 +35,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             MainActor.assumeIsolated { URLRouter.handle(url) }
         }
 
-        if !services.settings.config.onboardingDone, !services.isDemo {
-            // La schermata iniziale spiega già il conflitto con Boring Notch.
-            SettingsWindowController.shared.show(section: .welcome, services: services)
+        // `--onboarding` la forza (anche con `--demo`, che non salva nulla): serve per provarla.
+        let forced = CommandLine.arguments.contains("--onboarding")
+        if forced || (!services.settings.config.onboardingDone && !services.isDemo) {
+            // La guida iniziale spiega già il conflitto con Boring Notch.
+            OnboardingWindowController.shared.show(services: services)
         } else {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { services.warnAboutConflicts() }
         }

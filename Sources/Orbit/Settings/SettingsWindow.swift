@@ -3,7 +3,7 @@ import Combine
 import SwiftUI
 
 enum SettingsSection: String, CaseIterable, Identifiable {
-    case welcome, layout, appearance, general, profiles
+    case layout, appearance, general, profiles
     case agents, music, calendar, shelf, launcher, widgets
     case peeks, hud, shortcuts, permissions, advanced
 
@@ -11,7 +11,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .welcome:     tr("Primi passi")
         case .layout:      tr("Layout")
         case .appearance:  tr("Aspetto")
         case .general:     tr("Comportamento")
@@ -32,7 +31,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
 
     var symbol: String {
         switch self {
-        case .welcome:     "moon.stars.fill"
         case .layout:      "rectangle.3.group.fill"
         case .appearance:  "paintpalette.fill"
         case .general:     "cursorarrow.motionlines"
@@ -53,7 +51,6 @@ enum SettingsSection: String, CaseIterable, Identifiable {
 
     var tint: Color {
         switch self {
-        case .welcome:     .indigo
         case .layout:      .blue
         case .appearance:  .pink
         case .general:     .gray
@@ -85,6 +82,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     static let shared = SettingsWindowController()
 
     private var window: NSWindow?
+    var isVisible: Bool { window?.isVisible ?? false }
     private let navigation = SettingsNavigation()
 
     func show(section: SettingsSection?, services: AppServices) {
@@ -165,7 +163,6 @@ struct SettingsRoot: View {
     @ViewBuilder
     private var detail: some View {
         switch navigation.selection ?? .layout {
-        case .welcome:     WelcomeView(services: services) { navigation.selection = .layout }
         case .layout:      LayoutEditorView(services: services)
         case .appearance:  AppearanceSettingsView(services: services)
         case .general:     GeneralSettingsView()

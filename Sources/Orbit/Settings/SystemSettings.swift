@@ -561,7 +561,7 @@ struct AdvancedSettingsView: View {
 
             Section("Primi passi") {
                 Button("Rivedi la schermata iniziale") {
-                    SettingsWindowController.shared.show(section: .welcome, services: AppServices.shared)
+                    OnboardingWindowController.shared.show(services: AppServices.shared)
                 }
             }
 
@@ -579,126 +579,6 @@ struct AdvancedSettingsView: View {
             Button("Ripristina", role: .destructive) { settings.resetToDefaults() }
         } message: {
             Text("Layout, aspetto e profili salvati tornano come all'inizio. Scaffale e note non vengono toccati.")
-        }
-    }
-}
-
-// MARK: - Benvenuto
-
-struct WelcomeView: View {
-    let services: AppServices
-    var onDone: () -> Void
-
-    @EnvironmentObject private var settings: SettingsStore
-    @State private var boringNotchRunning = WelcomeView.isBoringNotchRunning
-    @State private var login = LoginItem.isAvailable
-
-    private static var isBoringNotchRunning: Bool {
-        !NSRunningApplication.runningApplications(withBundleIdentifier: "theboringteam.boringnotch").isEmpty
-    }
-
-    private struct Choice: Identifiable {
-        var id: String
-        var title: String
-        var detail: String
-        var symbol: String
-    }
-
-    private var choices: [Choice] { [
-        Choice(id: "default", title: tr("Un po' di tutto"), detail: tr("Agenti, musica e calendario, tutti nella prima pagina"), symbol: "moon.stars.fill"),
-        Choice(id: "coding", title: tr("Prima di tutto gli agenti"), detail: tr("La notch si apre sulle tue sessioni di coding"), symbol: "chevron.left.forwardslash.chevron.right"),
-        Choice(id: "music", title: tr("Prima di tutto la musica"), detail: tr("Il lettore in grande, con i colori della copertina"), symbol: "music.note"),
-        Choice(id: "agenda", title: tr("Prima di tutto la giornata"), detail: tr("Calendario, timer e note"), symbol: "calendar"),
-        Choice(id: "minimal", title: tr("L'essenziale"), detail: tr("Quasi invisibile, finché non serve"), symbol: "circle")
-    ] }
-
-    @State private var selected = "default"
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                VStack(spacing: 6) {
-                    OrbitGlyph()
-                        .fill(LinearGradient(colors: [Color(hex: 0xFFE9B3), Color(hex: 0xFFA86B), Color(hex: 0xE85C8F)], startPoint: .top, endPoint: .bottom))
-                        .frame(width: 72, height: 36)
-                        .padding(.bottom, 4)
-                    Text("Ti diamo il benvenuto in Orbit")
-                        .font(.title.weight(.semibold))
-                    Text("La notch diventa la parte più utile dello schermo. Passaci sopra col mouse per aprirla.")
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-
-                VStack(spacing: 6) {
-                    Text("Da dove vuoi partire?")
-                        .font(.headline)
-                    Text("Puoi cambiare tutto in qualsiasi momento.")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
-
-                VStack(spacing: 6) {
-                    ForEach(choices) { choice in
-                        Button {
-                            selected = choice.id
-                            if let profile = ProfileConfig.builtIn.first(where: { $0.id == choice.id }) {
-                                services.apply(profile: profile)
-                            }
-                        } label: {
-                            HStack(spacing: 12) {
-                                Image(systemName: choice.symbol)
-                                    .font(.system(size: 15, weight: .semibold))
-                                    .foregroundStyle(selected == choice.id ? .white : .secondary)
-                                    .frame(width: 34, height: 34)
-                                    .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(selected == choice.id ? Color.accentColor : Color.secondary.opacity(0.15)))
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(choice.title).font(.body.weight(.medium)).foregroundStyle(.primary)
-                                    Text(choice.detail).font(.callout).foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                if selected == choice.id {
-                                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.accentColor)
-                                }
-                            }
-                            .padding(9)
-                            .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(.quaternary.opacity(selected == choice.id ? 0.7 : 0.3)))
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .frame(maxWidth: 520)
-
-                if boringNotchRunning {
-                    HStack(spacing: 10) {
-                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                        Text("Boring Notch è aperto: due app sulla stessa notch si sovrappongono.")
-                            .font(.callout)
-                        Spacer()
-                        Button("Chiudilo") {
-                            NSRunningApplication.runningApplications(withBundleIdentifier: "theboringteam.boringnotch").forEach { $0.terminate() }
-                            boringNotchRunning = false
-                        }
-                    }
-                    .padding(10)
-                    .frame(maxWidth: 520)
-                    .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.orange.opacity(0.12)))
-                }
-
-                Toggle("Avvia Orbit al login", isOn: $login)
-                    .disabled(!LoginItem.isAvailable)
-
-                Button("Inizia") {
-                    LoginItem.set(login)
-                    settings.update { $0.onboardingDone = true }
-                    onDone()
-                }
-                .keyboardShortcut(.defaultAction)
-                .controlSize(.large)
-            }
-            .padding(.horizontal, 32)
-            .padding(.vertical, 18)
-            .frame(maxWidth: .infinity)
         }
     }
 }

@@ -147,7 +147,7 @@ struct AppearanceSettingsView: View {
 }
 
 /// I temi, ognuno disegnato col proprio materiale e col proprio accento.
-private struct ThemeGallery: View {
+struct ThemeGallery: View {
     @EnvironmentObject private var settings: SettingsStore
 
     var body: some View {

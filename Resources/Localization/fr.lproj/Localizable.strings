@@ -611,3 +611,29 @@
 "Controlla adesso" = "Rechercher maintenant";
 "Le nuove versioni si scaricano e si installano da sole, dopo averti chiesto il permesso." = "Les nouvelles versions se téléchargent et s’installent d’elles-mêmes, après vous avoir demandé.";
 "Vedi" = "Voir";
+
+/* Onboarding */
+"In un minuto la rendi tua: scegli cosa mostra, come appare e come si usa." = "En une minute, elle est à vous : choisissez ce qu'elle affiche, son apparence et comment l'utiliser.";
+"Cominciamo" = "C'est parti";
+"Avanti" = "Suivant";
+"Indietro" = "Retour";
+"L'anteprima si aggiorna a ogni scelta. Puoi cambiare tutto in qualsiasi momento." = "L'aperçu se met à jour à chaque choix. Vous pouvez tout modifier à tout moment.";
+"Che aspetto deve avere?" = "Quel aspect doit-elle avoir ?";
+"Scegli un tema: l'anteprima cambia subito." = "Choisissez un thème : l'aperçu change aussitôt.";
+"Come si usa" = "Mode d'emploi";
+"Cinque cose da sapere, poi è tutta tua." = "Cinq choses à savoir, puis elle est à vous.";
+"Apri con il mouse" = "Ouvrir avec la souris";
+"Porta il puntatore sulla notch, oppure clicca: si apre. Allontanalo e si chiude." = "Placez le pointeur sur l'encoche, ou cliquez : elle s'ouvre. Éloignez-le et elle se ferme.";
+"Provala" = "Essayer";
+"Guarda in alto…" = "Regardez en haut…";
+"Scorri le pagine" = "Parcourir les pages";
+"A notch aperta, scorri a sinistra e a destra con due dita per cambiare pagina." = "Encoche ouverte, balayez à gauche et à droite avec deux doigts pour changer de page.";
+"Dalla tastiera" = "Au clavier";
+"%@ apre e chiude la notch da qualsiasi app." = "%@ ouvre et ferme l'encoche depuis n'importe quelle app.";
+"Assegna una scorciatoia da Impostazioni › Scorciatoie." = "Définissez un raccourci dans Réglages › Raccourcis.";
+"Trascina i file" = "Glisser des fichiers";
+"Porta un file verso la notch: finisce nello Scaffale, pronto da riprendere." = "Amenez un fichier vers l'encoche : il atterrit sur l'Étagère, prêt à être repris.";
+"Le impostazioni" = "Les réglages";
+"L'icona di Orbit nella barra dei menu apre le impostazioni quando vuoi." = "L'icône d'Orbit dans la barre des menus ouvre les réglages quand vous voulez.";
+"Ultimi ritocchi" = "Dernières touches";
+"Due permessi facoltativi, poi hai finito." = "Deux autorisations facultatives, puis c'est terminé.";
