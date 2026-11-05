@@ -55,6 +55,11 @@ private enum OnboardingStep: Int, CaseIterable {
     case welcome, content, look, tutorial, ready
 }
 
+/// Nel secondo passo: partire da un preset pronto, o comporre la notch a mano.
+private enum ContentMode: Hashable {
+    case preset, custom
+}
+
 struct OnboardingView: View {
     let services: AppServices
     var onFinish: () -> Void
@@ -63,6 +68,7 @@ struct OnboardingView: View {
     @State private var step = OnboardingStep.welcome
     @State private var goingForward = true
     @State private var previewPage: String?
+    @State private var contentMode = ContentMode.preset
     @State private var login = LoginItem.isAvailable
 
     var body: some View {
@@ -70,7 +76,7 @@ struct OnboardingView: View {
             ZStack {
                 switch step {
                 case .welcome:  WelcomeStep()
-                case .content:  ContentStep(selected: profileBinding, previewPage: $previewPage)
+                case .content:  ContentStep(selected: profileBinding, mode: $contentMode, previewPage: $previewPage)
                 case .look:     LookStep(previewPage: $previewPage)
                 case .tutorial: TutorialStep(services: services)
                 case .ready:    ReadyStep(login: $login)
@@ -93,10 +99,11 @@ struct OnboardingView: View {
         }
     }
 
-    /// Il profilo attivo, o quello di partenza se ancora non si è toccato nulla.
+    /// Il profilo attivo. Senza profilo vale "default" solo se il layout è ancora quello di
+    /// partenza: dopo una composizione a mano non risulta scelto nessun preset.
     private var profileBinding: Binding<String> {
         Binding(
-            get: { settings.config.activeProfileID ?? "default" },
+            get: { settings.config.activeProfileID ?? (settings.config.layout == LayoutConfig() ? "default" : "") },
             set: { id in
                 guard let profile = ProfileConfig.builtIn.first(where: { $0.id == id }) else { return }
                 previewPage = nil
@@ -240,6 +247,7 @@ private struct WelcomeStep: View {
 
 private struct ContentStep: View {
     @Binding var selected: String
+    @Binding var mode: ContentMode
     @Binding var previewPage: String?
 
     private struct Choice: Identifiable {
@@ -258,28 +266,142 @@ private struct ContentStep: View {
     ] }
 
     var body: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 12) {
             PreviewStage(pageID: $previewPage)
                 .padding(.top, 34)
 
-            StepHeader(title: "Da dove vuoi partire?", subtitle: "L'anteprima si aggiorna a ogni scelta. Puoi cambiare tutto in qualsiasi momento.")
+            Picker("", selection: $mode) {
+                Text("Preset").tag(ContentMode.preset)
+                Text("Personalizza").tag(ContentMode.custom)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(width: 280)
 
-            // Cinque scelte: in due colonne restano tutte in vista senza scorrere.
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
-                ForEach(choices) { choice in
-                    ChoiceRow(
-                        symbol: choice.symbol,
-                        title: choice.title,
-                        detail: choice.detail,
-                        isSelected: selected == choice.id
-                    ) { selected = choice.id }
+            switch mode {
+            case .preset:
+                StepHeader(title: "Da dove vuoi partire?", subtitle: "L'anteprima si aggiorna a ogni scelta. Puoi cambiare tutto in qualsiasi momento.")
+
+                // Cinque scelte: in due colonne restano tutte in vista senza scorrere.
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: 8), GridItem(.flexible(), spacing: 8)], spacing: 8) {
+                    ForEach(choices) { choice in
+                        ChoiceRow(
+                            symbol: choice.symbol,
+                            title: choice.title,
+                            detail: choice.detail,
+                            isSelected: selected == choice.id
+                        ) { selected = choice.id }
+                    }
+                }
+                .padding(.horizontal, 28)
+                .frame(maxWidth: 780)
+            case .custom:
+                CustomLayoutPicker()
+            }
+
+            Spacer(minLength: 0)
+        }
+    }
+}
+
+/// La composizione a mano: si sceglie quali widget stanno nella notch aperta, e in che ordine.
+/// Lo stato è la configurazione stessa (la prima pagina), quindi anteprima e scelta non divergono mai.
+private struct CustomLayoutPicker: View {
+    @EnvironmentObject private var settings: SettingsStore
+
+    private static let maxWidgets = 4
+
+    private var kinds: [String] {
+        settings.config.layout.pages.first?.widgets.map(\.kind) ?? []
+    }
+
+    var body: some View {
+        let current = kinds
+        let isFull = current.count >= Self.maxWidgets
+        VStack(spacing: 10) {
+            StepHeader(
+                title: "Componi la tua notch",
+                subtitle: "Fino a 4 widget, nell'ordine in cui li scegli. Altre pagine e la notch chiusa si regolano in Impostazioni › Layout."
+            )
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
+                ForEach(ModuleCatalog.widgets) { widget in
+                    let position = current.firstIndex(of: widget.kind)
+                    WidgetChoice(
+                        widget: widget,
+                        position: position.map { $0 + 1 },
+                        isEnabled: position != nil ? current.count > 1 : !isFull
+                    ) { toggle(widget.kind) }
                 }
             }
             .padding(.horizontal, 28)
             .frame(maxWidth: 780)
-
-            Spacer(minLength: 0)
         }
+    }
+
+    private func toggle(_ kind: String) {
+        var updated = kinds
+        if let index = updated.firstIndex(of: kind) {
+            guard updated.count > 1 else { return }
+            updated.remove(at: index)
+        } else {
+            guard updated.count < Self.maxWidgets else { return }
+            updated.append(kind)
+        }
+        apply(updated)
+    }
+
+    /// Riscrive la prima pagina con i widget scelti, tenendo le misure di quelli già presenti.
+    /// Le altre pagine del preset di partenza si tolgono: la pagina composta è tutta la notch.
+    private func apply(_ kinds: [String]) {
+        settings.update { config in
+            let existing = config.layout.pages.first?.widgets ?? []
+            let widgets = kinds.map { kind in
+                existing.first { $0.kind == kind }
+                    ?? WidgetPlacement(kind: kind, weight: ModuleCatalog.widgets.first { $0.kind == kind }?.defaultWeight ?? 1)
+            }
+            config.layout.pages = [PageConfig(id: "home", title: "Home", symbol: "house.fill", widgets: widgets)]
+            config.layout.startMode = .first
+        }
+    }
+}
+
+private struct WidgetChoice: View {
+    let widget: WidgetDescriptor
+    var position: Int?
+    var isEnabled: Bool
+    var action: () -> Void
+
+    private var isSelected: Bool { position != nil }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: widget.symbol)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(isSelected ? .white : .secondary)
+                    .frame(width: 26, height: 26)
+                    .background(RoundedRectangle(cornerRadius: 7, style: .continuous).fill(isSelected ? Color.accentColor : Color.secondary.opacity(0.15)))
+                Text(widget.name)
+                    .font(.callout.weight(.medium))
+                    .foregroundStyle(.primary)
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+                if let position {
+                    Text("\(position)")
+                        .font(.caption.weight(.bold).monospacedDigit())
+                        .foregroundStyle(.white)
+                        .frame(width: 18, height: 18)
+                        .background(Circle().fill(Color.accentColor))
+                }
+            }
+            .padding(7)
+            .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(.quaternary.opacity(isSelected ? 0.7 : 0.3)))
+            .contentShape(Rectangle())
+            .opacity(isEnabled ? 1 : 0.4)
+        }
+        .buttonStyle(.plain)
+        .help(widget.summary)
     }
 }
 
