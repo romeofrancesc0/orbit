@@ -32,6 +32,7 @@ final class NotchManager {
     func start() {
         rebuildControllers()
         installMonitors()
+        observeMenus()
         observeSystem()
 
         services.settings.$config
@@ -101,6 +102,29 @@ final class NotchManager {
         let location = NSEvent.mouseLocation
         let underMouse = controllers.values.first { $0.state.geometry.screenFrame.contains(location) }
         return underMouse ?? controllers.values.first
+    }
+
+    // MARK: - Menu a tendina
+
+    /// Quanti menu sono in corso (un sottomenu conta a parte): la notch resta aperta finché ce n'è uno.
+    private var menuDepth = 0
+
+    private func observeMenus() {
+        let center = NotificationCenter.default
+        let changes: [(Notification.Name, Int)] = [
+            (NSMenu.didBeginTrackingNotification, 1),
+            (NSMenu.didEndTrackingNotification, -1)
+        ]
+        for (name, delta) in changes {
+            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    self.menuDepth = max(0, self.menuDepth + delta)
+                    let active = self.menuDepth > 0
+                    self.controllers.values.forEach { $0.setMenuTracking(active) }
+                }
+            })
+        }
     }
 
     // MARK: - Eventi

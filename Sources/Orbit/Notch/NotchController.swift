@@ -172,8 +172,24 @@ final class NotchController {
         reevaluate()
     }
 
+    /// Un menu a tendina (tasto destro su una sessione, un selettore…) esce dai bordi della notch:
+    /// finché è aperto il mouse sta fuori per forza, e la notch non deve chiudersi sotto le sue mani.
+    func setMenuTracking(_ active: Bool) {
+        if active {
+            closeWork?.cancel()
+            state.hold(Self.menuHold)
+        } else {
+            state.release(Self.menuHold)
+            reevaluate()
+        }
+    }
+
+    private static let menuHold = "menu"
+
     func clicked(at location: NSPoint) {
         guard state.isOpen, config.behavior.closeOnClickOutside, !state.isPinnedForPreview else { return }
+        // Il click su una voce del menu cade fuori dalla notch ma non è un click "fuori".
+        guard !state.holds.contains(Self.menuHold) else { return }
         guard !interactiveRect.contains(location) else { return }
         state.holds.forEach { state.release($0) }
         close()
