@@ -124,9 +124,18 @@ codesign --verify --deep --strict "$APP"
 [ "$IDENTITY" = "-" ] && echo "▸ signed ad hoc" || echo "▸ signed with: $IDENTITY"
 
 echo "▸ building the disk image…"
-ln -s /Applications "$OUT/stage/Applications"
 DMG="$OUT/$APP_NAME.dmg"
-hdiutil create -quiet -volname "$VOLUME_NAME" -srcfolder "$OUT/stage" -fs HFS+ -format UDZO -ov "$DMG"
+# The installer window (big background, the app and the Applications shortcut side by side) is
+# laid out by dmgbuild from scripts/dmg/settings.py; the artwork is scripts/dmg/background.tiff
+# (redraw it with scripts/dmg/make_background.py). dmgbuild lives in a venv under .build.
+DMGBUILD=".build/dmgbuild-venv/bin/dmgbuild"
+if [ ! -x "$DMGBUILD" ]; then
+  echo "▸ installing dmgbuild (once)…"
+  python3 -m venv .build/dmgbuild-venv && .build/dmgbuild-venv/bin/pip install -q dmgbuild >/dev/null
+fi
+"$DMGBUILD" -s scripts/dmg/settings.py -D app="$APP" -D dmgdir=scripts/dmg \
+  -D icon="$APP/Contents/Resources/AppIcon.icns" "$VOLUME_NAME" "$DMG" >/dev/null 2>&1 \
+  || { echo "dmgbuild failed: run it by hand to see why"; exit 1; }
 rm -rf "$OUT/stage"
 
 echo "▸ signing the update…"
