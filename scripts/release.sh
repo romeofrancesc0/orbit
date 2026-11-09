@@ -5,6 +5,9 @@
 #   scripts/release.sh                     -> dist/release/Orbit.dmg + appcast.xml (nothing published)
 #   scripts/release.sh 1.0.1               -> sets the version to 1.0.1 (commit), then builds
 #   scripts/release.sh --publish [1.0.1]   -> also pushes and creates the GitHub release v<version>
+#   scripts/release.sh --local             -> only the installer .dmg, to try on this Mac: signed like
+#                                             build.sh (keeps your permissions), no update signature,
+#                                             no appcast, nothing published
 #
 # What gets published, as assets of the release:
 #   Orbit.dmg  the universal app (Apple Silicon + Intel). The website's button points to
@@ -38,10 +41,12 @@ DERIVED=".build/xcode-release"
 SPARKLE_BIN="$DERIVED/SourcePackages/artifacts/sparkle/Sparkle/bin"
 
 PUBLISH=0
+LOCAL=0
 NEW_VERSION=""
 for arg in "$@"; do
   case "$arg" in
     --publish) PUBLISH=1 ;;
+    --local)   LOCAL=1 ;;
     [0-9]*.[0-9]*.[0-9]*) NEW_VERSION="$arg" ;;
     *) echo "unknown option: $arg (use --publish and/or a version like 1.0.1)"; exit 1 ;;
   esac
@@ -49,6 +54,10 @@ done
 
 command -v xcodegen >/dev/null || { echo "XcodeGen is required: brew install xcodegen"; exit 1; }
 current_version() { awk -F'"' '/MARKETING_VERSION:/ {print $2; exit}' project.yml; }
+
+if [ "$PUBLISH" -eq 1 ] && [ "$LOCAL" -eq 1 ]; then
+  echo "--local and --publish don't go together"; exit 1
+fi
 
 if [ "$PUBLISH" -eq 1 ]; then
   command -v gh >/dev/null || { echo "The GitHub CLI is required to publish: brew install gh"; exit 1; }
@@ -117,6 +126,13 @@ IDENTITY="${ORBIT_SIGN_IDENTITY:--}"
 MEDIA_LIB="$(find "$APP/Contents" -name 'libOrbitMediaBridge.dylib' | head -1)"
 SIGN_FLAGS=(--force --timestamp=none --sign "$IDENTITY")
 if [ "$IDENTITY" != "-" ]; then SIGN_FLAGS=(--force --options runtime --timestamp --sign "$IDENTITY"); fi
+if [ "$LOCAL" -eq 1 ]; then
+  # Same identity as build.sh: macOS ties Accessibility, Camera and Calendar to the signature,
+  # so a copy signed like the development builds keeps the permissions already granted.
+  IDENTITY="${ORBIT_SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | awk -F'"' '/Apple Development/ {print $2; exit}')}"
+  IDENTITY="${IDENTITY:--}"
+  SIGN_FLAGS=(--force --sign "$IDENTITY")
+fi
 [ -n "$MEDIA_LIB" ] && codesign "${SIGN_FLAGS[@]}" "$MEDIA_LIB"
 sign_sparkle "$APP" "${SIGN_FLAGS[@]}"
 codesign "${SIGN_FLAGS[@]}" "$APP"
@@ -137,6 +153,11 @@ fi
   -D icon="$APP/Contents/Resources/AppIcon.icns" "$VOLUME_NAME" "$DMG" >/dev/null 2>&1 \
   || { echo "dmgbuild failed: run it by hand to see why"; exit 1; }
 rm -rf "$OUT/stage"
+
+if [ "$LOCAL" -eq 1 ]; then
+  echo "▸ ready: $DMG ($(du -h "$DMG" | cut -f1 | tr -d ' ')), local copy: no update feed, nothing published"
+  exit 0
+fi
 
 echo "▸ signing the update…"
 # prints: sparkle:edSignature="…" length="…"
