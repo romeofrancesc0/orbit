@@ -201,6 +201,20 @@ final class MediaKeyTap: @unchecked Sendable {
         AXIsProcessTrustedWithOptions(options)
     }
 
+    /// macOS lega il permesso alla firma dell'app: dopo un aggiornamento firmato in modo diverso
+    /// Orbit risulta ancora "attiva" in Accessibilità ma il sistema non la riconosce più.
+    /// Si cancella la sua voce (solo quella di Orbit) e si chiede di nuovo il permesso.
+    static func resetTrust() {
+        let reset = Process()
+        reset.executableURL = URL(fileURLWithPath: "/usr/bin/tccutil")
+        reset.arguments = ["reset", "Accessibility", Bundle.main.bundleIdentifier ?? "com.francescoromeo.powerednotch"]
+        reset.standardOutput = FileHandle.nullDevice
+        reset.standardError = FileHandle.nullDevice
+        try? reset.run()
+        reset.waitUntilExit()
+        requestTrust()
+    }
+
     var isRunning: Bool { tap != nil }
 
     @discardableResult

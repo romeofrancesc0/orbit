@@ -192,12 +192,23 @@ struct HUDSettingsView: View {
                     }
                 ))
                 if settings.config.hud.replaceSystemHUD, !trusted {
-                    HStack {
-                        Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                        Text("Serve il permesso di Accessibilità per ricevere i tasti di volume e luminosità.")
-                            .font(.callout)
-                        Spacer()
-                        Button("Apri Impostazioni") { MediaKeyTap.requestTrust() }
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(alignment: .top) {
+                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Serve il permesso di Accessibilità per ricevere i tasti di volume e luminosità. Finché manca compare l'indicatore di sistema.")
+                                    .font(.callout)
+                                Text("Se in Impostazioni di Sistema Orbit risulta già attiva, quel permesso era di una versione precedente: ripristinalo e attivalo di nuovo.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .fixedSize(horizontal: false, vertical: true)
+                        }
+                        HStack {
+                            Spacer()
+                            Button("Ripristina il permesso") { MediaKeyTap.resetTrust() }
+                            Button("Apri Impostazioni") { MediaKeyTap.requestTrust() }
+                        }
                     }
                 }
             }
@@ -488,7 +499,7 @@ struct PermissionsSettingsView: View {
                     title: tr("Accessibilità"),
                     detail: tr("Solo per intercettare i tasti di volume e luminosità."),
                     state: accessibility ? .granted : .undetermined
-                ) { MediaKeyTap.requestTrust() }
+                ) { MediaKeyTap.resetTrust() }
             }
         }
         .onReceive(timer) { _ in
