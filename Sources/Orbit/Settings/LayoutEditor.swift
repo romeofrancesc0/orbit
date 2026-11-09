@@ -99,7 +99,22 @@ struct LayoutEditorView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Widget disponibili")
                         .font(.subheadline.weight(.semibold))
-                    WidgetPalette(custom: custom) { kind in
+                    if let page = selectedPage {
+                        let hidden = PageLayout.hiddenWidgets(in: page, appearance: settings.config.appearance)
+                        if !hidden.isEmpty {
+                            HiddenWidgetsNotice(count: hidden.count) {
+                                let ids = Set(hidden.map(\.id))
+                                settings.update { config in
+                                    guard let index = config.layout.pages.firstIndex(where: { $0.id == page.id }) else { return }
+                                    config.layout.pages[index].widgets.removeAll { ids.contains($0.id) }
+                                }
+                            }
+                        }
+                    }
+                    WidgetPalette(custom: custom, canAdd: { kind in
+                        guard let page = selectedPage else { return false }
+                        return PageLayout.canAdd(kind, to: page.widgets, appearance: settings.config.appearance)
+                    }) { kind in
                         addWidget(kind)
                     }
                 }
@@ -167,7 +182,9 @@ struct LayoutEditorView: View {
     }
 
     private func addWidget(_ kind: String) {
-        guard let page = selectedPage, let index = layout.pages.firstIndex(where: { $0.id == page.id }) else { return }
+        guard let page = selectedPage, let index = layout.pages.firstIndex(where: { $0.id == page.id }),
+              PageLayout.canAdd(kind, to: page.widgets, appearance: settings.config.appearance)
+        else { return }
         let weight = ModuleCatalog.widget(kind, custom: custom)?.defaultWeight ?? 1
         settings.update {
             $0.layout.pages[index].widgets.append(WidgetPlacement(id: UUID().uuidString, kind: kind, weight: weight))
@@ -616,15 +633,7 @@ private struct PageCanvasOverlay: View {
     }
 
     private var columns: [[WidgetPlacement]] {
-        var result: [[WidgetPlacement]] = []
-        for widget in page.widgets {
-            if widget.stacked, !result.isEmpty {
-                result[result.count - 1].append(widget)
-            } else {
-                result.append([widget])
-            }
-        }
-        return result
+        PageLayout.columns(of: page.widgets)
     }
 
     var body: some View {
@@ -634,7 +643,10 @@ private struct PageCanvasOverlay: View {
         GeometryReader { geometry in
             let horizontalPadding = (NotchMetrics.contentInset + CGFloat(settings.config.appearance.openEarRadius)) * scale
             let width = geometry.size.width - horizontalPadding * 2
-            let columns = columns
+            let allColumns = columns
+            // Le stesse larghezze della notch vera: le maniglie cadono sopra i widget che si vedono.
+            let widths = PageLayout.widths(for: allColumns, width: width, spacing: spacing, scale: scale)
+            let columns = Array(allColumns.prefix(widths.count))
             let totalWeight = max(columns.reduce(0) { $0 + $1[0].weight }, 0.01)
             let available = max(0, width - spacing * CGFloat(max(columns.count - 1, 0)))
 
@@ -651,7 +663,7 @@ private struct PageCanvasOverlay: View {
                             )
                         }
                     }
-                    .frame(width: available * column[0].weight / totalWeight)
+                    .frame(width: widths[index])
 
                     if index < columns.count - 1 {
                         ResizeHandle(width: spacing) { delta in
@@ -702,6 +714,7 @@ private struct PageCanvasOverlay: View {
         guard let raw, let payload = DragPayload.parse(raw), let pageIndex else { return false }
         switch payload.kind {
         case "new-widget":
+            guard PageLayout.canAdd(payload.value, to: page.widgets, appearance: settings.config.appearance) else { return false }
             let weight = ModuleCatalog.widget(payload.value, custom: settings.config.customWidgets)?.defaultWeight ?? 1
             let widget = WidgetPlacement(id: UUID().uuidString, kind: payload.value, weight: weight)
             settings.update { config in
@@ -901,8 +914,31 @@ private struct WidgetInspector: View {
 }
 
 /// Tutti i widget che si possono aggiungere.
+/// Alcuni widget della pagina non entrano nella larghezza della notch: lo si dice,
+/// e si offre di toglierli.
+private struct HiddenWidgetsNotice: View {
+    let count: Int
+    var onRemove: () -> Void
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+            Text(count == 1
+                 ? tr("Un widget non entra nella larghezza della notch e resta nascosto. Allarga la notch in Aspetto o toglilo.")
+                 : tr("%lld widget non entrano nella larghezza della notch e restano nascosti. Allarga la notch in Aspetto o toglili.", count))
+                .font(.callout)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 8)
+            Button(count == 1 ? tr("Toglilo") : tr("Toglili"), action: onRemove)
+        }
+        .padding(10)
+        .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.orange.opacity(0.12)))
+    }
+}
+
 private struct WidgetPalette: View {
     let custom: [CustomWidgetConfig]
+    var canAdd: (String) -> Bool = { _ in true }
     var onAdd: (String) -> Void
 
     private let columns = [GridItem(.adaptive(minimum: 210), spacing: 8)]
@@ -910,6 +946,7 @@ private struct WidgetPalette: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: 8) {
             ForEach(ModuleCatalog.allWidgets(custom: custom)) { descriptor in
+                let fits = canAdd(descriptor.kind)
                 Button {
                     onAdd(descriptor.kind)
                 } label: {
@@ -938,8 +975,11 @@ private struct WidgetPalette: View {
                     .frame(maxWidth: .infinity, minHeight: 56)
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(.background.opacity(0.6)))
                     .contentShape(Rectangle())
+                    .opacity(fits ? 1 : 0.4)
                 }
                 .buttonStyle(.plain)
+                .disabled(!fits)
+                .help(fits ? descriptor.summary : tr("Non c'è più spazio in questa pagina: allarga la notch in Aspetto o togli un widget."))
                 .draggable(DragPayload.newWidget(descriptor.kind)) {
                     Label(descriptor.name, systemImage: descriptor.symbol)
                         .font(.callout.weight(.medium))

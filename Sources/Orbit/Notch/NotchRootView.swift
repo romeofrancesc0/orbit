@@ -144,8 +144,10 @@ private struct NotchContentModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .opacity(progress)
-            .scaleEffect(0.94 + 0.06 * progress, anchor: .top)
-            .blur(radius: blur ? (1 - progress) * 10 : 0)
+            .scaleEffect(0.96 + 0.04 * progress, anchor: .top)
+            // Una sfocatura leggera basta a dare l'idea: una forte, su tutto il contenuto,
+            // costava fotogrammi proprio durante l'apertura.
+            .blur(radius: blur ? (1 - progress) * 4 : 0)
     }
 }
 
@@ -331,9 +333,12 @@ struct ClosedNotchContent: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         let isLeading = alignment == .leading
+        // Gli elementi entrano finché c'è posto nell'ala; quelli in fondo all'elenco restano fuori
+        // invece di accavallarsi sul ritaglio e fra di loro.
+        let room = CGFloat(settings.config.appearance.maxWingWidth) - 19
         ZStack(alignment: alignment) {
             Color.clear.frame(width: width, height: 1)
-            HStack(spacing: 7) { content() }
+            WingLayout(maxWidth: room) { content() }
                 .padding(.leading, isLeading ? 11 : 8)
                 .padding(.trailing, isLeading ? 8 : 11)
                 .fixedSize()
@@ -345,6 +350,71 @@ struct ClosedNotchContent: View {
         .onPreferenceChange(WingWidthKey.self) { value in
             // Padding da solo significa ala vuota: non deve allargare nulla.
             measure(value <= 19.5 ? 0 : min(value, CGFloat(settings.config.appearance.maxWingWidth)))
+        }
+    }
+}
+
+/// Mette in fila gli elementi di un'ala finché non si arriva alla sua larghezza massima.
+/// Un elemento elastico (il titolo che scorre) si prende lo spazio rimasto; quelli che non
+/// entrano si posano fuori dalla finestra. Il primo c'è sempre, anche se da solo sfora.
+private struct WingLayout: Layout {
+    var maxWidth: CGFloat
+    var spacing: CGFloat = 7
+
+    struct Cache {
+        var sizes: [CGSize] = []
+        var count = 0
+    }
+
+    func makeCache(subviews: Subviews) -> Cache { Cache() }
+
+    func updateCache(_ cache: inout Cache, subviews: Subviews) {
+        cache = fit(subviews)
+    }
+
+    private func fit(_ subviews: Subviews) -> Cache {
+        var sizes: [CGSize] = []
+        var used: CGFloat = 0
+        for subview in subviews {
+            let gap: CGFloat = sizes.isEmpty ? 0 : spacing
+            let remaining = maxWidth - used - gap
+            let ideal = subview.sizeThatFits(.unspecified)
+            if ideal.width <= remaining + 0.5 || sizes.isEmpty && remaining < 24 {
+                sizes.append(ideal)
+                used += gap + ideal.width
+                continue
+            }
+            // Non entra per intero: se sa restringersi, prende quel che resta e chiude la fila.
+            if remaining >= 24 {
+                let squeezed = subview.sizeThatFits(ProposedViewSize(width: remaining, height: nil))
+                if squeezed.width <= remaining + 0.5 {
+                    sizes.append(squeezed)
+                    used += gap + squeezed.width
+                }
+            }
+            break
+        }
+        if sizes.isEmpty, let first = subviews.first { sizes.append(first.sizeThatFits(.unspecified)) }
+        return Cache(sizes: sizes, count: sizes.count)
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
+        guard cache.count > 0 else { return .zero }
+        let width = cache.sizes.reduce(0) { $0 + $1.width } + spacing * CGFloat(cache.count - 1)
+        let height = cache.sizes.map(\.height).max() ?? 0
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
+        var x = bounds.minX
+        for (index, subview) in subviews.enumerated() {
+            if index < cache.count {
+                let size = cache.sizes[index]
+                subview.place(at: CGPoint(x: x, y: bounds.midY), anchor: .leading, proposal: ProposedViewSize(size))
+                x += size.width + spacing
+            } else {
+                subview.place(at: CGPoint(x: bounds.minX - 10_000, y: bounds.midY), anchor: .leading, proposal: .zero)
+            }
         }
     }
 }
@@ -451,15 +521,21 @@ struct OpenNotchContent: View {
             .padding(.top, NotchMetrics.contentTopGap)
         }
         .frame(width: size.width, height: size.height, alignment: .top)
-        .animation(theme.animation, value: state.selectedPageID)
+        .animation(pageAnimation, value: state.selectedPageID)
     }
 
+    /// Il cambio di pagina è più breve dell'apertura: si scorre spesso, deve sembrare immediato.
+    private var pageAnimation: Animation? {
+        theme.animation == nil ? nil : .spring(response: 0.3, dampingFraction: 0.9)
+    }
+
+    /// Le pagine scivolano di poco e si dissolvono, invece di attraversare tutta la notch:
+    /// meno strada da fare, e il movimento si legge come un passo e non come un trascinamento.
     private var pageTransition: AnyTransition {
-        let edge = state.pageDirection
-        let opposite: Edge = edge == .trailing ? .leading : .trailing
+        let shift: CGFloat = state.pageDirection == .trailing ? 56 : -56
         return .asymmetric(
-            insertion: .move(edge: edge).combined(with: .opacity),
-            removal: .move(edge: opposite).combined(with: .opacity)
+            insertion: .offset(x: shift).combined(with: .opacity),
+            removal: .offset(x: -shift).combined(with: .opacity).animation(.easeOut(duration: 0.16))
         )
     }
 }
@@ -557,34 +633,22 @@ struct PageContent: View {
 
     @Environment(\.notchTheme) private var theme
 
-    /// Un widget "impilato" si unisce alla colonna di quello prima.
-    private var columns: [[WidgetPlacement]] {
-        var result: [[WidgetPlacement]] = []
-        for widget in page.widgets {
-            if widget.stacked, !result.isEmpty {
-                result[result.count - 1].append(widget)
-            } else {
-                result.append([widget])
-            }
-        }
-        return result
-    }
-
     var body: some View {
         GeometryReader { geometry in
-            let columns = columns
+            let columns = PageLayout.columns(of: page.widgets)
             let spacing = CGFloat(theme.appearance.widgetSpacing)
-            let totalWeight = max(columns.reduce(0) { $0 + $1[0].weight }, 0.01)
-            let available = max(0, geometry.size.width - spacing * CGFloat(columns.count - 1))
+            // Con la notch stretta i widget in fondo restano fuori invece di accavallarsi.
+            let widths = PageLayout.widths(for: columns, width: geometry.size.width, spacing: spacing)
 
             HStack(spacing: spacing) {
-                ForEach(columns, id: \.first?.id) { column in
+                ForEach(Array(zip(columns, widths)), id: \.0.first?.id) { column, width in
                     VStack(spacing: spacing) {
                         ForEach(column) { widget in
                             WidgetHost(kind: widget.kind)
                         }
                     }
-                    .frame(width: available * column[0].weight / totalWeight)
+                    .frame(width: width)
+                    .clipped()
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height, alignment: .leading)

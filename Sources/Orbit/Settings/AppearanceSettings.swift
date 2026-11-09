@@ -98,6 +98,17 @@ struct AppearanceSettingsView: View {
 
             Section("Forma") {
                 ValueSlider(title: tr("Larghezza da aperta"), value: settings.binding(\.appearance.openWidth), range: 520...1100, step: 10)
+                let hidden = settings.config.layout.pages.reduce(0) { $0 + PageLayout.hiddenWidgets(in: $1, appearance: settings.config.appearance).count }
+                if hidden > 0 {
+                    Label(
+                        hidden == 1
+                            ? tr("A questa larghezza un widget non entra e resta nascosto.")
+                            : tr("A questa larghezza %lld widget non entrano e restano nascosti.", hidden),
+                        systemImage: "exclamationmark.triangle.fill"
+                    )
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+                }
                 ValueSlider(title: tr("Altezza da aperta"), value: settings.binding(\.appearance.openHeight), range: 170...420, step: 4)
                 ValueSlider(title: tr("Angoli da aperta"), value: settings.binding(\.appearance.openBottomRadius), range: 8...48)
                 ValueSlider(title: tr("Raccordo in alto da aperta"), value: settings.binding(\.appearance.openEarRadius), range: 0...28)
