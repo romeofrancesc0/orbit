@@ -359,12 +359,12 @@ struct CustomWidgetsSettingsView: View {
                 Text("Testo semplice: la prima riga è il valore, le altre vanno sotto. Oppure JSON, tutti i campi facoltativi:")
                     .font(.callout)
                     .foregroundStyle(.secondary)
-                Text("""
+                Text(verbatim: """
                 {
-                  "text": "22°",  "subtitle": tr("Milano"),
+                  "text": "22°",  "subtitle": "\(tr("Milano"))",
                   "symbol": "sun.max.fill",  "tint": "#FFD60A",
                   "progress": 0.4,
-                  "rows": [{ "title": tr("Domani"), "value": "19°", "symbol": "cloud.fill" }],
+                  "rows": [{ "title": "\(tr("Domani"))", "value": "19°", "symbol": "cloud.fill" }],
                   "url": "https://…",
                   "compact": "22°",  "active": true
                 }
