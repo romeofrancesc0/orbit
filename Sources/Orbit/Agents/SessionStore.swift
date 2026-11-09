@@ -125,7 +125,14 @@ final class SessionStore: ObservableObject {
         guard isActiveUI != active else { return }
         isActiveUI = active
         scheduleTimer()
-        if active { refresh() }
+        // Si aggiorna appena la notch ha finito di aprirsi: una lista che si riordina a metà
+        // dell'animazione la fa inciampare.
+        if active {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
+                guard let self, self.isActiveUI else { return }
+                self.refresh()
+            }
+        }
     }
 
     func apply(config newConfig: AgentsConfig) {

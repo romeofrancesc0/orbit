@@ -205,15 +205,23 @@ final class NotchController {
         closeWork = nil
         state.isHovering = true
 
-        // Un avviso resta lì finché il mouse ci sta sopra: aprire la notch adesso
-        // lo farebbe sparire proprio mentre si sta per cliccarlo.
-        guard !state.isOpen, state.peek == nil, config.behavior.openOnHover else { return }
+        scheduleHoverOpen()
+    }
+
+    /// Il mouse sulla notch chiusa la apre dopo un attimo. Un avviso con un pulsante
+    /// ("Entra", "Chiudilo") resta fermo finché il mouse ci sta sopra: aprire adesso lo
+    /// farebbe sparire proprio mentre lo si sta per cliccare. Gli altri avvisi (il brano
+    /// cambiato, la carica) si aprono nella notch come se non ci fossero, appena un po' più tardi.
+    private func scheduleHoverOpen() {
+        hoverWork?.cancel()
+        guard !state.isOpen, config.behavior.openOnHover, state.peek?.actionLabel == nil else { return }
+        let delay = config.behavior.hoverDelay + (state.peek == nil ? 0 : 0.25)
         let work = DispatchWorkItem { [weak self] in
-            guard let self, self.mouseInside else { return }
+            guard let self, self.mouseInside, self.state.peek?.actionLabel == nil else { return }
             self.open()
         }
         hoverWork = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + config.behavior.hoverDelay, execute: work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
     }
 
     private func mouseExited() {
@@ -224,15 +232,28 @@ final class NotchController {
     }
 
     private func scheduleCloseIfNeeded() {
-        guard state.isOpen, config.behavior.closeOnMouseLeave, !state.isHeld else { return }
+        guard state.isOpen else { return }
         closeWork?.cancel()
+        // Con lo specchio acceso ci si guarda senza tenere il mouse sulla notch: si chiude
+        // 5 secondi dopo che il cursore se n'è andato, e lo fa comunque, anche se qualcosa
+        // la trattiene, perché la fotocamera non deve restare accesa per sbaglio.
+        let cameraOn = services.camera.isRunning
+        guard cameraOn || (config.behavior.closeOnMouseLeave && !state.isHeld) else { return }
         let work = DispatchWorkItem { [weak self] in
-            guard let self, !self.mouseInside, !self.state.isHeld, !self.services.isDragActive else { return }
+            guard let self, !self.mouseInside, !self.services.isDragActive else { return }
+            if self.services.camera.isRunning {
+                // Un menu aperto resta l'unica cosa che la tiene aperta.
+                guard !self.state.holds.contains(Self.menuHold) else { return }
+            } else {
+                guard self.config.behavior.closeOnMouseLeave, !self.state.isHeld else { return }
+            }
             self.close()
         }
         closeWork = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + config.behavior.closeDelay, execute: work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + (cameraOn ? Self.mirrorCloseDelay : config.behavior.closeDelay), execute: work)
     }
+
+    private static let mirrorCloseDelay: TimeInterval = 5
 
     /// Una trattenuta è finita: se il mouse è già altrove, è ora di chiudere.
     private func reevaluate() {
@@ -260,7 +281,8 @@ final class NotchController {
 
     /// Il click sulla notch chiusa la apre anche senza aspettare il ritardo.
     func handleClickOnClosed() {
-        guard !state.isOpen, state.peek == nil else { return }
+        // Un avviso col suo pulsante gestisce da sé il click.
+        guard !state.isOpen, state.peek?.actionLabel == nil else { return }
         hoverWork?.cancel()
         open()
     }
@@ -310,7 +332,11 @@ final class NotchController {
 
     func present(peek: NotchPeek?) {
         guard !state.isOpen || peek == nil else { return }
+        let hadPeek = state.peek != nil
         state.peek = peek
+        // Finito l'avviso col mouse ancora sopra, non arriverebbe un nuovo "ingresso":
+        // senza questo la notch non si aprirebbe più finché il mouse non esce e rientra.
+        if hadPeek, peek == nil, mouseInside { scheduleHoverOpen() }
     }
 
     func present(hud: NotchHUD?) {

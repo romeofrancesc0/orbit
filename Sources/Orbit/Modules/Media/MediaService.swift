@@ -237,12 +237,17 @@ final class MediaService: ObservableObject {
         }
     }
 
+    /// L'icona dell'app che suona. Chiederla al Finder costa: la si chiede una volta per app.
     var sourceIcon: NSImage? {
-        guard let bundle = nowPlaying?.sourceBundleID,
-              let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundle)
-        else { return nil }
-        return NSWorkspace.shared.icon(forFile: url.path)
+        guard let bundle = nowPlaying?.sourceBundleID else { return nil }
+        if let cached = Self.iconCache[bundle] { return cached }
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundle) else { return nil }
+        let icon = NSWorkspace.shared.icon(forFile: url.path)
+        Self.iconCache[bundle] = icon
+        return icon
     }
+
+    private static var iconCache: [String: NSImage] = [:]
 
     // MARK: - Anteprima
 
