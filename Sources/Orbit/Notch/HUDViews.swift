@@ -18,6 +18,7 @@ struct HUDMeter: View {
     @State private var active = false
     @State private var bump = false
     @State private var settle: Task<Void, Never>?
+    @State private var lastFraction: Double?
 
     var body: some View {
         GeometryReader { geometry in
@@ -59,11 +60,13 @@ struct HUDMeter: View {
                     .offset(x: fill - height / 2 - knob / 2)
             }
             .frame(height: height)
-            .scaleEffect(x: 1, y: bump ? 1.4 : 1)
+            .scaleEffect(x: 1, y: bump ? 1.3 : 1)
             .frame(maxHeight: .infinity)
-            .animation(reduceMotion ? nil : .interpolatingSpring(stiffness: 360, damping: 21), value: level)
-            .animation(reduceMotion ? nil : .spring(response: 0.26, dampingFraction: 0.55), value: active)
-            .animation(reduceMotion ? nil : .spring(response: 0.2, dampingFraction: 0.45), value: bump)
+            // Il riempimento scivola senza rimbalzare: tenendo premuto il tasto, una molla
+            // che sfora ripartiva a ogni passo e la barra andava a scatti.
+            .animation(reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 1), value: level)
+            .animation(reduceMotion ? nil : .spring(response: 0.3, dampingFraction: 0.82), value: active)
+            .animation(reduceMotion ? nil : .spring(response: 0.24, dampingFraction: 0.6), value: bump)
         }
         .frame(height: height)
         .onChange(of: kick) { trigger() }
@@ -72,14 +75,19 @@ struct HUDMeter: View {
 
     private func trigger() {
         guard !reduceMotion else { return }
+        // Il battito solo a fondo corsa, quando la pressione non può più cambiare il livello:
+        // a ogni passo farebbe tremare la barra.
+        let level = min(1, max(0, fraction))
+        let atLimit = (level >= 0.999 || level <= 0.001) && lastFraction.map { abs($0 - level) < 0.001 } == true
+        lastFraction = level
         active = true
-        bump = true
+        bump = atLimit
         settle?.cancel()
         settle = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(110))
+            try? await Task.sleep(for: .milliseconds(120))
             guard !Task.isCancelled else { return }
             bump = false
-            try? await Task.sleep(for: .milliseconds(560))
+            try? await Task.sleep(for: .milliseconds(700))
             guard !Task.isCancelled else { return }
             active = false
         }
@@ -107,8 +115,8 @@ struct HUDGlyph: View {
         }
         .font(.system(size: size, weight: .semibold))
         .foregroundStyle(hud.muted ? theme.tertiary : theme.primary)
+        // Cambia forma (muto, livello) con una dissolvenza: niente colpetto a ogni pressione.
         .contentTransition(.symbolEffect(.replace))
-        .symbolEffect(.bounce, options: .speed(1.6), value: hud.stamp)
     }
 }
 

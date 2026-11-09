@@ -384,10 +384,18 @@ struct BatteryGlyph: View {
                     .padding(1.5)
                     .frame(width: max(height * 0.3, (width - 2) * min(1, max(0.04, level))))
                 if isCharging {
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: height * 0.72, weight: .black))
-                        .foregroundStyle(.black.opacity(0.75))
-                        .frame(maxWidth: .infinity)
+                    // Il fulmine bianco con un bordo scuro, come quello di macOS: si legge sia
+                    // sopra il verde della carica sia sul vuoto della batteria. Nero da solo,
+                    // su una batteria poco carica finiva sul fondo nero e sembrava una macchia.
+                    ZStack {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: height * 0.98, weight: .black))
+                            .foregroundStyle(.black.opacity(0.85))
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: height * 0.7, weight: .black))
+                            .foregroundStyle(.white)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
             .frame(width: width - 2, height: height)
