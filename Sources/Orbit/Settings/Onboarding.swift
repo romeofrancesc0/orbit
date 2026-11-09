@@ -52,7 +52,7 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
 // MARK: - Passi
 
 private enum OnboardingStep: Int, CaseIterable {
-    case welcome, content, look, tutorial, ready
+    case welcome, content, look, lockScreen, tutorial, ready
 }
 
 /// Nel secondo passo: partire da un preset pronto, o comporre la notch a mano.
@@ -65,11 +65,15 @@ struct OnboardingView: View {
     var onFinish: () -> Void
 
     @EnvironmentObject private var settings: SettingsStore
-    @State private var step = OnboardingStep.welcome
+    /// `--demo --onboarding-step=3` apre la guida su un passo preciso, per gli screenshot.
+    @State private var step = CommandLine.arguments.first { $0.hasPrefix("--onboarding-step=") }
+        .flatMap { Int($0.dropFirst(18)) }
+        .flatMap(OnboardingStep.init(rawValue:)) ?? .welcome
     @State private var goingForward = true
     @State private var previewPage: String?
     @State private var contentMode = ContentMode.preset
     @State private var login = LoginItem.isAvailable
+    @State private var lockScreenSuggested = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -78,6 +82,7 @@ struct OnboardingView: View {
                 case .welcome:  WelcomeStep()
                 case .content:  ContentStep(selected: profileBinding, mode: $contentMode, previewPage: $previewPage)
                 case .look:     LookStep(previewPage: $previewPage)
+                case .lockScreen: LockScreenStep(suggested: $lockScreenSuggested)
                 case .tutorial: TutorialStep(services: services)
                 case .ready:    ReadyStep(login: $login)
                 }
@@ -317,11 +322,12 @@ private struct CustomLayoutPicker: View {
 
     var body: some View {
         let current = kinds
-        let isFull = current.count >= Self.maxWidgets
+        let widgets = settings.config.layout.pages.first?.widgets ?? []
+        let appearance = settings.config.appearance
         VStack(spacing: 10) {
             StepHeader(
                 title: "Componi la tua notch",
-                subtitle: "Fino a 4 widget, nell'ordine in cui li scegli. Altre pagine e la notch chiusa si regolano in Impostazioni › Layout."
+                subtitle: "Fino a 4 widget, nell'ordine in cui li scegli e quanti ne entrano nella larghezza della notch. Altre pagine e la notch chiusa si regolano in Impostazioni › Layout."
             )
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
                 ForEach(ModuleCatalog.widgets) { widget in
@@ -329,7 +335,10 @@ private struct CustomLayoutPicker: View {
                     WidgetChoice(
                         widget: widget,
                         position: position.map { $0 + 1 },
-                        isEnabled: position != nil ? current.count > 1 : !isFull
+                        // Uno in più solo se entra nella larghezza della notch, senza accavallarsi.
+                        isEnabled: position != nil
+                            ? current.count > 1
+                            : current.count < Self.maxWidgets && PageLayout.canAdd(widget.kind, to: widgets, appearance: appearance)
                     ) { toggle(widget.kind) }
                 }
             }
@@ -344,7 +353,9 @@ private struct CustomLayoutPicker: View {
             guard updated.count > 1 else { return }
             updated.remove(at: index)
         } else {
-            guard updated.count < Self.maxWidgets else { return }
+            guard updated.count < Self.maxWidgets,
+                  PageLayout.canAdd(kind, to: settings.config.layout.pages.first?.widgets ?? [], appearance: settings.config.appearance)
+            else { return }
             updated.append(kind)
         }
         apply(updated)
@@ -464,7 +475,72 @@ private struct LookStep: View {
     }
 }
 
-// MARK: - 4 · Come si usa
+// MARK: - 4 · Schermata di blocco
+
+private struct LockScreenStep: View {
+    /// Al primo passaggio si propone lo stile completo: chi non lo vuole lo spegne qui.
+    @Binding var suggested: Bool
+
+    @EnvironmentObject private var settings: SettingsStore
+
+    var body: some View {
+        let config = settings.config.lockScreen
+        VStack(spacing: 12) {
+            LockScreenStage(maxWidth: 400)
+                .shadow(color: .black.opacity(0.18), radius: 10, y: 4)
+                .padding(.top, 34)
+
+            StepHeader(
+                title: "E quando blocchi il Mac?",
+                subtitle: "Orbit può lasciarti la musica sulla schermata di blocco: comandi, avanzamento e il testo che scorre a tempo."
+            )
+
+            LockScreenStylePicker(columns: 2)
+                .padding(.horizontal, 28)
+                .frame(maxWidth: 780)
+
+            if config.style != .off {
+                LockScreenLookGallery()
+                    .padding(.horizontal, 28)
+                    .frame(maxWidth: 780)
+                    .transition(.opacity)
+
+                HStack(spacing: 20) {
+                    Picker("Posizione", selection: Binding(
+                        get: { settings.config.lockScreen.position },
+                        set: { value in
+                            settings.update {
+                                $0.lockScreen.position = value
+                                $0.lockScreen.placementY = nil
+                            }
+                        }
+                    )) {
+                        ForEach(LockScreenPosition.allCases) { Text($0.label).tag($0) }
+                    }
+                    .frame(width: 250)
+                    Toggle("Testo del brano", isOn: settings.binding(\.lockScreen.showLyrics))
+                }
+                .transition(.opacity)
+
+                Text("Altri dettagli (vetro, colori, grandezza, lato) in Impostazioni › Schermata di blocco. Il testo arriva da LRCLIB e da NetEase Cloud Music.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .animation(.easeInOut(duration: 0.2), value: config.style == .off)
+        .onAppear {
+            guard !suggested else { return }
+            suggested = true
+            if !settings.config.onboardingDone, config.style == .off {
+                settings.update { $0.lockScreen.style = .full }
+            }
+        }
+    }
+}
+
+// MARK: - 5 · Come si usa
 
 private struct TutorialStep: View {
     let services: AppServices
@@ -592,7 +668,7 @@ extension TutorialRow where Accessory == EmptyView {
     }
 }
 
-// MARK: - 5 · Ultimi ritocchi
+// MARK: - 6 · Ultimi ritocchi
 
 private struct ReadyStep: View {
     @Binding var login: Bool
@@ -621,7 +697,7 @@ private struct ReadyStep: View {
                     title: tr("Accessibilità"),
                     detail: tr("Solo per intercettare i tasti di volume e luminosità."),
                     state: accessibility ? .granted : .undetermined
-                ) { MediaKeyTap.requestTrust() }
+                ) { MediaKeyTap.resetTrust() }
 
                 if boringNotchRunning {
                     HStack(spacing: 10) {

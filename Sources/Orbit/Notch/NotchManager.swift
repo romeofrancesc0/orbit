@@ -13,6 +13,7 @@ final class NotchManager {
 
     private var monitors: [Any] = []
     private var observers: [NSObjectProtocol] = []
+    private var notchesOnLockScreen = false
     private var cancellables: Set<AnyCancellable> = []
     private var pollTimer: Timer?
 
@@ -217,6 +218,14 @@ final class NotchManager {
                 controllers.values.forEach { $0.dragEnded() }
             }
 
+        case .mouseMoved:
+            // Un movimento senza tasti premuti: se il rilascio era sfuggito, il trascinamento è finito.
+            if isDragActive {
+                isMouseDown = false
+                isDragActive = false
+                controllers.values.forEach { $0.dragEnded() }
+            }
+
         default:
             break
         }
@@ -262,13 +271,17 @@ final class NotchManager {
     private func screenLocked() {
         close()
         guard services.settings.config.behavior.showOnLockScreen else { return }
+        notchesOnLockScreen = true
         controllers.values.forEach { LockScreenSpace.shared.add($0.panel) }
     }
 
     /// Una finestra uscita da quello spazio non torna da sola negli spazi normali:
     /// il modo più pulito di ripartire è ricreare le notch.
+    /// Il lettore della schermata di blocco ha la sua finestra nello stesso spazio:
+    /// conta solo se ci erano finite le notch.
     private func screenUnlocked() {
-        guard LockScreenSpace.shared.hasWindows else { return }
+        guard notchesOnLockScreen else { return }
+        notchesOnLockScreen = false
         controllers.values.forEach {
             LockScreenSpace.shared.remove($0.panel)
             $0.tearDown()
@@ -350,17 +363,24 @@ final class NotchManager {
     private func presentPeek(_ peek: NotchPeek) {
         peekWork?.cancel()
         currentPeek = peek
+        peekShownAt = Date()
         controllers.values.forEach { $0.present(peek: peek) }
 
         schedulePeekEnd(after: peek.duration)
     }
+
+    /// Quando è comparso l'avviso in corso: col mouse sopra resta, ma non per sempre.
+    private var peekShownAt = Date()
+    private static let peekHoverLimit: TimeInterval = 20
 
     private func schedulePeekEnd(after delay: TimeInterval) {
         let work = DispatchWorkItem { [weak self] in
             MainActor.assumeIsolated {
                 guard let self else { return }
                 // Se il mouse è sull'avviso qualcuno lo sta leggendo: resta ancora un po'.
-                if self.controllers.values.contains(where: { $0.state.peek != nil && $0.state.isHovering }) {
+                let shownFor = Date().timeIntervalSince(self.peekShownAt)
+                if shownFor < (self.currentPeek?.duration ?? 0) + Self.peekHoverLimit,
+                   self.controllers.values.contains(where: { $0.state.peek != nil && $0.state.isHovering }) {
                     self.schedulePeekEnd(after: 1)
                     return
                 }

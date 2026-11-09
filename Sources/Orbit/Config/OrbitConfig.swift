@@ -17,6 +17,7 @@ struct OrbitConfig: Codable, Equatable {
     var behavior = BehaviorConfig()
     var peeks = PeekConfig()
     var media = MediaConfig()
+    var lockScreen = LockScreenConfig()
     var calendar = CalendarConfig()
     var shelf = ShelfConfig()
     var hud = HUDConfig()
@@ -67,6 +68,7 @@ struct OrbitConfig: Codable, Equatable {
         behavior = read(.behavior, d.behavior)
         peeks = read(.peeks, d.peeks)
         media = read(.media, d.media)
+        lockScreen = read(.lockScreen, d.lockScreen)
         calendar = read(.calendar, d.calendar)
         shelf = read(.shelf, d.shelf)
         hud = read(.hud, d.hud)
@@ -393,6 +395,256 @@ struct MediaConfig: Codable, Equatable {
     var wingsMusicAppsOnly = true
     /// Per quanti secondi la copertina resta nelle ali dopo la pausa.
     var pausedLingerSeconds: Double = 12
+}
+
+// MARK: - Schermata di blocco
+
+/// Quanto mostra il lettore sulla schermata di blocco.
+enum LockScreenStyle: String, Codable, CaseIterable, Identifiable {
+    case off, compact, full, lyrics
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .off:     tr("Nessuno")
+        case .compact: tr("Compatto")
+        case .full:    tr("Completo")
+        case .lyrics:  tr("Testo in primo piano")
+        }
+    }
+    var detail: String {
+        switch self {
+        case .off:     tr("La schermata di blocco resta quella di macOS.")
+        case .compact: tr("Copertina, comandi e avanzamento in una scheda discreta.")
+        case .full:    tr("Copertina grande e il testo che scorre a tempo.")
+        case .lyrics:  tr("Il testo in grande, come in Musica a tutto schermo.")
+        }
+    }
+    var symbol: String {
+        switch self {
+        case .off:     "lock.slash"
+        case .compact: "rectangle.fill"
+        case .full:    "rectangle.split.2x1.fill"
+        case .lyrics:  "quote.bubble.fill"
+        }
+    }
+}
+
+enum LockScreenPosition: String, Codable, CaseIterable, Identifiable {
+    case upper, center, lower
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .upper:  tr("Sotto l'orologio")
+        case .center: tr("Al centro")
+        case .lower:  tr("In basso")
+        }
+    }
+}
+
+enum LockScreenBackground: String, Codable, CaseIterable, Identifiable {
+    case artwork, glass, dark, color, none
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .artwork: tr("Dalla copertina")
+        case .glass:   tr("Liquid Glass")
+        case .dark:    tr("Scuro")
+        case .color:   tr("Colore")
+        case .none:    tr("Trasparente")
+        }
+    }
+    /// Lo sfondo lascia vedere il wallpaper: il testo ha bisogno di un'ombra per leggersi.
+    var showsWallpaper: Bool { self == .none || self == .glass }
+}
+
+/// Di lato, rispetto al centro dello schermo.
+enum LockScreenSide: String, Codable, CaseIterable, Identifiable {
+    case leading, center, trailing
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .leading:  tr("A sinistra")
+        case .center:   tr("Al centro")
+        case .trailing: tr("A destra")
+        }
+    }
+}
+
+/// Il colore della barra di avanzamento e dei punti delle pause.
+enum LockScreenAccent: String, Codable, CaseIterable, Identifiable {
+    case white, artwork, custom
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .white:   tr("Bianco")
+        case .artwork: tr("Dalla copertina")
+        case .custom:  tr("Personalizzato")
+        }
+    }
+}
+
+enum LockArtworkShape: String, Codable, CaseIterable, Identifiable {
+    case rounded, square, circle
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .rounded: tr("Arrotondata")
+        case .square:  tr("Quadrata")
+        case .circle:  tr("Rotonda")
+        }
+    }
+}
+
+struct LockScreenConfig: Codable, Equatable {
+    /// Spento di serie: si sceglie nella guida del primo avvio o nelle impostazioni.
+    var style: LockScreenStyle = .off
+    var position: LockScreenPosition = .center
+    var side: LockScreenSide = .center
+    /// Dove l'utente ha trascinato il lettore: il centro, in frazioni dello schermo (y dall'alto).
+    /// Senza, valgono altezza e lato. Ogni asse è indipendente.
+    var placementX: Double?
+    var placementY: Double?
+    /// Grandezza dell'intero lettore rispetto a quella di serie.
+    var scale: Double = 1
+    /// Copertina e comandi a destra, testo a sinistra.
+    var flipped = false
+    /// Lo spazio fra la colonna della copertina e il testo, nello stile completo.
+    var gap: Double = 30
+
+    // Scheda
+    var background: LockScreenBackground = .artwork
+    /// Quanto si scurisce lo sfondo (copertina, vetro) o quanto è pieno il colore (scuro, colore).
+    var dim: Double = 0.3
+    var colorHex = "#1F3A6E"
+    /// Il vetro più limpido, quello della schermata di blocco di iOS.
+    var clearGlass = false
+    /// Il vetro prende il colore della copertina.
+    var tintGlass = false
+    var cornerRadius: Double = 30
+    var border = true
+    var shadow = true
+    /// Un'ombra morbida sotto testo e comandi, per leggerli sopra qualunque wallpaper.
+    var textShadow = true
+
+    // Contenuto
+    var showArtwork = true
+    var artworkShape: LockArtworkShape = .rounded
+    var showSourceIcon = true
+    var showProgress = true
+    var showTimes = true
+    var accent: LockScreenAccent = .white
+    var accentHex = "#FF5E7A"
+
+    // Testo
+    /// Il testo sincronizzato: titolo e artista si cercano su LRCLIB.
+    var showLyrics = true
+    /// Se LRCLIB non ha il brano, lo si cerca anche su NetEase Cloud Music.
+    var moreLyricsSources = true
+    /// Grandezza del testo rispetto a quella di serie.
+    var lyricsScale: Double = 1
+    var lyricsCentered = false
+
+    /// Mentre la musica suona lo schermo bloccato resta acceso, invece di spegnersi dopo pochi secondi.
+    var keepScreenOn = true
+    var keepScreenOnBattery = true
+    /// Se attivo, lo schermo resta acceso al massimo `keepScreenOnMinutes` dal blocco del Mac.
+    var keepScreenOnLimited = false
+    var keepScreenOnMinutes = 60
+
+    static let screenOnMinutesRange = 5...480
+
+    init() {}
+
+    /// Le chiavi aggiunte dopo restano al loro default: una configurazione vecchia non torna a zero.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let d = LockScreenConfig()
+        func read<T: Decodable>(_ key: CodingKeys, _ fallback: T) -> T {
+            (try? c.decodeIfPresent(T.self, forKey: key)) ?? fallback
+        }
+        style = read(.style, d.style)
+        position = read(.position, d.position)
+        side = read(.side, d.side)
+        placementX = (try? c.decodeIfPresent(Double.self, forKey: .placementX)) ?? nil
+        placementY = (try? c.decodeIfPresent(Double.self, forKey: .placementY)) ?? nil
+        scale = read(.scale, d.scale)
+        flipped = read(.flipped, d.flipped)
+        gap = read(.gap, d.gap)
+        background = read(.background, d.background)
+        dim = read(.dim, background == .dark ? 0.58 : d.dim)
+        colorHex = read(.colorHex, d.colorHex)
+        clearGlass = read(.clearGlass, d.clearGlass)
+        tintGlass = read(.tintGlass, d.tintGlass)
+        cornerRadius = read(.cornerRadius, d.cornerRadius)
+        border = read(.border, background != .none)
+        shadow = read(.shadow, background != .none)
+        textShadow = read(.textShadow, d.textShadow)
+        showArtwork = read(.showArtwork, d.showArtwork)
+        artworkShape = read(.artworkShape, d.artworkShape)
+        showSourceIcon = read(.showSourceIcon, d.showSourceIcon)
+        showProgress = read(.showProgress, d.showProgress)
+        showTimes = read(.showTimes, d.showTimes)
+        accent = read(.accent, d.accent)
+        accentHex = read(.accentHex, d.accentHex)
+        showLyrics = read(.showLyrics, d.showLyrics)
+        moreLyricsSources = read(.moreLyricsSources, d.moreLyricsSources)
+        lyricsScale = read(.lyricsScale, d.lyricsScale)
+        lyricsCentered = read(.lyricsCentered, d.lyricsCentered)
+        keepScreenOn = read(.keepScreenOn, d.keepScreenOn)
+        keepScreenOnBattery = read(.keepScreenOnBattery, d.keepScreenOnBattery)
+        keepScreenOnLimited = read(.keepScreenOnLimited, d.keepScreenOnLimited)
+        keepScreenOnMinutes = min(Self.screenOnMinutesRange.upperBound,
+                                  max(Self.screenOnMinutesRange.lowerBound, read(.keepScreenOnMinutes, d.keepScreenOnMinutes)))
+    }
+}
+
+/// Un aspetto pronto per il lettore della schermata di blocco: come i temi della notch,
+/// un punto di partenza che poi si ritocca a piacere.
+struct LockScreenLook: Identifiable {
+    let id: String
+    let name: String
+    let background: LockScreenBackground
+    var dim: Double = 0.3
+    var clearGlass = false
+    var tintGlass = false
+    var colorHex: String?
+    var cornerRadius: Double = 30
+    var border = true
+    var shadow = true
+
+    func apply(to config: inout LockScreenConfig) {
+        config.background = background
+        config.dim = dim
+        config.clearGlass = clearGlass
+        config.tintGlass = tintGlass
+        if let colorHex { config.colorHex = colorHex }
+        config.cornerRadius = cornerRadius
+        config.border = border
+        config.shadow = shadow
+        if background.showsWallpaper { config.textShadow = true }
+    }
+
+    func matches(_ config: LockScreenConfig) -> Bool {
+        guard config.background == background else { return false }
+        switch background {
+        case .glass: return config.clearGlass == clearGlass && config.tintGlass == tintGlass
+        default:     return true
+        }
+    }
+
+    static let all: [LockScreenLook] = [
+        LockScreenLook(id: "artwork", name: tr("Copertina"), background: .artwork, dim: 0.3),
+        LockScreenLook(id: "glass", name: tr("Liquid Glass"), background: .glass, dim: 0.12, cornerRadius: 34),
+        LockScreenLook(id: "clear-glass", name: tr("Vetro limpido"), background: .glass, dim: 0, clearGlass: true, cornerRadius: 34, shadow: false),
+        LockScreenLook(id: "tinted-glass", name: tr("Vetro colorato"), background: .glass, dim: 0.05, tintGlass: true, cornerRadius: 34),
+        LockScreenLook(id: "transparent", name: tr("Trasparente"), background: .none, cornerRadius: 30, border: false, shadow: false),
+        LockScreenLook(id: "dark", name: tr("Scuro"), background: .dark, dim: 0.58),
+        LockScreenLook(id: "color", name: tr("Colore"), background: .color, dim: 0.8, colorHex: "#1F3A6E")
+    ]
+
+    static func current(_ config: LockScreenConfig) -> LockScreenLook? {
+        all.first { $0.matches(config) }
+    }
 }
 
 struct CalendarConfig: Codable, Equatable {

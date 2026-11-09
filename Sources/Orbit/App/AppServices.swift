@@ -11,6 +11,7 @@ final class AppServices {
     let settings: SettingsStore
     let sessions: SessionStore
     let media = MediaService()
+    let lyrics = LyricsService()
     let calendar = CalendarService()
     let shelf: ShelfStore
     let battery = BatteryMonitor()
@@ -25,6 +26,7 @@ final class AppServices {
     let brightness = BrightnessController()
 
     private(set) lazy var notch = NotchManager(services: self)
+    private(set) lazy var lockScreen = LockScreenWidgetController(services: self)
 
     private let mediaKeys = MediaKeyTap()
     private let bluetooth = BluetoothMonitor()
@@ -46,12 +48,36 @@ final class AppServices {
            let language = AppLanguage.allCases.first(where: { $0.code == String(argument.dropFirst(11)) }) {
             settings.update { $0.language = language }
         }
+        // `--demo --lock-screen-preview=full` shows that lock screen style without touching the saved settings.
+        if isDemo, let argument = CommandLine.arguments.first(where: { $0.hasPrefix("--lock-screen-preview=") }),
+           let style = LockScreenStyle(rawValue: String(argument.dropFirst(22))) {
+            settings.update { $0.lockScreen.style = style }
+        }
+        // `--lock-look=clear-glass` and `--lock-side=trailing`, for screenshots of each look.
+        if isDemo, let argument = CommandLine.arguments.first(where: { $0.hasPrefix("--lock-look=") }),
+           let look = LockScreenLook.all.first(where: { $0.id == String(argument.dropFirst(12)) }) {
+            settings.update { look.apply(to: &$0.lockScreen) }
+        }
+        if isDemo, CommandLine.arguments.contains("--lock-flip") {
+            settings.update { $0.lockScreen.flipped = true }
+        }
+        // `--lock-screen-timer=90`: screen kept on for at most 90 minutes, to see the dial.
+        if isDemo, let argument = CommandLine.arguments.first(where: { $0.hasPrefix("--lock-screen-timer=") }),
+           let minutes = Int(argument.dropFirst(20)) {
+            settings.update { $0.lockScreen.keepScreenOnLimited = true; $0.lockScreen.keepScreenOnMinutes = minutes }
+        }
+        if isDemo, let argument = CommandLine.arguments.first(where: { $0.hasPrefix("--lock-side=") }),
+           let side = LockScreenSide(rawValue: String(argument.dropFirst(12))) {
+            settings.update { $0.lockScreen.side = side }
+        }
         sessions = isDemo ? SessionStore(preview: DemoData.sessions) : SessionStore(config: settings.config.agents)
         shelf = ShelfStore(persists: !isDemo)
         notes = NotesStore(persists: !isDemo, initial: isDemo ? DemoData.notes : nil)
     }
 
-    var isDragActive: Bool { notch.isDragActive }
+    /// Il rilascio di un trascinamento può non arrivare ai monitor (finisce in un'altra app):
+    /// senza il tasto premuto non c'è trascinamento, qualunque cosa ricordi la notch.
+    var isDragActive: Bool { notch.isDragActive && NSEvent.pressedMouseButtons & 1 != 0 }
 
     // MARK: - Avvio
 
@@ -74,6 +100,7 @@ final class AppServices {
             .store(in: &cancellables)
 
         notch.start()
+        lockScreen.start()
         Updater.shared.start(enabled: !isDemo)
         MainMenu.install(services: self)
         MenuBarController.shared.start(services: self)
@@ -143,7 +170,8 @@ final class AppServices {
         guard !isDemo else { return }
         let kinds = usedKinds(config)
 
-        if kinds.contains("media") || (config.peeks.enabled && config.peeks.trackChange) {
+        // Il lettore della schermata di blocco deve sapere cosa suona già prima del blocco.
+        if kinds.contains("media") || (config.peeks.enabled && config.peeks.trackChange) || config.lockScreen.style != .off {
             media.start()
         } else {
             media.stop()
@@ -468,6 +496,9 @@ final class AppServices {
     func notchOpenChanged() {
         let anyOpen = notch.controllers.values.contains { $0.state.isOpen }
         sessions.setActiveUI(anyOpen)
+        // Lo specchio si spegne quando la sua vista sparisce; questo è il paracadute,
+        // nel caso la vista non lo dica: a notch chiusa la fotocamera è sempre spenta.
+        if !anyOpen { camera.stop() }
         notch.stateChanged()
     }
 
@@ -535,6 +566,7 @@ extension View {
             .environmentObject(services.sessions)
             .environmentObject(services.sessions.summary)
             .environmentObject(services.media)
+            .environmentObject(services.lyrics)
             .environmentObject(services.calendar)
             .environmentObject(services.shelf)
             .environmentObject(services.battery)

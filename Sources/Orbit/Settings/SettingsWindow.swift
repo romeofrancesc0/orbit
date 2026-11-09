@@ -4,7 +4,7 @@ import SwiftUI
 
 enum SettingsSection: String, CaseIterable, Identifiable {
     case layout, appearance, general, profiles
-    case agents, music, calendar, shelf, launcher, widgets
+    case agents, music, lockScreen, calendar, shelf, launcher, widgets
     case peeks, hud, shortcuts, permissions, advanced
 
     var id: String { rawValue }
@@ -17,6 +17,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .profiles:    tr("Profili")
         case .agents:      tr("Agenti")
         case .music:       tr("Musica")
+        case .lockScreen:  tr("Schermata di blocco")
         case .calendar:    tr("Calendario")
         case .shelf:       tr("Scaffale")
         case .launcher:    tr("Collegamenti")
@@ -37,6 +38,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .profiles:    "person.2.fill"
         case .agents:      "sparkles"
         case .music:       "music.note"
+        case .lockScreen:  "lock.fill"
         case .calendar:    "calendar"
         case .shelf:       "tray.full.fill"
         case .launcher:    "square.grid.2x2.fill"
@@ -57,6 +59,7 @@ enum SettingsSection: String, CaseIterable, Identifiable {
         case .profiles:    .purple
         case .agents:      Color(hex: 0xD97757)
         case .music:       .red
+        case .lockScreen:  .indigo
         case .calendar:    .orange
         case .shelf:       .teal
         case .launcher:    .mint
@@ -137,7 +140,7 @@ struct SettingsRoot: View {
 
     private let groups: [(String, [SettingsSection])] = [
         (tr("Notch"), [.layout, .appearance, .general, .profiles]),
-        (tr("Contenuti"), [.agents, .music, .calendar, .shelf, .launcher, .widgets]),
+        (tr("Contenuti"), [.agents, .music, .lockScreen, .calendar, .shelf, .launcher, .widgets]),
         (tr("Sistema"), [.peeks, .hud, .shortcuts, .permissions, .advanced])
     ]
 
@@ -169,6 +172,7 @@ struct SettingsRoot: View {
         case .profiles:    ProfilesSettingsView(services: services)
         case .agents:      AgentsSettingsView()
         case .music:       MusicSettingsView()
+        case .lockScreen:  LockScreenSettingsView()
         case .calendar:    CalendarSettingsView()
         case .shelf:       ShelfSettingsView()
         case .launcher:    LauncherSettingsView()

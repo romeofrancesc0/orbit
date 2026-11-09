@@ -1,3 +1,4 @@
+import Combine
 import CoreGraphics
 import Foundation
 import SwiftUI
@@ -229,6 +230,49 @@ enum Diagnostics {
         check(!shape.contains(CGPoint(x: 1, y: 20)), "fuori dalle orecchie è vuoto")
         check(!NotchShape(earRadius: 500, bottomRadius: 500).path(in: CGRect(x: 0, y: 0, width: 40, height: 10)).isEmpty, "raggi eccessivi non rompono la forma")
 
+        print("── Widget nella larghezza della notch")
+        var wide = AppearanceConfig()
+        wide.openWidth = 820
+        var narrow = AppearanceConfig()
+        narrow.openWidth = 520
+        let home = PageConfig.defaults[0]
+        check(PageLayout.hiddenWidgets(in: home, appearance: wide).isEmpty, "a 820 punti la pagina di serie entra tutta")
+        check(PageLayout.hiddenWidgets(in: home, appearance: narrow).map(\.kind) == ["calendar"], "a 520 punti resta fuori l'ultimo widget, non si accavalla")
+        let crowded = ["agents", "media", "calendar", "clock"].map { WidgetPlacement(kind: $0) }
+        let columns = PageLayout.columns(of: crowded)
+        let widths = PageLayout.widths(for: columns, width: PageLayout.contentWidth(narrow), spacing: 8)
+        check(zip(columns, widths).allSatisfy { $1 + 0.5 >= PageLayout.minimumWidth(of: $0[0].kind) }, "nessuna colonna sotto il suo minimo")
+        check(widths.reduce(0, +) + 8 * CGFloat(widths.count - 1) <= PageLayout.contentWidth(narrow) + 0.5, "le colonne non sforano la notch")
+        check(!PageLayout.canAdd("clock", to: Array(crowded.prefix(2)) + [WidgetPlacement(kind: "calendar")], appearance: narrow), "a notch stretta non si aggiunge un widget che non entra")
+        check(PageLayout.canAdd("clock", to: [WidgetPlacement(kind: "media")], appearance: narrow), "se c'è posto si aggiunge")
+
+        print("── Testi a tempo")
+        let lrc = """
+        [ar: Someone]
+        [offset:+500]
+        [00:12.00]First line
+        [00:15.50][01:02.25]Chorus
+        [00:20.00]
+        [00:21]
+        [00:24.10]After the break
+        [00:30.00]
+        """
+        let parsed = Lyrics.parseLRC(lrc)
+        check(parsed != nil, "un LRC si legge")
+        if let parsed {
+            check(parsed.lines.first?.isInterlude == true, "un'introduzione lunga diventa una pausa")
+            check(parsed.lines.filter(\.isInterlude).count == 3, "le pause doppie si fondono")
+            check(parsed.lines.filter { $0.text == "Chorus" }.count == 2, "più istanti sulla stessa riga")
+            check(abs((parsed.lines.first { $0.text == "First line" }?.time ?? 0) - 11.5) < 0.001, "l'offset sposta tutto in anticipo")
+            check(parsed.lines.map(\.time) == parsed.lines.map(\.time).sorted(), "le righe sono in ordine")
+            check(parsed.index(at: 0) == 0 && parsed.index(at: 11.4) == 1, "la riga giusta a ogni istante")
+            check(parsed.index(at: 70) == parsed.lines.count - 1, "dopo l'ultima resta l'ultima")
+        }
+        let trailing = Lyrics.parseLRC("[00:01.00]Uno\n[00:02.00]\n[00:03.00]")
+        check(trailing?.lines.count == 1, "le pause in fondo si tolgono")
+        check(Lyrics.parseLRC("solo testo, senza tempi") == nil, "un testo senza tempi non è un LRC")
+        check(Lyrics.plain("una\ndue")?.isSynced == false, "il testo semplice si legge senza tempi")
+
         print(failures == 0 ? "\ntutto ok" : "\n\(failures) verifiche fallite")
     }
 
@@ -290,5 +334,86 @@ enum Diagnostics {
             }
             print("")
         }
+    }
+
+    /// `Orbit --demo --preview-window=lockscreen|onboarding|settings`: apre l'anteprima in una finestra
+    /// qualunque, senza notch e senza badare a un'altra copia di Orbit già aperta.
+    /// Con `--demo` non si salva nulla.
+    @MainActor
+    static func previewWindow(_ kind: String) {
+        let services = AppServices.shared
+        let content: AnyView
+        let size: NSSize
+        switch kind {
+        case "settings":
+            // Si apre sulla pagina della schermata di blocco.
+            let navigation = SettingsNavigation()
+            navigation.selection = .lockScreen
+            content = AnyView(SettingsRoot(navigation: navigation, services: services).orbitEnvironment(services))
+            size = NSSize(width: 1020, height: 760)
+        case "onboarding":
+            // La finestra vera della guida, non una copia: si prova quella che vedrà chi installa.
+            OnboardingWindowController.shared.show(services: services)
+            return
+        default:
+            content = AnyView(LockScreenStage(maxWidth: 1100).orbitEnvironment(services))
+            size = NSSize(width: 1100, height: 1100 * 982 / 1512)
+        }
+        let window = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        window.title = "Orbit preview"
+        window.contentViewController = NSHostingController(rootView: content)
+        window.setContentSize(size)
+        window.center()
+        window.isReleasedWhenClosed = false
+        NSApp.setActivationPolicy(.regular)
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        previewWindowRef = window
+    }
+
+    @MainActor private static var previewWindowRef: NSWindow?
+
+    /// `Orbit --probe-lyrics`: cosa vede il ponte in riproduzione e che testo trova per quel brano.
+    @MainActor
+    static func probeLyrics() {
+        let media = MediaService()
+        let lyrics = LyricsService()
+        media.start()
+        var printed = false
+        var cancellables: Set<AnyCancellable> = []
+        lyrics.$status.dropFirst().sink { status in
+            switch status {
+            case .loading: print("cerco il testo…")
+            case .loaded(let found): print("testo trovato: \(found.lines.count) righe, a tempo: \(found.isSynced)"); found.lines.prefix(3).forEach { print("   [\(Format.playback($0.time))] \($0.text.isEmpty ? "•••" : $0.text)") }; printed = true
+            case .instrumental: print("brano strumentale"); printed = true
+            case .unavailable: print("testo non disponibile"); printed = true
+            case .idle: print("nessuna ricerca"); printed = true
+            }
+        }.store(in: &cancellables)
+        // `--probe-lyrics=Titolo|Artista|Album|Durata`: prova un brano preciso invece di quello in riproduzione.
+        let fixed: NowPlaying? = CommandLine.arguments.first { $0.hasPrefix("--probe-lyrics=") }.map { argument in
+            let parts = argument.dropFirst(15).split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+            var track = DemoData.track
+            track.title = parts.first ?? ""
+            track.artist = parts.count > 1 ? parts[1] : ""
+            track.album = parts.count > 2 ? parts[2] : ""
+            track.duration = parts.count > 3 ? Double(parts[3]) ?? 0 : 0
+            return track
+        }
+        let source: AnyPublisher<NowPlaying, Never> = fixed.map { Just($0).eraseToAnyPublisher() }
+            ?? media.$nowPlaying.compactMap { $0 }.eraseToAnyPublisher()
+        source.first().sink { track in
+            print("in riproduzione: \(track.title) — \(track.artist) — \(track.album) (\(Int(track.duration)) s)")
+            print("app: \(track.bundleID ?? "-") genitore: \(track.parentBundleID ?? "-") musica: \(MediaService.isMusicApp(track.sourceBundleID))")
+            lyrics.load(for: track)
+        }.store(in: &cancellables)
+
+        let deadline = Date().addingTimeInterval(15)
+        while !printed, Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.1))
+        }
+        if fixed == nil, media.nowPlaying == nil { print("niente in riproduzione (o il ponte non risponde: \(media.bridgeError ?? "-"))") }
+        media.stop()
+        _ = cancellables
     }
 }

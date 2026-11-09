@@ -13,6 +13,11 @@ MainActor.assumeIsolated {
         exit(0)
     }
 
+    if arguments.contains(where: { $0.hasPrefix("--probe-lyrics") }) {
+        Diagnostics.probeLyrics()
+        exit(0)
+    }
+
     if arguments.contains("--probe-controls") {
         Diagnostics.probeControls()
         exit(0)
@@ -33,6 +38,11 @@ MainActor.assumeIsolated {
     if arguments.contains("--enable-login-item") {
         print(LoginItem.set(true) ? tr("avvio al login attivo") : tr("avvio al login non disponibile"))
         exit(0)
+    }
+
+    if let argument = arguments.first(where: { $0.hasPrefix("--preview-window=") }) {
+        Diagnostics.previewWindow(String(argument.dropFirst(17)))
+        app.run()
     }
 
     let delegate = AppDelegate()

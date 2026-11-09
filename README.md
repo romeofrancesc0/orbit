@@ -53,6 +53,7 @@ The app lands in `~/Applications/Orbit.app` and starts right away.
 |---|---|
 | **Agents** | The sessions of Claude Code and Codex, with no configuration. Status, current activity and context used, and one click takes you to the right chat. |
 | **Music** | Any app that plays: Music, Spotify, Safari, YouTube. Artwork, draggable progress, a visualizer, and colors taken from the cover. |
+| **Lock screen** | The player stays on the lock screen: artwork, controls, a draggable progress bar and synced lyrics that scroll like in Music (from [LRCLIB](https://lrclib.net), and NetEase Cloud Music when LRCLIB doesn't have the song). Three styles and seven looks (artwork, Liquid Glass, clear or tinted glass, transparent over your wallpaper, dark, a color of your choice), then drag it anywhere between the clock and the password field, swap the artwork and lyrics sides, and set size, spacing, corners, shadows, artwork shape and what to show. While music plays the locked screen stays on, for as long as it plays or for a time you set on a dial (one turn is an hour). |
 | **Calendar** | The week, your events and reminders, and a button to join meetings. |
 | **Shelf** | Drag files, links or text onto the notch and find them there again. With AirDrop, Quick Look and system sharing. |
 | **Volume and brightness** | Replaces the system indicators with ones in the notch: a fluid meter that reacts to every key press, with a handle that pops out while you adjust and a bounce at the limits. |
@@ -258,13 +259,20 @@ The clipboard history lives in memory only and skips anything apps mark as confi
 
 ```bash
 scripts/release.sh --publish 1.0.1           # new version: universal .dmg + update feed, published as a GitHub release
+scripts/release.sh --local                   # just the installer .dmg, to try on this Mac (nothing signed for updates, nothing published)
 ./build.sh --run                              # bundle in dist/ and launch
 dist/Orbit.app/Contents/MacOS/Orbit --selftest         # check the rules you can't see by eye
 dist/Orbit.app/Contents/MacOS/Orbit --dump             # what the agent providers see
 dist/Orbit.app/Contents/MacOS/Orbit --probe-controls   # volume, brightness, calendar
+dist/Orbit.app/Contents/MacOS/Orbit --probe-lyrics     # what's playing and which lyrics are found (or --probe-lyrics="Title|Artist|Album|Seconds")
 open dist/Orbit.app --args --demo           # the notch with made-up data, for screenshots
 open dist/Orbit.app --args --demo --language=de   # …in another language, without touching your settings
 open dist/Orbit.app --args --virtual-notch  # as on a display without a notch
+dist/Orbit.app/Contents/MacOS/Orbit --demo --lock-screen-preview=full --preview-window=lockscreen   # the lock screen player in a window (compact, full, lyrics)
+dist/Orbit.app/Contents/MacOS/Orbit --demo --lock-screen-preview=full --lock-look=clear-glass --lock-side=trailing --preview-window=lockscreen   # a look (artwork, glass, clear-glass, tinted-glass, transparent, dark, color)
+dist/Orbit.app/Contents/MacOS/Orbit --demo --lock-screen-preview=full --cycle-tracks --preview-window=lockscreen   # switches song every few seconds, to watch the transitions
+dist/Orbit.app/Contents/MacOS/Orbit --demo --lock-screen-preview=full --lock-screen-timer=90 --preview-window=settings   # the screen-on dial set to 1 h 30
+dist/Orbit.app/Contents/MacOS/Orbit --demo --preview-window=onboarding                             # the setup guide, even with Orbit already open
 ```
 
 The Xcode project is generated from `project.yml`. It needs Xcode and not just SwiftPM because Shortcuts and Focus filters require metadata that only Xcode's build system generates.
@@ -296,7 +304,8 @@ Since macOS 15.4, MediaRemote answers with empty data to ordinary processes. Tha
 - Ad-hoc signing makes macOS forget permissions on every build. `build.sh` uses an Apple Development certificate if it finds one, or the one named in `ORBIT_SIGN_IDENTITY`.
 - Without the hooks, "permission requested" can't be told apart from "running".
 - The music visualizer is a timed animation, not an audio analysis: doing that would require the permission to record system audio.
-- "Show on the lock screen" is experimental.
+- "Show on the lock screen" (the notch) and the lock screen player are experimental: they rely on a private SkyLight space above the lock screen.
+- Lyrics are looked up only while the Mac is locked, only for music apps, and only by title, artist, album and duration.
 - The comments in the source code are in Italian.
 - Shortcuts, Spotlight and the permission prompts follow the *system* language, not the one chosen inside the app: macOS reads their text from the app bundle before the app is running.
 

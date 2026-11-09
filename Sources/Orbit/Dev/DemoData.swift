@@ -45,7 +45,55 @@ enum DemoData {
         ]
     }
 
+    /// Il brano delle anteprime: lo stesso nella demo, nella guida e nelle impostazioni.
+    static var track: NowPlaying {
+        NowPlaying(
+            title: "Nocturne in F minor",
+            artist: "Orbit Ensemble",
+            album: "Midnight",
+            duration: 248,
+            elapsed: 71,
+            rate: 1,
+            timestamp: Date(),
+            isPlaying: true,
+            bundleID: "com.apple.Music",
+            parentBundleID: nil,
+            appName: "Music",
+            artworkID: "demo",
+            shuffle: 1,
+            repeatMode: 1
+        )
+    }
+
+    /// Un testo inventato per il brano delle anteprime, a tempo come quelli veri.
+    static var lyrics: Lyrics {
+        let verses = [
+            "", "The city hums a quiet tune", "Streetlights fold into the dark",
+            "I trace the outline of the moon", "On the window, like a spark", "",
+            "Every night I come around", "Circling back to where you are",
+            "Gravity without a sound", "Pulling me from every star", "",
+            "Slow down, the hours drift", "Hold on, the shadows lift",
+            "We're in orbit, you and I", "Falling up into the sky", "",
+            "Paper planes and coffee rings", "Half a song I never wrote",
+            "All the small forgotten things", "Floating softly, still afloat", "",
+            "Every night I come around", "Circling back to where you are",
+            "Gravity without a sound", "Pulling me from every star", "",
+            "Slow down, the hours drift", "Hold on, the shadows lift",
+            "We're in orbit, you and I", "Falling up into the sky", "",
+            "And when the morning finds us here", "Still turning, crystal clear",
+            "We're in orbit, you and I", "Falling up into the sky"
+        ]
+        var time = 0.0
+        var lines: [LyricLine] = []
+        for (index, text) in verses.enumerated() {
+            lines.append(LyricLine(id: index, time: time, text: text))
+            time += text.isEmpty ? 9 : 6.4
+        }
+        return Lyrics(lines: lines, isSynced: true)
+    }
+
     static func seed(_ services: AppServices) {
+        services.lyrics.seedForPreview(lyrics, track: track)
         services.media.seedForPreview(
             NowPlaying(
                 title: "Nocturne in F minor",
@@ -107,7 +155,7 @@ enum DemoData {
     }
 
     /// Una copertina inventata: una luna su un cielo al tramonto.
-    private static var artwork: NSImage {
+    static var artwork: NSImage {
         let size = NSSize(width: 500, height: 500)
         return NSImage(size: size, flipped: false) { rect in
             let sky = NSGradient(colors: [
